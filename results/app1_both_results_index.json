@@ -1,0 +1,67 @@
+{
+  "generation_info": {
+    "app_id": "app1",
+    "generated_at": "2025-07-23T15:24:30.806018",
+    "output_format_requested": "both",
+    "formats_generated": [
+      "visio",
+      "lucid"
+    ],
+    "quality_level": "professional",
+    "professional_grade": true,
+    "banking_optimized": true
+  },
+  "executive_metadata": {
+    "document_classification": "CONFIDENTIAL - EXECUTIVE REVIEW",
+    "prepared_for": "C-Suite Leadership Team",
+    "document_type": "Network Architecture Executive Summary",
+    "preparation_date": "July 23, 2025",
+    "next_review_date": "October 23, 2025",
+    "document_owner": "Chief Technology Officer",
+    "distribution_list": [
+      "CTO",
+      "CISO",
+      "CRO",
+      "Chief Architect"
+    ],
+    "confidentiality_notice": "This document contains confidential and proprietary information"
+  },
+  "executive_insights": {
+    "total_applications": 1,
+    "critical_applications": 0,
+    "security_zones": 1,
+    "compliance_frameworks": [
+      "PCI-DSS",
+      "SOX",
+      "FFIEC",
+      "GDPR"
+    ],
+    "architecture_maturity": "Level 4 - Managed and Optimized",
+    "security_posture": "Strong - Multi-layered Defense",
+    "business_continuity": "Tier 1 - Mission Critical Protected"
+  },
+  "generated_files": [
+    {
+      "format": "visio",
+      "filename": "app1.vsdx",
+      "folder": "results/visio/",
+      "file_path": "results\\visio\\app1.vsdx",
+      "quality_level": "Professional Grade",
+      "target_audience": "Microsoft Visio Users",
+      "file_size": "7.6 KB"
+    },
+    {
+      "format": "lucid",
+      "filename": "app1.lucid",
+      "folder": "results/lucid/",
+      "file_path": "results\\lucid\\app1.lucid",
+      "quality_level": "Professional Grade",
+      "target_audience": "Lucidchart Users",
+      "file_size": "4.9 KB"
+    }
+  ],
+  "format_descriptions": {
+    "visio": "Microsoft Visio professional diagrams (.vsdx)",
+    "lucid": "Lucidchart professional diagrams (.lucid)"
+  }
+}

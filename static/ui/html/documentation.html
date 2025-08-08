@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation Dashboard</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/documentation.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <div>
+                        <h1 class="header-title">Documentation Dashboard</h1>
+                        <p class="header-subtitle">Professional quality document generation with banking compliance</p>
+                    </div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: var(--accent-blue);" id="totalDocuments">51</div>
+                        <div class="stat-label">Total Documents</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: var(--accent-green);" id="generatedDocs">24</div>
+                        <div class="stat-label">Generated</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: var(--accent-orange);" id="inProgressDocs">8</div>
+                        <div class="stat-label">In Progress</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: var(--accent-purple);" id="qualityScore">95%</div>
+                        <div class="stat-label">Quality Score</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <a href="index.html" class="tab-btn">
+                <span class="tab-icon">🗂️</span>
+                <span>Topology</span>
+            </a>
+            <a href="#" class="tab-btn disabled">
+                <span class="tab-icon">🔄</span>
+                <span>Convergence</span>
+            </a>
+            <a href="archetype.html" class="tab-btn">
+                <span class="tab-icon">🏗️</span>
+                <span>Archetype Classification</span>
+            </a>
+            <a href="integration.html" class="tab-btn">
+                <span class="tab-icon">🔗</span>
+                <span>Integration</span>
+            </a>
+            <a href="model.html" class="tab-btn">
+                <span class="tab-icon">📊</span>
+                <span>Model</span>
+            </a>
+            <a href="documentation.html" class="tab-btn active">
+                <span class="tab-icon">📚</span>
+                <span>Documentation</span>
+            </a>
+            <a href="appRationalization.html" class="tab-btn">
+                <span class="tab-icon">7️⃣</span>
+                <span>App Rationalization</span>
+            </a>
+            <a href="recommendations.html" class="tab-btn">
+                <span class="tab-icon">💡</span>
+                <span>Recommendations</span>
+            </a>
+        </div>
+
+        <!-- Documentation Main Content -->
+        <div class="main-grid">
+            <!-- Left Panel - Document Generator Controls -->
+            <div class="panel">
+                <div class="panel-title">🔍 Enhanced Document Generator</div>
+                
+                <!-- File Upload Section -->
+                <div class="metric-section">
+                    <div class="filter-title">
+                        <span>📁</span>
+                        <span>Data Source</span>
+                    </div>
+                    <div class="file-upload-area" onclick="document.getElementById('fileInput').click()">
+                        <div style="font-size: 2rem; margin-bottom: 10px; color: var(--accent-blue);">📤</div>
+                        <div>Drop files here or click to browse</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">
+                            Supports: CSV, XLSX, JSON
+                        </div>
+                    </div>
+                    <input type="file" id="fileInput" style="display: none;" accept=".csv,.xlsx,.json" multiple>
+                    
+                    <select class="form-select" id="dataSource" style="margin-top: 10px;">
+                        <option value="data_staging">📂 data_staging/ folder</option>
+                        <option value="upload">📤 Upload new file</option>
+                        <option value="single_app">🎯 Single application</option>
+                    </select>
+                </div>
+                
+                <!-- Quality Level Section -->
+                <div class="metric-section">
+                    <div class="filter-title">
+                        <span>🎯</span>
+                        <span>Quality Level</span>
+                    </div>
+                    <select class="form-select" id="qualityLevel">
+                        <option value="professional">Professional Grade (95%+)</option>
+                        <option value="executive">Executive Grade (98%+)</option>
+                        <option value="technical">Technical Grade (90%+)</option>
+                    </select>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;" id="qualityDescription">
+                        Professional quality for business stakeholders
+                    </div>
+                </div>
+                
+                <!-- Output Format Section -->
+                <div class="metric-section">
+                    <div class="filter-title">
+                        <span>📊</span>
+                        <span>Output Formats</span>
+                    </div>
+                    <select class="form-select" id="outputFormat" style="margin-bottom: 15px;">
+                        <option value="all">🚀 All Formats (Complete Package)</option>
+                        <option value="both">📐 Visio + Lucid Charts</option>
+                        <option value="visio">📐 Visio XML Only</option>
+                        <option value="lucid">📊 Lucid Chart Only</option>
+                    </select>
+                    <div class="format-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="includeWord" checked>
+                            <span>📄 Word Templates</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="includeExcel" checked>
+                            <span>📊 Excel Mappers</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="includePDF" checked>
+                            <span>📑 PDF Reports</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Application Filter -->
+                <div class="metric-section">
+                    <div class="filter-title">
+                        <span>🔍</span>
+                        <span>Application Filter</span>
+                    </div>
+                    <input type="text" class="form-input" id="filterInput" 
+                           placeholder="Search applications...">
+                    <div class="filter-controls">
+                        <button class="btn btn-sm" onclick="selectAll()">All</button>
+                        <button class="btn btn-sm" onclick="clearSelection()">Clear</button>
+                        <button class="btn btn-sm" onclick="resetFilter()">Reset</button>
+                    </div>
+                </div>
+                
+                <!-- Processing Mode -->
+                <div class="metric-section">
+                    <div class="filter-title">
+                        <span>⚙️</span>
+                        <span>Processing Mode</span>
+                    </div>
+                    <select class="form-select" id="processingMode" style="margin-bottom: 15px;">
+                        <option value="documentation">📄 Documentation</option>
+                        <option value="topology">🔗 Network Topology</option>
+                        <option value="diagram">📊 Diagrams</option>
+                        <option value="all">🚀 Complete Analysis</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="processApplications()" style="width: 100%;">
+                        🚀 Generate Enhanced Documents
+                    </button>
+                </div>
+            </div>
+
+            <!-- Middle Panel - Document Viewer -->
+            <div class="documentation-container">
+                <div class="documentation-header">
+                    <div class="panel-title">📚 Document Viewer & Generator</div>
+                    <div class="view-controls">
+                        <button class="btn active" onclick="setDocumentationView('generator')" id="generatorBtn">Generator</button>
+                        <button class="btn" onclick="setDocumentationView('preview')" id="previewBtn">Preview</button>
+                        <button class="btn" onclick="setDocumentationView('templates')" id="templatesBtn">Templates</button>
+                    </div>
+                    <div class="paper-size-controls">
+                        <select class="btn-select" id="paperSize" onchange="changePaperSize()">
+                            <option value="a4">📄 A4 (210×297mm)</option>
+                            <option value="letter">📄 Letter (8.5×11")</option>
+                            <option value="legal">📄 Legal (8.5×14")</option>
+                            <option value="tabloid" selected>📊 Tabloid (11×17")</option>
+                            <option value="a3">📊 A3 (297×420mm)</option>
+                        </select>
+                        <div class="zoom-controls">
+                            <button class="btn btn-sm" onclick="zoomOut()">🔍−</button>
+                            <span id="zoomLevel">100%</span>
+                            <button class="btn btn-sm" onclick="zoomIn()">🔍+</button>
+                            <button class="btn btn-sm" onclick="fitToWindow()">⟷ Fit</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="document-viewer-area" id="documentationCanvas">
+                    <div class="viewer-workspace">
+                        <!-- Document Paper -->
+                        <div class="document-paper" id="documentPaper">
+                            <div class="paper-content">
+                                <!-- Generator View -->
+                                <div class="view-content" id="generatorView">
+                                    <div class="canvas-placeholder">
+                                        <div class="icon">📊</div>
+                                        <h3>Document Generator</h3>
+                                        <p>Generate professional diagrams and documents</p>
+                                        <div class="feature-highlight">
+                                            <h4 style="color: var(--accent-blue); margin-bottom: 15px;">🎯 Enhanced Features</h4>
+                                            <div class="feature-grid">
+                                                <div>• <strong>Quality Levels:</strong> Executive (98%+), Professional (95%+)</div>
+                                                <div>• <strong>Multiple Formats:</strong> Visio, Word, Excel, PDF</div>
+                                                <div>• <strong>Banking Compliance:</strong> PCI-DSS, SOX, FFIEC</div>
+                                                <div>• <strong>Professional Layouts:</strong> Golden ratio spacing</div>
+                                                <div>• <strong>Real-time Preview:</strong> See results instantly</div>
+                                                <div>• <strong>Enterprise Ready:</strong> Corporate branding</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Preview View -->
+                                <div class="view-content" id="previewView" style="display: none;">
+                                    <div class="canvas-placeholder">
+                                        <div class="icon">👁️</div>
+                                        <h3>Document Preview</h3>
+                                        <p>Preview generated documents and diagrams</p>
+                                        <div class="preview-area">
+                                            <div class="preview-placeholder">
+                                                <div style="border: 2px dashed var(--border-color); padding: 40px; border-radius: 8px;">
+                                                    <div style="color: var(--accent-blue); font-size: 2rem; margin-bottom: 10px;">📋</div>
+                                                    <div>Document preview will appear here</div>
+                                                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 8px;">
+                                                        Supports: Visio, Excel, Word, PDF viewing
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Templates View -->
+                                <div class="view-content" id="templatesView" style="display: none;">
+                                    <div class="canvas-placeholder">
+                                        <div class="icon">🗂️</div>
+                                        <h3>Document Templates</h3>
+                                        <p>Choose from professional templates</p>
+                                        <div class="templates-grid">
+                                            <div class="template-card" onclick="selectTemplate('network-topology')">
+                                                <div class="template-icon">🌐</div>
+                                                <div class="template-name">Network Topology</div>
+                                                <div class="template-desc">Infrastructure diagrams</div>
+                                            </div>
+                                            <div class="template-card" onclick="selectTemplate('data-flow')">
+                                                <div class="template-icon">🔄</div>
+                                                <div class="template-name">Data Flow</div>
+                                                <div class="template-desc">Process diagrams</div>
+                                            </div>
+                                            <div class="template-card" onclick="selectTemplate('architecture')">
+                                                <div class="template-icon">🏗️</div>
+                                                <div class="template-name">Architecture</div>
+                                                <div class="template-desc">System architecture</div>
+                                            </div>
+                                            <div class="template-card" onclick="selectTemplate('executive-summary')">
+                                                <div class="template-icon">📊</div>
+                                                <div class="template-name">Executive Summary</div>
+                                                <div class="template-desc">Business reports</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Paper Shadow -->
+                        <div class="paper-shadow"></div>
+                    </div>
+                </div>
+                
+                <div class="documentation-details" id="documentationDetails" style="display: none;">
+                    <div class="detail-title" id="detailTitle">Document Generation Status</div>
+                    <div class="detail-info"><strong>Status:</strong> <span id="detailStatus">Ready</span></div>
+                    <div class="detail-info"><strong>Quality Level:</strong> <span id="detailQuality">Professional (95%+)</span></div>
+                    <div class="detail-info"><strong>Output Format:</strong> <span id="detailFormat">All Formats</span></div>
+                    <div class="detail-info"><strong>Progress:</strong> <span id="detailProgress">0%</span></div>
+                    
+                    <div class="progress-list">
+                        <div style="font-size: 11px; font-weight: 600; margin-bottom: 6px; color: var(--text-muted);">Generation Steps:</div>
+                        <div id="detailSteps"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Status and Results -->
+            <div class="panel status-panel">
+                <div class="panel-title">📊 Generation Status</div>
+                
+                <!-- Batch Info -->
+                <div class="status-section">
+                    <div class="filter-title">
+                        <span>📦</span>
+                        <span>Batch Information</span>
+                    </div>
+                    <div class="batch-info">
+                        <div class="stat-row">
+                            <span>Total Apps:</span>
+                            <span id="totalApps">51</span>
+                        </div>
+                        <div class="stat-row">
+                            <span>Selected:</span>
+                            <span id="selectedApps">51</span>
+                        </div>
+                        <div class="stat-row">
+                            <span>Current Batch:</span>
+                            <span id="currentBatch">1</span>
+                        </div>
+                        <div class="stat-row">
+                            <span>Batch Size:</span>
+                            <span id="batchSize">50</span>
+                        </div>
+                        <div class="stat-row">
+                            <span>Range:</span>
+                            <span id="batchRange">1-50</span>
+                        </div>
+                        <div class="stat-row">
+                            <span>Total:</span>
+                            <span id="batchTotal">51</span>
+                        </div>
+                    </div>
+                    <div class="batch-controls">
+                        <button class="btn btn-sm" onclick="previousBatch()" id="prevBtn" disabled>← Previous</button>
+                        <button class="btn btn-sm" onclick="nextBatch()" id="nextBtn" disabled>Next →</button>
+                    </div>
+                </div>
+
+                <!-- Processing Status -->
+                <div class="status-section">
+                    <div class="filter-title">
+                        <span>⚡</span>
+                        <span>Processing Status</span>
+                    </div>
+                    <div class="processing-panel" id="processingPanel">
+                        <div>Ready for Enhanced Generation</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">
+                            Select applications, quality level, and formats
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Generation Buttons -->
+                <div class="status-section">
+                    <div class="filter-title">
+                        <span>🔧</span>
+                        <span>Quick Generate</span>
+                    </div>
+                    <div class="quick-buttons">
+                        <button class="btn btn-sm" onclick="generateVisio()">📐 Visio</button>
+                        <button class="btn btn-sm" onclick="generateLucid()">📊 Lucid</button>
+                        <button class="btn btn-sm" onclick="generatePDF()">📑 PDF</button>
+                        <button class="btn btn-sm" onclick="generateWord()">📄 Word</button>
+                        <button class="btn btn-sm" onclick="generateExcel()">📊 Excel</button>
+                        <button class="btn btn-sm" onclick="downloadJSON()">📥 JSON</button>
+                    </div>
+                </div>
+
+                <!-- Results -->
+                <div class="status-section">
+                    <div class="filter-title">
+                        <span>✅</span>
+                        <span>Generated Documents</span>
+                    </div>
+                    <div class="result-panel" id="resultPanel" style="display: none;">
+                        <div id="jsonPreview"></div>
+                    </div>
+                    <div id="noResults" style="color: var(--text-muted); font-size: 0.8rem; text-align: center; padding: 15px;">
+                        No documents generated yet
+                    </div>
+                </div>
+
+                <!-- Application List -->
+                <div class="status-section">
+                    <div class="filter-title">
+                        <span>📋</span>
+                        <span>Applications</span>
+                    </div>
+                    <div id="appList" style="max-height: 200px; overflow-y: auto;">
+                        <div style="color: var(--text-muted); text-align: center; padding: 20px;">
+                            Applications will be loaded here
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div id="statusBar" class="status-bar">
+        <!-- Left side status items -->
+        <div class="status-left">
+            <div class="status-item">
+                <div class="status-indicator" id="connectionIndicator"></div>
+                <span id="connectionStatus">🔄 Connecting...</span>
+            </div>
+            
+            <div class="status-item">
+                <span id="lastUpdate">Last updated: Loading...</span>
+            </div>
+            
+            <div class="status-item">
+                <span id="documentCount">Documents: 0</span>
+            </div>
+        </div>
+
+        <!-- Right side status items -->
+        <div class="status-right">
+            <div class="status-item">
+                <span id="systemStatus">System: Ready</span>
+            </div>
+            
+            <div class="status-item">
+                <span id="userInfo">User: Admin</span>
+            </div>
+            
+            <div class="status-item">
+                <span id="version">v2.0.0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load JavaScript Files -->
+    <script src="../js/app-data.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/documentation.js"></script>
+    
+    <!-- Page-specific JavaScript -->
+    <script>
+        // Global variables for document viewer
+        let currentZoom = 100;
+        let currentPaperSize = 'tabloid';
+        
+        // Documentation view switching
+        function setDocumentationView(view) {
+            // Remove active class from all buttons
+            document.querySelectorAll('.view-controls .btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Add active class to clicked button
+            const button = document.getElementById(view + 'Btn');
+            if (button) {
+                button.classList.add('active');
+            }
+            
+            // Hide all views
+            document.querySelectorAll('.view-content').forEach(content => {
+                content.style.display = 'none';
+            });
+            
+            // Show selected view
+            const viewElement = document.getElementById(view + 'View');
+            if (viewElement) {
+                viewElement.style.display = 'flex';
+            }
+            
+            console.log(`📋 View changed to: ${view}`);
+        }
+        
+        // Paper size management
+        function changePaperSize() {
+            const paperSelect = document.getElementById('paperSize');
+            const paperElement = document.getElementById('documentPaper');
+            
+            if (paperSelect && paperElement) {
+                // Remove old size classes
+                paperElement.classList.remove('a4', 'letter', 'legal', 'tabloid', 'a3');
+                
+                // Add new size class
+                currentPaperSize = paperSelect.value;
+                paperElement.classList.add(currentPaperSize);
+                
+                console.log(`📄 Paper size changed to: ${currentPaperSize}`);
+                
+                // Auto-fit to window after size change
+                setTimeout(fitToWindow, 100);
+            }
+        }
+        
+        // Zoom controls
+        function zoomIn() {
+            if (currentZoom < 200) {
+                currentZoom += 25;
+                updateZoom();
+            }
+        }
+        
+        function zoomOut() {
+            if (currentZoom > 50) {
+                currentZoom -= 25;
+                updateZoom();
+            }
+        }
+        
+        function updateZoom() {
+            const workspace = document.querySelector('.viewer-workspace');
+            const zoomDisplay = document.getElementById('zoomLevel');
+            
+            if (workspace && zoomDisplay) {
+                workspace.className = 'viewer-workspace';
+                workspace.style.transform = `scale(${currentZoom / 100})`;
+                zoomDisplay.textContent = `${currentZoom}%`;
+            }
+        }
+        
+        function fitToWindow() {
+            const container = document.querySelector('.document-viewer-area');
+            const paper = document.getElementById('documentPaper');
+            const workspace = document.querySelector('.viewer-workspace');
+            
+            if (!container || !paper || !workspace) return;
+            
+            const containerRect = container.getBoundingClientRect();
+            const paperRect = paper.getBoundingClientRect();
+            
+            // Calculate scale to fit both width and height with padding
+            const scaleX = (containerRect.width - 80) / paper.offsetWidth;
+            const scaleY = (containerRect.height - 80) / paper.offsetHeight;
+            const scale = Math.min(scaleX, scaleY, 1); // Don't scale up beyond 100%
+            
+            currentZoom = Math.round(scale * 100);
+            workspace.style.transform = `scale(${scale})`;
+            
+            const zoomDisplay = document.getElementById('zoomLevel');
+            if (zoomDisplay) {
+                zoomDisplay.textContent = `${currentZoom}%`;
+            }
+        }
+        
+        // Template selection
+        function selectTemplate(templateId) {
+            console.log(`🗂️ Template selected: ${templateId}`);
+            
+            // Switch to generator view
+            setDocumentationView('generator');
+            
+            // Update the generator view with template info
+            const generatorView = document.getElementById('generatorView');
+            if (generatorView) {
+                // Add visual feedback
+                document.querySelectorAll('.template-card').forEach(card => {
+                    card.style.borderColor = '#e9ecef';
+                    card.style.background = '#f8f9fa';
+                });
+                
+                // Highlight selected template
+                event.target.closest('.template-card').style.borderColor = 'var(--accent-blue)';
+                event.target.closest('.template-card').style.background = '#f0f8ff';
+            }
+            
+            // Show success message
+            setTimeout(() => {
+                alert(`Template "${templateId}" selected! Ready for document generation.`);
+            }, 300);
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set default paper size
+            changePaperSize();
+            
+            // Fit to window initially
+            setTimeout(fitToWindow, 500);
+            
+            // Handle window resize
+            window.addEventListener('resize', fitToWindow);
+            
+            console.log('📚 Document viewer initialized');
+        });
+    </script>
+
+    <!-- Debug Script - Remove after fixing -->
+    <script>
+        console.log('🔍 Current page location:', window.location.href);
+        console.log('🔍 Testing script paths...');
+
+        // Test each script path
+        const scriptPaths = [
+            '../js/app-data.js',
+            '../js/common.js', 
+            '../js/documentation.js'
+        ];
+
+        scriptPaths.forEach(path => {
+            fetch(path)
+                .then(response => {
+                    console.log(`📄 ${path}: ${response.status} ${response.statusText}`);
+                    return response.text();
+                })
+                .then(content => {
+                    if (content.includes('<!DOCTYPE html>')) {
+                        console.error(`❌ ${path} is returning HTML (probably 404)`);
+                    } else if (content.includes('// Sample application data')) {
+                        console.log(`✅ ${path} loaded correctly (found JS content)`);
+                    } else {
+                        console.log(`📄 ${path} content preview:`, content.substring(0, 100));
+                    }
+                })
+                .catch(error => console.error(`❌ ${path} failed:`, error));
+        });
+    </script>
+</body>
+</html>

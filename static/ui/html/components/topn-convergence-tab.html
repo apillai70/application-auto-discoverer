@@ -1,0 +1,2183 @@
+<!-- Topology Tab Component -->
+<div class="topology-container">
+    <!-- Sidebar Controls -->
+    <div class="topology-sidebar">
+        <div class="sidebar-header">
+            <h2>🔗 Network Topology</h2>
+            <p>Real-time network visualization and analysis</p>
+        </div>
+
+        <!-- Data Source Selection -->
+        <div class="control-section">
+            <h3>📊 Data Source</h3>
+            <select class="control-select" id="dataSourceSelect">
+                <option value="live">🔴 Live Data Stream</option>
+                <option value="extrahop">🔍 ExtraHop</option>
+                <option value="splunk">📊 Splunk Logs</option>
+                <option value="upload">📁 File Upload</option>
+                <option value="sample">🧪 Sample Data</option>
+            </select>
+            <button class="btn btn-primary" onclick="connectDataSource()" style="width: 100%; margin-top: 10px;">
+                <span id="connectButtonText">Connect</span>
+            </button>
+        </div>
+
+        <!-- Network Analysis Controls -->
+        <div class="control-section">
+            <h3>🔍 Network Analysis</h3>
+            
+            <div class="control-group">
+                <label for="topNTalkers">Top N Talkers:</label>
+                <div class="input-group">
+                    <input type="number" id="topNTalkers" class="control-input" value="10" min="1" max="100">
+                    <button class="btn btn-secondary" onclick="applyTopNFilter()">Apply</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="convergenceThreshold">Convergence Threshold:</label>
+                <input type="range" id="convergenceThreshold" class="control-range" value="3" min="1" max="10" oninput="updateConvergenceThreshold()">
+                <span id="convergenceValue">3</span>
+            </div>
+
+            <div class="control-group">
+                <label for="timeWindow">Time Window:</label>
+                <select class="control-select" id="timeWindow">
+                    <option value="1h">Last 1 Hour</option>
+                    <option value="6h">Last 6 Hours</option>
+                    <option value="24h" selected>Last 24 Hours</option>
+                    <option value="7d">Last 7 Days</option>
+                    <option value="custom">Custom Range</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="protocolFilter">Protocol Filter:</label>
+                <select class="control-select" id="protocolFilter" multiple>
+                    <option value="HTTP" selected>HTTP</option>
+                    <option value="HTTPS" selected>HTTPS</option>
+                    <option value="SSH" selected>SSH</option>
+                    <option value="FTP">FTP</option>
+                    <option value="DNS" selected>DNS</option>
+                    <option value="SMTP">SMTP</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Visualization Controls -->
+        <div class="control-section">
+            <h3>🎨 Visualization</h3>
+            
+            <div class="control-group">
+                <label>Layout Algorithm:</label>
+                <select class="control-select" id="layoutAlgorithm">
+                    <option value="force" selected>Force-Directed</option>
+                    <option value="circular">Circular</option>
+                    <option value="hierarchical">Hierarchical</option>
+                    <option value="grid">Grid</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>Node Size by:</label>
+                <select class="control-select" id="nodeSizeMetric">
+                    <option value="traffic" selected>Traffic Volume</option>
+                    <option value="connections">Connection Count</option>
+                    <option value="bandwidth">Bandwidth Usage</option>
+                    <option value="packets">Packet Count</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>Color Scheme:</label>
+                <select class="control-select" id="colorScheme">
+                    <option value="device-type" selected>Device Type</option>
+                    <option value="subnet">Subnet</option>
+                    <option value="traffic-volume">Traffic Volume</option>
+                    <option value="security-zone">Security Zone</option>
+                </select>
+            </div>
+
+            <div class="toggle-group">
+                <div class="toggle-item">
+                    <input type="checkbox" id="showLabels" checked>
+                    <label for="showLabels">Show Labels</label>
+                </div>
+                <div class="toggle-item">
+                    <input type="checkbox" id="showTraffic" checked>
+                    <label for="showTraffic">Show Traffic</label>
+                </div>
+                <div class="toggle-item">
+                    <input type="checkbox" id="animateTraffic">
+                    <label for="animateTraffic">Animate Traffic</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="control-section">
+            <h3>⚡ Quick Actions</h3>
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="refreshTopology()">
+                    <span>🔄</span> Refresh
+                </button>
+                <button class="btn btn-secondary" onclick="resetView()">
+                    <span>🏠</span> Reset View
+                </button>
+                <button class="btn btn-secondary" onclick="fitToScreen()">
+                    <span>🔍</span> Fit Screen
+                </button>
+                <button class="btn btn-success" onclick="exportTopology()">
+                    <span>💾</span> Export
+                </button>
+            </div>
+        </div>
+
+        <!-- Statistics Panel -->
+        <div class="stats-section">
+            <h3>📈 Network Statistics</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="nodeCount">0</div>
+                    <div class="stat-label">Nodes</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="linkCount">0</div>
+                    <div class="stat-label">Links</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="convergenceCount">0</div>
+                    <div class="stat-label">Convergence Points</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="totalTraffic">0 GB</div>
+                    <div class="stat-label">Total Traffic</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Visualization Area -->
+    <div class="topology-main">
+        <!-- Toolbar -->
+        <div class="topology-toolbar">
+            <div class="toolbar-left">
+                <button class="toolbar-btn" onclick="zoomIn()" title="Zoom In">
+                    <span>🔍+</span>
+                </button>
+                <button class="toolbar-btn" onclick="zoomOut()" title="Zoom Out">
+                    <span>🔍-</span>
+                </button>
+                <button class="toolbar-btn" onclick="panMode()" title="Pan Mode">
+                    <span>✋</span>
+                </button>
+                <button class="toolbar-btn" onclick="selectMode()" title="Select Mode">
+                    <span>👆</span>
+                </button>
+            </div>
+            
+            <div class="toolbar-center">
+                <div class="search-box">
+                    <input type="text" id="nodeSearch" placeholder="Search nodes..." class="search-input">
+                    <button onclick="searchNodes()" class="search-btn">🔍</button>
+                </div>
+            </div>
+            
+            <div class="toolbar-right">
+                <button class="toolbar-btn" onclick="toggleMinimap()" title="Toggle Minimap">
+                    <span>🗺️</span>
+                </button>
+                <button class="toolbar-btn" onclick="toggleFullscreen()" title="Fullscreen">
+                    <span>⛶</span>
+                </button>
+                <button class="toolbar-btn" onclick="showTopologySettings()" title="Settings">
+                    <span>⚙️</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Visualization Canvas -->
+        <div class="topology-canvas" id="topologyCanvas">
+            <svg id="networkSVG" class="network-svg"></svg>
+            
+            <!-- Minimap -->
+            <div class="minimap" id="minimap" style="display: none;">
+                <svg id="minimapSVG" class="minimap-svg"></svg>
+            </div>
+            
+            <!-- Loading Overlay -->
+            <div class="canvas-loading" id="canvasLoading">
+                <div class="loading-content">
+                    <div class="loading-spinner"></div>
+                    <h3>Loading Network Topology...</h3>
+                    <p id="loadingStatus">Initializing visualization engine</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Information Panels -->
+        <div class="info-panels">
+            <!-- Node Details Panel -->
+            <div class="info-panel" id="nodeInfoPanel" style="display: none;">
+                <div class="panel-header">
+                    <h4>Node Details</h4>
+                    <button onclick="closeInfoPanel('nodeInfoPanel')" class="close-btn">×</button>
+                </div>
+                <div class="panel-content" id="nodeInfoContent">
+                    <!-- Node information will be populated here -->
+                </div>
+            </div>
+
+            <!-- Convergence Analysis Panel -->
+            <div class="info-panel convergence-panel" id="convergencePanel" style="display: none;">
+                <div class="panel-header">
+                    <h4>🔥 Convergence Analysis</h4>
+                    <button onclick="closeInfoPanel('convergencePanel')" class="close-btn">×</button>
+                </div>
+                <div class="panel-content">
+                    <div id="convergenceGrid" class="convergence-grid">
+                        <!-- Convergence Analysis Panel -->
+                <div class="info-panel convergence-panel" id="convergencePanel" style="display: none;">
+                    <div class="panel-header">
+                        <h4>🔥 Convergence Analysis</h4>
+                        <button onclick="closeInfoPanel('convergencePanel')" class="close-btn">×</button>
+                    </div>
+                    <div class="panel-content">
+                        <div id="convergenceGrid" class="convergence-grid">
+                            <!-- Convergence nodes will be displayed here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Path Analysis Panel -->
+                <div class="info-panel" id="pathAnalysisPanel" style="display: none;">
+                    <div class="panel-header">
+                        <h4>📍 Path Analysis</h4>
+                        <button onclick="closeInfoPanel('pathAnalysisPanel')" class="close-btn">×</button>
+                    </div>
+                    <div class="panel-content" id="pathAnalysisContent">
+                        <!-- Path analysis will be displayed here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Legend -->
+            <div class="topology-legend" id="topologyLegend">
+                <div class="legend-header">
+                    <h4>Legend</h4>
+                    <button onclick="toggleLegend()" class="legend-toggle">−</button>
+                </div>
+                <div class="legend-content" id="legendContent">
+                    <div class="legend-section">
+                        <h5>Node Types</h5>
+                        <div class="legend-items">
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #4CAF50;"></div>
+                                <span>Core Banking</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #2196F3;"></div>
+                                <span>Lending Platform</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #FF9800;"></div>
+                                <span>Liquidity Management</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #9C27B0;"></div>
+                                <span>Transaction Manager</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #E91E63;"></div>
+                                <span>Treasury Management</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #00BCD4;"></div>
+                                <span>Data Analytics</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="legend-section">
+                        <h5>Link Types</h5>
+                        <div class="legend-items">
+                            <div class="legend-item">
+                                <div class="legend-line" style="background: #00ff88;"></div>
+                                <span>High Traffic</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-line" style="background: #ffc107;"></div>
+                                <span>Medium Traffic</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-line" style="background: #6c757d;"></div>
+                                <span>Low Traffic</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="legend-section">
+                        <h5>Indicators</h5>
+                        <div class="legend-items">
+                            <div class="legend-item">
+                                <span style="color: #ff6b6b;">⚡</span>
+                                <span>Convergence Point</span>
+                            </div>
+                            <div class="legend-item">
+                                <span style="color: #ffc107;">⚠️</span>
+                                <span>High Utilization</span>
+                            </div>
+                            <div class="legend-item">
+                                <span style="color: #dc3545;">🚨</span>
+                                <span>Security Alert</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>ence nodes will be displayed here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Path Analysis Panel -->
+            <div class="info-panel" id="pathAnalysisPanel" style="display: none;">
+                <div class="panel-header">
+                    <h4>📍 Path Analysis</h4>
+                    <button onclick="closeInfoPanel('pathAnalysisPanel')" class="close-btn">×</button>
+                </div>
+                <div class="panel-content" id="pathAnalysisContent">
+                    <!-- Path analysis will be displayed here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="topology-legend" id="topologyLegend">
+            <div class="legend-header">
+                <h4>Legend</h4>
+                <button onclick="toggleLegend()" class="legend-toggle">−</button>
+            </div>
+            <div class="legend-content" id="legendContent">
+                <div class="legend-section">
+                    <h5>Node Types</h5>
+                    <div class="legend-items">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #dc3545;"></div>
+                            <span>Server</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #28a745;"></div>
+                            <span>Client</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #007bff;"></div>
+                            <span>Router</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #6f42c1;"></div>
+                            <span>Switch</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #fd7e14;"></div>
+                            <span>Firewall</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #20c997;"></div>
+                            <span>Database</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="legend-section">
+                    <h5>Link Types</h5>
+                    <div class="legend-items">
+                        <div class="legend-item">
+                            <div class="legend-line" style="background: #00ff88;"></div>
+                            <span>High Traffic</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-line" style="background: #ffc107;"></div>
+                            <span>Medium Traffic</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-line" style="background: #6c757d;"></div>
+                            <span>Low Traffic</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="legend-section">
+                    <h5>Indicators</h5>
+                    <div class="legend-items">
+                        <div class="legend-item">
+                            <span style="color: #ff6b6b;">⚡</span>
+                            <span>Convergence Point</span>
+                        </div>
+                        <div class="legend-item">
+                            <span style="color: #ffc107;">⚠️</span>
+                            <span>High Utilization</span>
+                        </div>
+                        <div class="legend-item">
+                            <span style="color: #dc3545;">🚨</span>
+                            <span>Security Alert</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Topology Component Styles */
+.topology-container {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    height: 100%;
+    background: #000000;
+}
+
+.topology-sidebar {
+    background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+    border-right: 1px solid #334155;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.sidebar-header {
+    text-align: center;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #334155;
+}
+
+.sidebar-header h2 {
+    color: #00d4ff;
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+}
+
+.sidebar-header p {
+    color: #94a3b8;
+    font-size: 0.9rem;
+}
+
+.control-section {
+    background: rgba(30, 41, 59, 0.3);
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 15px;
+}
+
+.control-section h3 {
+    color: #00d4ff;
+    font-size: 1rem;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.control-group {
+    margin-bottom: 15px;
+}
+
+.control-group label {
+    display: block;
+    color: #e2e8f0;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.control-input, .control-select {
+    width: 100%;
+    padding: 8px 12px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid #334155;
+    border-radius: 4px;
+    color: #e2e8f0;
+    font-size: 0.9rem;
+}
+
+.control-input:focus, .control-select:focus {
+    outline: none;
+    border-color: #00d4ff;
+    box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.2);
+}
+
+.control-select option {
+    background: #1e293b;
+    color: #e2e8f0;
+}
+
+.input-group {
+    display: flex;
+    gap: 5px;
+}
+
+.input-group .control-input {
+    flex: 1;
+}
+
+.control-range {
+    width: 100%;
+    margin: 5px 0;
+}
+
+.control-range::-webkit-slider-track {
+    background: #334155;
+    height: 4px;
+    border-radius: 2px;
+}
+
+.control-range::-webkit-slider-thumb {
+    background: #00d4ff;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.toggle-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.toggle-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.toggle-item input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #00d4ff;
+}
+
+.action-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.btn {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.btn-primary {
+    background: linear-gradient(90deg, #0ea5e9, #00d4ff);
+    color: #000;
+}
+
+.btn-secondary {
+    background: #374151;
+    color: #e2e8f0;
+    border: 1px solid #4b5563;
+}
+
+.btn-success {
+    background: linear-gradient(90deg, #059669, #00ff88);
+    color: #000;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 212, 255, 0.3);
+}
+
+.stats-section h3 {
+    color: #00d4ff;
+    font-size: 1rem;
+    margin-bottom: 15px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.stat-item {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid #334155;
+    border-radius: 6px;
+    padding: 12px;
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #00d4ff;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.stat-label {
+    color: #94a3b8;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Main Visualization Area */
+.topology-main {
+    display: flex;
+    flex-direction: column;
+    background: #000000;
+    position: relative;
+}
+
+.topology-toolbar {
+    background: #1e293b;
+    border-bottom: 1px solid #334155;
+    padding: 10px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.toolbar-left, .toolbar-right {
+    display: flex;
+    gap: 5px;
+}
+
+.toolbar-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.toolbar-btn {
+    padding: 8px 12px;
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid #334155;
+    border-radius: 4px;
+    color: #e2e8f0;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.toolbar-btn:hover {
+    background: #334155;
+    border-color: #00d4ff;
+}
+
+.search-box {
+    display: flex;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid #334155;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.search-input {
+    padding: 8px 12px;
+    border: none;
+    background: transparent;
+    color: #e2e8f0;
+    width: 250px;
+    outline: none;
+}
+
+.search-btn {
+    padding: 8px 12px;
+    background: #00d4ff;
+    border: none;
+    color: #000;
+    cursor: pointer;
+}
+
+.topology-canvas {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(circle at center, #0a0f1c 0%, #000000 70%);
+}
+
+.network-svg {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+}
+
+.canvas-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+.loading-content {
+    text-align: center;
+    color: #e2e8f0;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid #334155;
+    border-top: 3px solid #00d4ff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+.minimap {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 200px;
+    height: 150px;
+    background: rgba(30, 41, 59, 0.9);
+    border: 1px solid #334155;
+    border-radius: 6px;
+    z-index: 5;
+}
+
+.minimap-svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* Information Panels */
+.info-panels {
+    position: absolute;
+    top: 60px;
+    left: 20px;
+    right: 20px;
+    pointer-events: none;
+    z-index: 8;
+}
+
+.info-panel {
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid #334155;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    max-width: 400px;
+    pointer-events: auto;
+    backdrop-filter: blur(10px);
+}
+
+.panel-header {
+    padding: 15px;
+    border-bottom: 1px solid #334155;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.panel-header h4 {
+    color: #00d4ff;
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.panel-content {
+    padding: 15px;
+    color: #e2e8f0;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.convergence-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+}
+
+.convergence-node {
+    background: rgba(255, 107, 107, 0.1);
+    border: 1px solid #ff6b6b;
+    border-radius: 4px;
+    padding: 10px;
+}
+
+.convergence-node-title {
+    font-weight: bold;
+    color: #ff6b6b;
+    margin-bottom: 5px;
+}
+
+.convergence-stats {
+    font-size: 0.85rem;
+    color: #e2e8f0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+}
+
+/* Legend */
+.topology-legend {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid #334155;
+    border-radius: 8px;
+    min-width: 200px;
+    backdrop-filter: blur(10px);
+    z-index: 5;
+}
+
+.legend-header {
+    padding: 12px 15px;
+    border-bottom: 1px solid #334155;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.legend-header h4 {
+    color: #00d4ff;
+    margin: 0;
+    font-size: 1rem;
+}
+
+        .legend-toggle {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .legend-content {
+            padding: 15px;
+        }
+
+        .legend-section {
+            margin-bottom: 15px;
+        }
+
+        .legend-section h5 {
+            color: #00d4ff;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .legend-items {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: #e2e8f0;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .legend-line {
+            width: 20px;
+            height: 3px;
+            border-radius: 1px;
+        }
+
+        /* Arrow controls */
+        .arrow-controls {
+            position: absolute;
+            bottom: 20px;
+            right: 240px;
+            display: grid;
+            grid-template-columns: 40px 40px 40px;
+            grid-template-rows: 40px 40px 40px;
+            gap: 5px;
+            z-index: 9;
+        }
+
+        .arrow-btn {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(51, 51, 51, 0.8);
+            color: white;
+            font-size: 18px;
+            border: 1px solid #444;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .arrow-btn:hover {
+            background-color: #555;
+            border-color: #00d4ff;
+        }
+
+        /* Filter specific styles */
+        .app-filter-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .app-select-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .app-select {
+            width: 100%;
+            height: 120px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #334155;
+            border-radius: 4px;
+            color: #e2e8f0;
+            font-size: 0.9rem;
+            overflow-y: auto;
+        }
+
+        .app-select option {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 4px 8px;
+        }
+
+        .app-select option:hover {
+            background: #334155;
+        }
+
+        .expand-btn {
+            width: 30px;
+            height: 30px;
+            background: #374151;
+            color: #e2e8f0;
+            border: 1px solid #4b5563;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .expand-btn:hover {
+            background: #4b5563;
+        }
+
+        .filter-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .toggle-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .toggle-btn {
+            padding: 8px 12px;
+            background: #374151;
+            color: #e2e8f0;
+            border: 1px solid #4b5563;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn[data-active="true"] {
+            background: #0ea5e9;
+            color: white;
+            border-color: #0ea5e9;
+        }
+
+        .toggle-btn:hover {
+            background: #4b5563;
+        }
+
+        /* Responsive design for topology */
+        @media (max-width: 1200px) {
+            .topology-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+            }
+            
+            .topology-sidebar {
+                height: auto;
+                max-height: 40vh;
+                border-right: none;
+                border-bottom: 1px solid #334155;
+            }
+            
+            .arrow-controls {
+                right: 20px;
+            }
+        }
+    </style>
+
+    <script>
+        // Global variables for topology
+        let topologySvg, topologySvgGroup, topologyTooltip;
+        let originalTopologyData = { nodes: [], links: [] };
+        let filteredTopologyData = { nodes: [], links: [] };
+        let currentSimulation = null;
+        let isCollapsed = true;
+        let showUpstream = false;
+        let showDownstream = false;
+        let applicationList = [];
+
+        // Archetype color mapping (matching your financial services theme)
+        const archetypeColorMap = {
+            "Core Banking": "#4CAF50",
+            "Lending Platform": "#2196F3", 
+            "Liquidity Management": "#FF9800",
+            "Financial Transaction Manager": "#9C27B0",
+            "Data Warehouse": "#607D8B",
+            "Treasury Management": "#E91E63",
+            "Data Analytics": "#00BCD4",
+            "Trade Finance": "#795548",
+            "Private Banking": "#3F51B5",
+            "Digital Payments": "#8BC34A",
+            "Wealth Management": "#FFC107",
+            "Securities Processing": "#673AB7",
+            "Customer Management": "#009688",
+            "Payment Processing": "#FF5722",
+            "ATM Management": "#CDDC39",
+            "Market Trading": "#F44336",
+            "Capital Markets": "#FFEB3B",
+            "Unknown": "#9E9E9E"
+        };
+
+        // Initialize Topology Manager
+        window.TopologyManager = {
+            async initialize() {
+                console.log('🔗 Initializing Topology Manager');
+                
+                try {
+                    // Hide loading overlay
+                    const loadingOverlay = document.getElementById('canvasLoading');
+                    if (loadingOverlay) loadingOverlay.style.display = 'none';
+
+                    // Initialize D3 elements
+                    this.initializeD3Elements();
+                    
+                    // Load application list
+                    await this.loadApplicationList();
+                    
+                    // Load initial topology data
+                    await this.loadInitialData();
+                    
+                    // Setup event listeners
+                    this.setupEventListeners();
+                    
+                    // Initial render
+                    this.updateVisualization();
+                    
+                    window.AppDiscoverer.showToast('✅ Network topology initialized', 'success');
+                    console.log('✅ Topology Manager initialized successfully');
+                    
+                } catch (error) {
+                    console.error('❌ Failed to initialize topology:', error);
+                    window.AppDiscoverer.showToast('Failed to initialize topology', 'error');
+                    this.showError(error);
+                }
+            },
+
+            initializeD3Elements() {
+                topologySvg = d3.select("#networkSVG");
+                topologySvgGroup = topologySvg.append("g");
+                topologyTooltip = d3.select("#tooltip");
+                
+                // Setup zoom behavior
+                const zoom = d3.zoom()
+                    .scaleExtent([0.1, 4])
+                    .on("zoom", (event) => {
+                        topologySvgGroup.attr("transform", event.transform);
+                    });
+                
+                topologySvg.call(zoom);
+
+                // Setup arrow marker
+                topologySvg.select("defs").remove();
+                const defs = topologySvg.append("defs");
+                
+                defs.append("marker")
+                    .attr("id", "arrowhead")
+                    .attr("viewBox", "0 -5 10 10")
+                    .attr("refX", 15)
+                    .attr("refY", 0)
+                    .attr("markerWidth", 6)
+                    .attr("markerHeight", 6)
+                    .attr("orient", "auto")
+                    .append("path")
+                    .attr("d", "M0,-5L10,0L0,5")
+                    .attr("fill", "#999");
+
+                console.log('✅ D3 elements initialized');
+            },
+
+            async loadApplicationList() {
+                try {
+                    // Try to load from API first
+                    const response = await fetch('/config/applicationList.json');
+                    if (response.ok) {
+                        const data = await response.json();
+                        applicationList = data.applications || data;
+                    } else {
+                        // Fallback to hardcoded list from your JSON
+                        applicationList = [
+                            { "app_id": "ACDA", "app_name": "ATM Check Card Disputes API" },
+                            { "app_id": "ALE", "app_name": "Advisor Locator Engine" },
+                            { "app_id": "AODSVY", "app_name": "AOD Survey" },
+                            { "app_id": "APSE", "app_name": "Appointment Setting (Timetrade)" },
+                            { "app_id": "ARA", "app_name": "Account Analysis Request Application" },
+                            { "app_id": "AV", "app_name": "Automated Vault" },
+                            { "app_id": "BCA", "app_name": "Branch Customer Authentication" },
+                            { "app_id": "BKO", "app_name": "Banko POC" },
+                            { "app_id": "BLND", "app_name": "BLEND SSI" },
+                            { "app_id": "BLZD", "app_name": "FICO/Blaze Decisioning -Rules Development" }
+                        ];
+                    }
+                    
+                    this.populateAppFilter();
+                    console.log('✅ Application list loaded:', applicationList.length, 'applications');
+                    
+                } catch (error) {
+                    console.error('❌ Failed to load application list:', error);
+                    applicationList = [];
+                }
+            },
+
+            async loadInitialData() {
+                // Create sample financial topology data (based on your viewer)
+                originalTopologyData = this.createFinancialTopologyData();
+                filteredTopologyData = JSON.parse(JSON.stringify(originalTopologyData));
+                
+                console.log('✅ Initial topology data loaded');
+            },
+
+            createFinancialTopologyData() {
+                return {
+                    nodes: [
+                        {id: "10.0.2.39", label: "10.0.2.39", application: "Hogan", cluster: 39, ip: "10.0.2.39", archetype: "Core Banking"},
+                        {id: "10.0.1.57", label: "10.0.1.57", application: "nCino 2", cluster: 66, ip: "10.0.1.57", archetype: "Lending Platform"},
+                        {id: "10.0.1.212", label: "10.0.1.212", application: "Finastra LIQ 2", cluster: 35, ip: "10.0.1.212", archetype: "Liquidity Management"},
+                        {id: "10.0.2.136", label: "10.0.2.136", application: "FTM4C 2", cluster: 32, ip: "10.0.2.136", archetype: "Financial Transaction Manager"},
+                        {id: "10.0.0.42", label: "10.0.0.42", application: "DNWHS", cluster: 22, ip: "10.0.0.42", archetype: "Data Warehouse"},
+                        {id: "10.0.1.92", label: "10.0.1.92", application: "FTM4C", cluster: 31, ip: "10.0.1.92", archetype: "Financial Transaction Manager"},
+                        {id: "10.0.1.124", label: "10.0.1.124", application: "iTreasury 3", cluster: 64, ip: "10.0.1.124", archetype: "Treasury Management"},
+                        {id: "10.0.2.34", label: "10.0.2.34", application: "DNZEL", cluster: 23, ip: "10.0.2.34", archetype: "Data Analytics"},
+                        {id: "10.0.1.72", label: "10.0.1.72", application: "IBAS Trade Finance", cluster: 41, ip: "10.0.1.72", archetype: "Trade Finance"},
+                        {id: "10.0.1.178", label: "10.0.1.178", application: "DNGCM 2", cluster: 21, ip: "10.0.1.178", archetype: "Customer Management"},
+                        {id: "10.0.3.183", label: "10.0.3.183", application: "Avaloq 3", cluster: 6, ip: "10.0.3.183", archetype: "Private Banking"},
+                        {id: "10.0.0.230", label: "10.0.0.230", application: "ACBS", cluster: 0, ip: "10.0.0.230", archetype: "Core Banking"},
+                        {id: "10.0.1.5", label: "10.0.1.5", application: "Fiserv Zelle 2", cluster: 37, ip: "10.0.1.5", archetype: "Digital Payments"},
+                        {id: "10.0.3.64", label: "10.0.3.64", application: "nCino 2", cluster: 66, ip: "10.0.3.64", archetype: "Lending Platform"},
+                        {id: "10.0.0.6", label: "10.0.0.6", application: "Finastra LIQ 2", cluster: 35, ip: "10.0.0.6", archetype: "Liquidity Management"},
+                        {id: "10.0.2.19", label: "10.0.2.19", application: "Empower", cluster: 25, ip: "10.0.2.19", archetype: "Wealth Management"},
+                        {id: "10.0.3.6", label: "10.0.3.6", application: "Black Diamond Wealth Platform", cluster: 9, ip: "10.0.3.6", archetype: "Wealth Management"},
+                        {id: "10.0.3.222", label: "10.0.3.222", application: "DNWHS", cluster: 22, ip: "10.0.3.222", archetype: "Data Warehouse"},
+                        {id: "10.0.1.180", label: "10.0.1.180", application: "FISCP 2", cluster: 29, ip: "10.0.1.180", archetype: "Securities Processing"},
+                        {id: "10.0.3.14", label: "10.0.3.14", application: "FISCP 3", cluster: 30, ip: "10.0.3.14", archetype: "Securities Processing"},
+                        {id: "10.0.2.74", label: "10.0.2.74", application: "Empower 2", cluster: 26, ip: "10.0.2.74", archetype: "Wealth Management"},
+                        {id: "10.0.2.60", label: "10.0.2.60", application: "Fiserv Zelle", cluster: 36, ip: "10.0.2.60", archetype: "Digital Payments"},
+                        {id: "10.0.2.116", label: "10.0.2.116", application: "IBAS Trade Finance 2", cluster: 42, ip: "10.0.2.116", archetype: "Trade Finance"},
+                        {id: "10.0.1.136", label: "10.0.1.136", application: "Customer 360", cluster: 17, ip: "10.0.1.136", archetype: "Customer Management"},
+                        {id: "10.0.0.238", label: "10.0.0.238", application: "IPAY", cluster: 44, ip: "10.0.0.238", archetype: "Payment Processing"},
+                        {id: "10.0.2.211", label: "10.0.2.211", application: "FTM4C", cluster: 31, ip: "10.0.2.211", archetype: "Financial Transaction Manager"},
+                        {id: "10.0.3.200", label: "10.0.3.200", application: "nCino 2", cluster: 66, ip: "10.0.3.200", archetype: "Lending Platform"},
+                        {id: "10.0.3.55", label: "10.0.3.55", application: "ATMDS", cluster: 3, ip: "10.0.3.55", archetype: "ATM Management"},
+                        {id: "10.0.1.165", label: "10.0.1.165", application: "DNZEL", cluster: 23, ip: "10.0.1.165", archetype: "Data Analytics"},
+                        {id: "10.0.1.175", label: "10.0.1.175", application: "iTreasury 2", cluster: 63, ip: "10.0.1.175", archetype: "Treasury Management"},
+                        {id: "10.0.2.91", label: "10.0.2.91", application: "MTS", cluster: 51, ip: "10.0.2.91", archetype: "Market Trading"},
+                        {id: "10.0.2.243", label: "10.0.2.243", application: "iTreasury", cluster: 62, ip: "10.0.2.243", archetype: "Treasury Management"},
+                        {id: "10.0.3.176", label: "10.0.3.176", application: "FTM4C 3", cluster: 33, ip: "10.0.3.176", archetype: "Financial Transaction Manager"},
+                        {id: "10.0.3.48", label: "10.0.3.48", application: "FISCP 3", cluster: 30, ip: "10.0.3.48", archetype: "Securities Processing"},
+                        {id: "10.0.0.96", label: "10.0.0.96", application: "Empower 2", cluster: 26, ip: "10.0.0.96", archetype: "Wealth Management"},
+                        {id: "10.0.3.85", label: "10.0.3.85", application: "iTreasury 3", cluster: 64, ip: "10.0.3.85", archetype: "Treasury Management"},
+                        {id: "10.0.3.104", label: "10.0.3.104", application: "DNZEL", cluster: 23, ip: "10.0.3.104", archetype: "Data Analytics"},
+                        {id: "10.0.2.4", label: "10.0.2.4", application: "Calypso", cluster: 15, ip: "10.0.2.4", archetype: "Capital Markets"}
+                    ],
+                    links: [
+                        {source: "10.0.0.230", target: "10.0.1.136", protocol: "HTTPS", port: 443, value: 8},
+                        {source: "10.0.2.39", target: "10.0.1.57", protocol: "HTTPS", port: 443, value: 6},
+                        {source: "10.0.0.230", target: "10.0.0.238", protocol: "TCP", port: 8080, value: 7},
+                        {source: "10.0.1.124", target: "10.0.1.212", protocol: "HTTPS", port: 443, value: 5},
+                        {source: "10.0.2.243", target: "10.0.2.4", protocol: "TCP", port: 9443, value: 4},
+                        {source: "10.0.1.175", target: "10.0.2.91", protocol: "TCP", port: 8443, value: 3},
+                        {source: "10.0.1.92", target: "10.0.0.230", protocol: "TCP", port: 1433, value: 9},
+                        {source: "10.0.2.136", target: "10.0.2.39", protocol: "TCP", port: 1433, value: 8},
+                        {source: "10.0.3.176", target: "10.0.3.183", protocol: "HTTPS", port: 443, value: 4},
+                        {source: "10.0.1.5", target: "10.0.0.238", protocol: "HTTPS", port: 443, value: 7},
+                        {source: "10.0.2.60", target: "10.0.0.230", protocol: "TCP", port: 8080, value: 6},
+                        {source: "10.0.0.42", target: "10.0.0.230", protocol: "TCP", port: 1433, value: 5},
+                        {source: "10.0.3.222", target: "10.0.2.39", protocol: "TCP", port: 1433, value: 4},
+                        {source: "10.0.2.34", target: "10.0.0.42", protocol: "TCP", port: 5432, value: 6},
+                        {source: "10.0.1.165", target: "10.0.3.222", protocol: "TCP", port: 5432, value: 5},
+                        {source: "10.0.2.19", target: "10.0.1.136", protocol: "HTTPS", port: 443, value: 4},
+                        {source: "10.0.3.6", target: "10.0.3.183", protocol: "HTTPS", port: 443, value: 5},
+                        {source: "10.0.1.72", target: "10.0.0.230", protocol: "TCP", port: 8080, value: 6},
+                        {source: "10.0.2.116", target: "10.0.2.39", protocol: "TCP", port: 8080, value: 5},
+                        {source: "10.0.1.180", target: "10.0.2.4", protocol: "TCP", port: 9443, value: 4},
+                        {source: "10.0.3.14", target: "10.0.2.91", protocol: "TCP", port: 8443, value: 3},
+                        {source: "10.0.1.57", target: "10.0.1.136", protocol: "HTTPS", port: 443, value: 7},
+                        {source: "10.0.3.64", target: "10.0.0.230", protocol: "TCP", port: 8080, value: 6},
+                        {source: "10.0.3.55", target: "10.0.0.230", protocol: "TCP", port: 8080, value: 3}
+                    ]
+                };
+            },
+
+            populateAppFilter() {
+                const appSelect = document.getElementById('appSelect');
+                if (!appSelect || !originalTopologyData.nodes) return;
+
+                // Store current selections
+                const currentSelections = Array.from(appSelect.selectedOptions || []).map(o => o.value);
+
+                appSelect.innerHTML = '<option value="">-- All --</option>';
+
+                const getBaseAppName = (appName) => appName
+                    .replace(/\s*\d+$/, '')
+                    .replace(/\s*\(\d+\)\s*$/, '')
+                    .trim();
+
+                // Get unique app names from topology data
+                const apps = [...new Set(
+                    originalTopologyData.nodes
+                        .map(n => n.application)
+                        .filter(Boolean)
+                        .map(app => isCollapsed ? getBaseAppName(app) : app)
+                )];
+
+                apps.sort().forEach(app => {
+                    const option = document.createElement('option');
+                    option.value = app;
+                    option.textContent = app;
+
+                    if (currentSelections.includes(app)) {
+                        option.selected = true;
+                    }
+
+                    appSelect.appendChild(option);
+                });
+
+                console.log('✅ App filter populated with', apps.length, 'applications');
+            },
+
+            setupEventListeners() {
+                // App filter controls
+                const appSelect = document.getElementById('appSelect');
+                const applyFilterBtn = document.getElementById('applyFilterBtn');
+                const expandBtn = document.getElementById('expandBtn');
+                const upstreamBtn = document.getElementById('upstreamBtn');
+                const downstreamBtn = document.getElementById('downstreamBtn');
+
+                if (applyFilterBtn) {
+                    applyFilterBtn.addEventListener('click', () => this.applyAppFilter());
+                }
+
+                if (expandBtn) {
+                    expandBtn.addEventListener('click', () => this.toggleAppVariants());
+                }
+
+                if (upstreamBtn) {
+                    upstreamBtn.addEventListener('click', () => this.toggleUpstream());
+                }
+
+                if (downstreamBtn) {
+                    downstreamBtn.addEventListener('click', () => this.toggleDownstream());
+                }
+
+                if (appSelect) {
+                    appSelect.addEventListener('change', () => this.applyAppFilter());
+                }
+
+                // Toggle controls
+                const showLabelsToggle = document.getElementById('showLabels');
+                const showTrafficToggle = document.getElementById('showTraffic');
+                const animateTrafficToggle = document.getElementById('animateTraffic');
+
+                if (showLabelsToggle) {
+                    showLabelsToggle.addEventListener('change', (e) => {
+                        const visible = e.target.checked;
+                        d3.selectAll('.node-labels text').style('display', visible ? 'block' : 'none');
+                        d3.selectAll('.ip-labels text').style('display', visible ? 'block' : 'none');
+                    });
+                }
+
+                if (showTrafficToggle) {
+                    showTrafficToggle.addEventListener('change', (e) => {
+                        const visible = e.target.checked;
+                        d3.selectAll('.link-labels text').style('display', visible ? 'block' : 'none');
+                    });
+                }
+
+                // Data source connection
+                const connectBtn = document.querySelector('[onclick="connectDataSource()"]');
+                if (connectBtn) {
+                    connectBtn.onclick = () => this.connectDataSource();
+                }
+
+                console.log('✅ Event listeners setup complete');
+            },
+
+            applyAppFilter() {
+                const appSelect = document.getElementById('appSelect');
+                if (!appSelect) return;
+
+                const selectedApps = Array.from(appSelect.selectedOptions).map(o => o.value);
+
+                if (!originalTopologyData.nodes || !originalTopologyData.links) {
+                    window.AppDiscoverer.showToast('⚠️ No data loaded', 'warning');
+                    return;
+                }
+
+                let filteredNodes, filteredLinks;
+
+                // If "All" is selected or nothing is selected, show everything
+                if (selectedApps.includes("") || selectedApps.length === 0) {
+                    filteredNodes = originalTopologyData.nodes;
+                    filteredLinks = originalTopologyData.links;
+                } else {
+                    // Filter by multiple selected apps
+                    filteredNodes = originalTopologyData.nodes.filter(n => {
+                        if (!n.id || !n.application) return false;
+                        return selectedApps.some(selectedApp => 
+                            n.application.startsWith(selectedApp)
+                        );
+                    });
+
+                    // Get base node IDs for upstream/downstream logic
+                    const baseNodeIds = new Set(filteredNodes.map(n => n.id));
+
+                    // If upstream or downstream is enabled, expand the selection
+                    if (showUpstream || showDownstream) {
+                        const finalNodes = new Set(filteredNodes.map(n => n.id));
+                        const finalLinks = [];
+
+                        originalTopologyData.links.forEach(link => {
+                            const src = typeof link.source === "object" ? link.source.id : link.source;
+                            const tgt = typeof link.target === "object" ? link.target.id : link.target;
+
+                            const isDirect = baseNodeIds.has(src) && baseNodeIds.has(tgt);
+                            const isUp = showUpstream && baseNodeIds.has(tgt);
+                            const isDown = showDownstream && baseNodeIds.has(src);
+
+                            if (isUp || isDown || isDirect) {
+                                finalNodes.add(src);
+                                finalNodes.add(tgt);
+                                finalLinks.push(link);
+                            }
+                        });
+
+                        // Get the actual node objects for final nodes
+                        filteredNodes = originalTopologyData.nodes.filter(n => finalNodes.has(n.id));
+                        filteredLinks = finalLinks;
+                    } else {
+                        // Standard filtering without upstream/downstream
+                        const nodeIds = new Set(filteredNodes.map(n => n.id));
+                        filteredLinks = originalTopologyData.links.filter(l => 
+                            l.source != null && l.target != null && 
+                            nodeIds.has(l.source) && nodeIds.has(l.target)
+                        );
+                    }
+                }
+
+                filteredTopologyData = { nodes: filteredNodes, links: filteredLinks };
+                this.updateVisualization();
+
+                const upstreamText = showUpstream ? " + Upstream" : "";
+                const downstreamText = showDownstream ? " + Downstream" : "";
+                const appsText = selectedApps.includes("") ? "All" : selectedApps.join(", ");
+
+                window.AppDiscoverer.showToast(`✅ Filter applied: ${appsText}${upstreamText}${downstreamText} (${filteredNodes.length} nodes)`, 'success');
+                console.log(`🔍 Filtered by '${appsText}'${upstreamText}${downstreamText}`);
+            },
+
+            toggleAppVariants() {
+                isCollapsed = !isCollapsed;
+                const expandBtn = document.getElementById('expandBtn');
+                if (expandBtn) {
+                    expandBtn.textContent = isCollapsed ? '▼' : '▲';
+                }
+
+                this.populateAppFilter();
+                console.log(isCollapsed ? 
+                    'Collapsed - showing base names only (▼)' : 
+                    'Expanded - showing all variants (▲)'
+                );
+            },
+
+            toggleUpstream() {
+                showUpstream = !showUpstream;
+                const button = document.getElementById('upstreamBtn');
+                if (button) {
+                    button.dataset.active = showUpstream;
+                    button.textContent = showUpstream ? 'Hide Upstream' : 'Show Upstream';
+                }
+                this.applyAppFilter();
+            },
+
+            toggleDownstream() {
+                showDownstream = !showDownstream;
+                const button = document.getElementById('downstreamBtn');
+                if (button) {
+                    button.dataset.active = showDownstream;
+                    button.textContent = showDownstream ? 'Hide Downstream' : 'Show Downstream';
+                }
+                this.applyAppFilter();
+            },
+
+            async connectDataSource() {
+                const dataSource = document.getElementById('dataSourceSelect').value;
+                const connectBtn = document.getElementById('connectButtonText');
+                
+                if (connectBtn) connectBtn.textContent = 'Connecting...';
+                
+                try {
+                    switch (dataSource) {
+                        case 'live':
+                            await this.connectLiveData();
+                            break;
+                        case 'extrahop':
+                            await this.connectExtraHop();
+                            break;
+                        case 'splunk':
+                            await this.connectSplunk();
+                            break;
+                        case 'upload':
+                            this.openFileUpload();
+                            break;
+                        case 'sample':
+                            this.loadSampleData();
+                            break;
+                        default:
+                            throw new Error('Unknown data source');
+                    }
+                    
+                    window.AppDiscoverer.showToast(`✅ Connected to ${dataSource}`, 'success');
+                    
+                } catch (error) {
+                    console.error('❌ Connection failed:', error);
+                    window.AppDiscoverer.showToast(`❌ Failed to connect to ${dataSource}`, 'error');
+                } finally {
+                    if (connectBtn) connectBtn.textContent = 'Connect';
+                }
+            },
+
+            async connectLiveData() {
+                // Simulate live data connection
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                // In real implementation, establish WebSocket connection
+                console.log('🔴 Live data connection established');
+            },
+
+            async connectExtraHop() {
+                // Simulate ExtraHop API connection
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                console.log('🔍 ExtraHop connection established');
+            },
+
+            async connectSplunk() {
+                // Simulate Splunk API connection
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                console.log('📊 Splunk connection established');
+            },
+
+            openFileUpload() {
+                const fileInput = document.createElement('input');
+                fileInput.type = 'file';
+                fileInput.accept = '.json,.csv,.xlsx';
+                fileInput.onchange = (e) => this.handleFileUpload(e.target.files[0]);
+                fileInput.click();
+            },
+
+            handleFileUpload(file) {
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        originalTopologyData = data;
+                        filteredTopologyData = JSON.parse(JSON.stringify(data));
+                        this.populateAppFilter();
+                        this.updateVisualization();
+                        window.AppDiscoverer.showToast('✅ File loaded successfully', 'success');
+                    } catch (error) {
+                        console.error('❌ File parsing error:', error);
+                        window.AppDiscoverer.showToast('❌ Invalid file format', 'error');
+                    }
+                };
+                reader.readAsText(file);
+            },
+
+            loadSampleData() {
+                // Already loaded in initialization
+                this.updateVisualization();
+                window.AppDiscoverer.showToast('✅ Sample data loaded', 'success');
+            },
+
+            updateVisualization() {
+                if (!filteredTopologyData.nodes || filteredTopologyData.nodes.length === 0) {
+                    console.warn('No valid data to visualize');
+                    return;
+                }
+
+                // Clear previous visualization
+                topologySvgGroup.selectAll("*").remove();
+
+                // Get canvas dimensions
+                const canvasElement = document.getElementById('topologyCanvas');
+                const width = canvasElement ? canvasElement.clientWidth : 800;
+                const height = canvasElement ? canvasElement.clientHeight : 600;
+
+                topologySvg.attr('width', width).attr('height', height);
+
+                // Create simulation
+                if (currentSimulation) {
+                    currentSimulation.stop();
+                }
+
+                currentSimulation = d3.forceSimulation(filteredTopologyData.nodes)
+                    .force("link", d3.forceLink(filteredTopologyData.links).id(d => d.id).distance(100))
+                    .force("charge", d3.forceManyBody().strength(-300))
+                    .force("center", d3.forceCenter(width / 2, height / 2))
+                    .force("collision", d3.forceCollide().radius(20));
+
+                // Create links
+                const link = topologySvgGroup.append("g")
+                    .attr("class", "links")
+                    .selectAll("line")
+                    .data(filteredTopologyData.links)
+                    .join("line")
+                    .attr("stroke", "#999")
+                    .attr("stroke-opacity", 0.6)
+                    .attr("stroke-width", d => Math.sqrt(d.value || 1))
+                    .attr("marker-end", "url(#arrowhead)");
+
+                // Create link labels
+                const linkLabels = topologySvgGroup.append("g")
+                    .attr("class", "link-labels")
+                    .selectAll("text")
+                    .data(filteredTopologyData.links)
+                    .join("text")
+                    .attr("font-size", "10px")
+                    .attr("fill", "#aaa")
+                    .attr("text-anchor", "middle")
+                    .style("pointer-events", "none")
+                    .text(d => `${d.protocol || 'TCP'}:${d.port || '80'}`);
+
+                // Create nodes
+                const node = topologySvgGroup.append("g")
+                    .attr("class", "nodes")
+                    .selectAll("circle")
+                    .data(filteredTopologyData.nodes)
+                    .join("circle")
+                    .attr("r", 8)
+                    .attr("fill", d => {
+                        if (d.archetype && archetypeColorMap[d.archetype]) {
+                            return archetypeColorMap[d.archetype];
+                        }
+                        const colors = d3.schemeCategory10;
+                        return colors[d.group % 10] || "#69b3a2";
+                    })
+                    .attr("stroke", "#fff")
+                    .attr("stroke-width", 1.5)
+                    .call(d3.drag()
+                        .on("start", this.dragstarted)
+                        .on("drag", this.dragged)
+                        .on("end", this.dragended))
+                    .on("mouseover", this.showNodeTooltip)
+                    .on("mouseout", this.hideNodeTooltip)
+                    .on("click", this.showNodeDetails);
+
+                // Add node labels - show application names
+                const nodeLabels = topologySvgGroup.append("g")
+                    .attr("class", "node-labels")
+                    .selectAll("text")
+                    .data(filteredTopologyData.nodes)
+                    .join("text")
+                    .attr("font-size", "10px")
+                    .attr("fill", "#eee")
+                    .attr("text-anchor", "middle")
+                    .attr("dy", "0.3em")
+                    .style("pointer-events", "none")
+                    .style("font-weight", "bold")
+                    .text(d => {
+                        const appName = d.application || d.id;
+                        return appName.length > 15 ? appName.substring(0, 15) + '...' : appName;
+                    });
+
+                // Add IP labels
+                const ipLabels = topologySvgGroup.append("g")
+                    .attr("class", "ip-labels")
+                    .selectAll("text")
+                    .data(filteredTopologyData.nodes)
+                    .join("text")
+                    .attr("font-size", "7px")
+                    .attr("fill", "#aaa")
+                    .attr("text-anchor", "middle")
+                    .attr("dy", "0.3em")
+                    .style("pointer-events", "none")
+                    .text(d => d.ip || d.id);
+
+                // Simulation tick
+                currentSimulation.on("tick", () => {
+                    link
+                        .attr("x1", d => d.source.x)
+                        .attr("y1", d => d.source.y)
+                        .attr("x2", d => d.target.x)
+                        .attr("y2", d => d.target.y);
+
+                    linkLabels
+                        .attr("x", d => (d.source.x + d.target.x) / 2)
+                        .attr("y", d => (d.source.y + d.target.y) / 2);
+
+                    node
+                        .attr("cx", d => d.x)
+                        .attr("cy", d => d.y);
+
+                    nodeLabels
+                        .attr("x", d => d.x)
+                        .attr("y", d => d.y + 15);
+
+                    ipLabels
+                        .attr("x", d => d.x)
+                        .attr("y", d => d.y + 25);
+                });
+
+                // Update statistics
+                this.updateStatistics();
+
+                console.log(`📊 Visualization updated: ${filteredTopologyData.nodes.length} nodes, ${filteredTopologyData.links.length} links`);
+            },
+
+            dragstarted(event, d) {
+                if (!event.active) currentSimulation.alphaTarget(0.3).restart();
+                d.fx = d.x;
+                d.fy = d.y;
+            },
+
+            dragged(event, d) {
+                d.fx = event.x;
+                d.fy = event.y;
+            },
+
+            dragended(event, d) {
+                if (!event.active) currentSimulation.alphaTarget(0);
+                d.fx = null;
+                d.fy = null;
+            },
+
+            showNodeTooltip(event, d) {
+                topologyTooltip.transition().duration(200).style("opacity", .9);
+                topologyTooltip.html(
+                    `<strong>${d.application || 'Unknown App'}</strong><br/>` +
+                    `IP: ${d.ip || d.id}<br/>` +
+                    `Archetype: ${d.archetype || 'N/A'}<br/>` +
+                    `Cluster: ${d.cluster || 'N/A'}`
+                )
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY - 28) + "px")
+                .style("display", "block");
+            },
+
+            hideNodeTooltip() {
+                topologyTooltip.transition().duration(500).style("opacity", 0);
+            },
+
+            showNodeDetails(event, d) {
+                // Show node details in info panel
+                const nodeInfoPanel = document.getElementById('nodeInfoPanel');
+                const nodeInfoContent = document.getElementById('nodeInfoContent');
+                
+                if (nodeInfoPanel && nodeInfoContent) {
+                    nodeInfoContent.innerHTML = `
+                        <div style="margin-bottom: 15px;">
+                            <h5 style="color: #00d4ff; margin-bottom: 10px;">Application Details</h5>
+                            <div style="background: #0f172a; padding: 12px; border-radius: 6px;">
+                                <div><strong>Name:</strong> ${d.application || 'Unknown'}</div>
+                                <div><strong>IP Address:</strong> ${d.ip || d.id}</div>
+                                <div><strong>Archetype:</strong> ${d.archetype || 'N/A'}</div>
+                                <div><strong>Cluster ID:</strong> ${d.cluster || 'N/A'}</div>
+                            </div>
+                        </div>
+                        <div>
+                            <h5 style="color: #00d4ff; margin-bottom: 10px;">Network Connections</h5>
+                            <div style="background: #0f172a; padding: 12px; border-radius: 6px;">
+                                <div><strong>Incoming:</strong> ${filteredTopologyData.links.filter(l => l.target === d.id || (typeof l.target === 'object' && l.target.id === d.id)).length}</div>
+                                <div><strong>Outgoing:</strong> ${filteredTopologyData.links.filter(l => l.source === d.id || (typeof l.source === 'object' && l.source.id === d.id)).length}</div>
+                            </div>
+                        </div>
+                    `;
+                    nodeInfoPanel.style.display = 'block';
+                }
+            },
+
+            updateStatistics() {
+                const nodeCountEl = document.getElementById('nodeCount');
+                const linkCountEl = document.getElementById('linkCount');
+                const convergenceCountEl = document.getElementById('convergenceCount');
+                const totalTrafficEl = document.getElementById('totalTraffic');
+
+                if (nodeCountEl) nodeCountEl.textContent = filteredTopologyData.nodes.length;
+                if (linkCountEl) linkCountEl.textContent = filteredTopologyData.links.length;
+                
+                // Calculate convergence points (nodes with many connections)
+                const convergenceThreshold = parseInt(document.getElementById('convergenceThreshold')?.value || 3);
+                const convergencePoints = this.detectConvergencePoints(convergenceThreshold);
+                if (convergenceCountEl) convergenceCountEl.textContent = convergencePoints.length;
+
+                // Calculate total traffic
+                const totalTraffic = filteredTopologyData.links.reduce((sum, link) => sum + (link.value || 0), 0);
+                if (totalTrafficEl) totalTrafficEl.textContent = `${(totalTraffic / 1000).toFixed(1)} GB`;
+
+                // Show convergence analysis if there are convergence points
+                if (convergencePoints.length > 0) {
+                    this.showConvergenceAnalysis(convergencePoints);
+                }
+            },
+
+            detectConvergencePoints(threshold) {
+                const convergenceMap = new Map();
+
+                filteredTopologyData.links.forEach(link => {
+                    const source = typeof link.source === 'object' ? link.source.id : link.source;
+                    const target = typeof link.target === 'object' ? link.target.id : link.target;
+
+                    if (!convergenceMap.has(target)) {
+                        convergenceMap.set(target, { incoming: [], outgoing: [] });
+                    }
+                    convergenceMap.get(target).incoming.push(link);
+
+                    if (!convergenceMap.has(source)) {
+                        convergenceMap.set(source, { incoming: [], outgoing: [] });
+                    }
+                    convergenceMap.get(source).outgoing.push(link);
+                });
+
+                return Array.from(convergenceMap.entries())
+                    .filter(([nodeId, connections]) => 
+                        connections.incoming.length >= threshold || 
+                        connections.outgoing.length >= threshold
+                    )
+                    .map(([nodeId, connections]) => ({
+                        nodeId,
+                        incomingCount: connections.incoming.length,
+                        outgoingCount: connections.outgoing.length,
+                        totalConnections: connections.incoming.length + connections.outgoing.length
+                    }));
+            },
+
+            showConvergenceAnalysis(convergencePoints) {
+                const convergencePanel = document.getElementById('convergencePanel');
+                const convergenceGrid = document.getElementById('convergenceGrid');
+
+                if (convergencePanel && convergenceGrid) {
+                    convergenceGrid.innerHTML = '';
+
+                    convergencePoints.forEach(point => {
+                        const node = filteredTopologyData.nodes.find(n => n.id === point.nodeId);
+                        const nodeDiv = document.createElement('div');
+                        nodeDiv.className = 'convergence-node';
+                        nodeDiv.innerHTML = `
+                            <div class="convergence-node-title">${node ? node.application : point.nodeId}</div>
+                            <div class="convergence-stats">
+                                <div>In: ${point.incomingCount}</div>
+                                <div>Out: ${point.outgoingCount}</div>
+                                <div>Total: ${point.totalConnections}</div>
+                            </div>
+                        `;
+                        convergenceGrid.appendChild(nodeDiv);
+                    });
+
+                    convergencePanel.style.display = 'block';
+                }
+            },
+
+            showError(error) {
+                const canvasElement = document.getElementById('topologyCanvas');
+                if (canvasElement) {
+                    canvasElement.innerHTML = `
+                        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; color: #ef4444;">
+                            <div style="font-size: 4rem; margin-bottom: 20px;">⚠️</div>
+                            <h3>Failed to Load Network Topology</h3>
+                            <p>Error: ${error.message}</p>
+                            <button onclick="window.TopologyManager.initialize()" style="margin-top: 20px; padding: 10px 20px; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                Retry
+                            </button>
+                        </div>
+                    `;
+                }
+            }
+        };
+
+        // Global functions for UI interactions
+        window.connectDataSource = () => window.TopologyManager.connectDataSource();
+        window.applyTopNFilter = () => {
+            const topN = parseInt(document.getElementById('topNTalkers').value);
+            window.AppDiscoverer.showToast(`Applying Top ${topN} filter...`, 'info');
+            // Implementation would filter by traffic volume
+        };
+        window.updateConvergenceThreshold = () => {
+            const threshold = document.getElementById('convergenceThreshold').value;
+            document.getElementById('convergenceValue').textContent = threshold;
+            window.TopologyManager.updateStatistics();
+        };
+        window.refreshTopology = () => {
+            window.TopologyManager.updateVisualization();
+            window.AppDiscoverer.showToast('Topology refreshed', 'success');
+        };
+        window.resetView = () => {
+            if (topologySvg) {
+                topologySvg.transition().duration(500).call(
+                    d3.zoom().transform,
+                    d3.zoomIdentity
+                );
+            }
+        };
+        window.fitToScreen = () => {
+            // Implementation for fit to screen
+            window.resetView();
+        };
+        window.exportTopology = () => {
+            window.AppDiscoverer.showToast('Exporting topology...', 'info');
+            // Implementation for export
+        };
+        window.zoomIn = () => {
+            if (topologySvg) {
+                topologySvg.transition().duration(300).call(
+                    d3.zoom().scaleBy, 1.5
+                );
+            }
+        };
+        window.zoomOut = () => {
+            if (topologySvg) {
+                topologySvg.transition().duration(300).call(
+                    d3.zoom().scaleBy, 0.75
+                );
+            }
+        };
+        window.panMode = () => {
+            window.AppDiscoverer.showToast('Pan mode activated', 'info');
+        };
+        window.selectMode = () => {
+            window.AppDiscoverer.showToast('Select mode activated', 'info');
+        };
+        window.searchNodes = () => {
+            const query = document.getElementById('nodeSearch').value;
+            if (query) {
+                window.AppDiscoverer.showToast(`Searching for: ${query}`, 'info');
+            }
+        };
+        window.toggleMinimap = () => {
+            const minimap = document.getElementById('minimap');
+            if (minimap) {
+                minimap.style.display = minimap.style.display === 'none' ? 'block' : 'none';
+            }
+        };
+        window.toggleFullscreen = () => {
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                document.getElementById('topologyCanvas').requestFullscreen();
+            }
+        };
+        window.showTopologySettings = () => {
+            window.AppDiscoverer.showToast('Settings panel opening...', 'info');
+        };
+        window.closeInfoPanel = (panelId) => {
+            const panel = document.getElementById(panelId);
+            if (panel) panel.style.display = 'none';
+        };
+        window.toggleLegend = () => {
+            const legendContent = document.getElementById('legendContent');
+            const toggleBtn = document.querySelector('.legend-toggle');
+            if (legendContent && toggleBtn) {
+                const isVisible = legendContent.style.display !== 'none';
+                legendContent.style.display = isVisible ? 'none' : 'block';
+                toggleBtn.textContent = isVisible ? '+' : '−';
+            }
+        };
+
+        // Arrow controls
+        window.panGraph = (dx, dy) => {
+            if (topologySvg) {
+                const currentTransform = d3.zoomTransform(topologySvg.node());
+                topologySvg.transition().duration(300).call(
+                    d3.zoom().transform,
+                    currentTransform.translate(dx, dy)
+                );
+            }
+        };
+
+        // Initialize when component loads
+        document.addEventListener('app:init:topology', () => {
+            if (window.TopologyManager) {
+                window.TopologyManager.initialize();
+            }
+        });
+
+        console.log('✅ Topology component script loaded');
+    </script>
+
+    <!-- Update the component HTML to match the exact interface -->
+    <div class="topology-container">
+        <!-- Sidebar Controls -->
+        <div class="topology-sidebar">
+            <div class="sidebar-header">
+                <h2>🔗 Network Topology</h2>
+                <p>Real-time network visualization and analysis</p>
+            </div>
+
+            <!-- Data Source Selection -->
+            <div class="control-section">
+                <h3>📊 Data Source</h3>
+                <select class="control-select" id="dataSourceSelect">
+                    <option value="live">🔴 Live Data Stream</option>
+                    <option value="extrahop">🔍 ExtraHop</option>
+                    <option value="splunk">📊 Splunk Logs</option>
+                    <option value="upload">📁 File Upload</option>
+                    <option value="sample" selected>🧪 Sample Data</option>
+                </select>
+                <button class="btn btn-primary" onclick="connectDataSource()" style="width: 100%; margin-top: 10px;">
+                    <span id="connectButtonText">Connect</span>
+                </button>
+            </div>
+
+            <!-- App Filter (matching your exact interface) -->
+            <div class="control-section">
+                <h3>🔍 Filter by App</h3>
+                <div class="app-filter-container">
+                    <div class="app-select-wrapper">
+                        <select id="appSelect" class="app-select" multiple size="8">
+                            <option value="">-- All --</option>
+                        </select>
+                        <button id="expandBtn" class="expand-btn" title="Expand/collapse app variants">▼</button>
+                    </div>
+                    <button id="applyFilterBtn" class="btn btn-primary" style="width: 100%;">Apply Filter</button>
+                    
+                    <div class="toggle-group">
+                        <div class="toggle-item">
+                            <input type="checkbox" id="showProtocolLabels" checked>
+                            <label for="showProtocolLabels">Show Protocol & Port</label>
+                        </div>
+                    </div>
+                    
+                    <div class="toggle-buttons">
+                        <button id="upstreamBtn" class="toggle-btn" data-active="false">Show Upstream</button>
+                        <button id="downstreamBtn" class="toggle-btn" data-active="false">Show Downstream</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Network Analysis Controls -->
+            <div class="control-section">
+                <h3>🔍 Network Analysis</h3>
+                
+                <div class="control-group">
+                    <label for="topNTalkers">Top N Talkers:</label>
+                    <div class="input-group">
+                        <input type="number" id="topNTalkers" class="control-input" value="10" min="1" max="100">
+                        <button class="btn btn-secondary" onclick="applyTopNFilter()">Apply</button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="convergenceThreshold">Convergence Threshold:</label>
+                    <input type="range" id="convergenceThreshold" class="control-range" value="3" min="1" max="10" oninput="updateConvergenceThreshold()">
+                    <span id="convergenceValue">3</span>
+                </div>
+            </div>
+
+            <!-- Visualization Controls -->
+            <div class="control-section">
+                <h3>🎨 Visualization</h3>
+                
+                <div class="toggle-group">
+                    <div class="toggle-item">
+                        <input type="checkbox" id="showLabels" checked>
+                        <label for="showLabels">Show Labels</label>
+                    </div>
+                    <div class="toggle-item">
+                        <input type="checkbox" id="showTraffic" checked>
+                        <label for="showTraffic">Show Traffic</label>
+                    </div>
+                    <div class="toggle-item">
+                        <input type="checkbox" id="animateTraffic">
+                        <label for="animateTraffic">Animate Traffic</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="control-section">
+                <h3>⚡ Quick Actions</h3>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="refreshTopology()">
+                        <span>🔄</span> Refresh
+                    </button>
+                    <button class="btn btn-secondary" onclick="resetView()">
+                        <span>🏠</span> Reset View
+                    </button>
+                    <button class="btn btn-secondary" onclick="fitToScreen()">
+                        <span>🔍</span> Fit Screen
+                    </button>
+                    <button class="btn btn-success" onclick="exportTopology()">
+                        <span>💾</span> Export
+                    </button>
+                </div>
+            </div>
+
+            <!-- Statistics Panel -->
+            <div class="stats-section">
+                <h3>📈 Network Statistics</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="nodeCount">0</div>
+                        <div class="stat-label">Nodes</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="linkCount">0</div>
+                        <div class="stat-label">Links</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="convergenceCount">0</div>
+                        <div class="stat-label">Convergence Points</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalTraffic">0 GB</div>
+                        <div class="stat-label">Total Traffic</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Visualization Area -->
+        <div class="topology-main">
+            <!-- Toolbar -->
+            <div class="topology-toolbar">
+                <div class="toolbar-left">
+                    <button class="toolbar-btn" onclick="zoomIn()" title="Zoom In">
+                        <span>🔍+</span>
+                    </button>
+                    <button class="toolbar-btn" onclick="zoomOut()" title="Zoom Out">
+                        <span>🔍-</span>
+                    </button>
+                    <button class="toolbar-btn" onclick="panMode()" title="Pan Mode">
+                        <span>✋</span>
+                    </button>
+                    <button class="toolbar-btn" onclick="selectMode()" title="Select Mode">
+                        <span>👆</span>
+                    </button>
+                </div>
+                
+                <div class="toolbar-center">
+                    <div class="search-box">
+                        <input type="text" id="nodeSearch" placeholder="Search nodes..." class="search-input">
+                        <button onclick="searchNodes()" class="search-btn">🔍</button>
+                    </div>
+                </div>
+                
+                <div class="toolbar-right">
+                    <button class="toolbar-btn" onclick="toggleMinimap()" title="Toggle Minimap">
+                        <span>🗺️</span>
+                    </button>
+                    <button class="toolbar-btn" onclick="toggleFullscreen()" title="Fullscreen">
+                        <span>⛶</span>
+                    </button>
+                    <button class="toolbar-btn" onclick="showTopologySettings()" title="Settings">
+                        <span>⚙️</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Visualization Canvas -->
+            <div class="topology-canvas" id="topologyCanvas">
+                <svg id="networkSVG" class="network-svg"></svg>
+                
+                <!-- Minimap -->
+                <div class="minimap" id="minimap" style="display: none;">
+                    <svg id="minimapSVG" class="minimap-svg"></svg>
+                </div>
+                
+                <!-- Loading Overlay -->
+                <div class="canvas-loading" id="canvasLoading">
+                    <div class="loading-content">
+                        <div class="loading-spinner"></div>
+                        <h3>Loading Network Topology...</h3>
+                        <p id="loadingStatus">Initializing visualization engine</p>
+                    </div>
+                </div>
+
+                <!-- Arrow Controls (matching your interface) -->
+                <div class="arrow-controls">
+                    <div></div>
+                    <button class="arrow-btn" onclick="panGraph(0, -50)">⬆️</button>
+                    <div></div>
+                    <button class="arrow-btn" onclick="panGraph(-50, 0)">⬅️</button>
+                    <div></div>
+                    <button class="arrow-btn" onclick="panGraph(50, 0)">➡️</button>
+                    <div></div>
+                    <button class="arrow-btn" onclick="panGraph(0, 50)">⬇️</button>
+                    <div></div>
+                </div>
+            </div>
+
+            <!-- Information Panels -->
+            <div class="info-panels">
+                <!-- Node Details Panel -->
+                <div class="info-panel" id="nodeInfoPanel" style="display: none;">
+                    <div class="panel-header">
+                        <h4>Node Details</h4>
+                        <button onclick="closeInfoPanel('nodeInfoPanel')" class="close-btn">×</button>
+                    </div>
+                    <div class="panel-content" id="nodeInfoContent">
+                        <!-- Node information will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Converg

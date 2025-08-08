@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integration Hub Dashboard</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/integration.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <div>
+                        <h1 class="header-title">Integration Hub</h1>
+                        <p class="header-subtitle">Connect and configure network data sources for real-time analysis</p>
+                    </div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: #3b82f6;" id="activeConnections">3</div>
+                        <div class="stat-label">Active Connections</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: #10b981;" id="dataStreams">2.4k</div>
+                        <div class="stat-label">Data Streams/min</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: #f59e0b;" id="realTimeEvents">847</div>
+                        <div class="stat-label">Real-time Events</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: #8b5cf6;" id="dataVolume">15.2 GB</div>
+                        <div class="stat-label">Data Volume/day</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <a href="index.html" class="tab-btn">
+                <span class="tab-icon">🗂️</span>
+                <span>Topology</span>
+            </a>
+            <a href="convergence.html" class="tab-btn disabled">
+				<span class="tab-icon">🔄</span>
+				<span>Convergence</span>
+			</a>
+			<a href="archetype.html" class="tab-btn">
+                <span class="tab-icon">🏗️</span>
+                <span>Archetype</span>
+            </a>
+            <a href="integration.html" class="tab-btn active">
+                <span class="tab-icon">🔗</span>
+                <span>Integration</span>
+            </a>
+            <a href="model.html" class="tab-btn">
+                <span class="tab-icon">📊</span>
+                <span>Model</span>
+            </a>
+            <a href="documentation.html" class="tab-btn">
+                <span class="tab-icon">📚</span>
+                <span>Documentation</span>
+            </a>
+            <a href="appRationalization.html" class="tab-btn">
+                <span class="tab-icon">7️⃣</span>
+                <span>App Rationalization</span>
+            </a>
+            <a href="recommendations.html" class="tab-btn">
+                <span class="tab-icon">💡</span>
+                <span>Recommendations</span>
+            </a>
+        </div>
+
+        <!-- Pipeline Status Overview -->
+        <div class="pipeline-status">
+            <h4>📊 Data Processing Pipeline</h4>
+            <div class="pipeline-steps">
+                <div class="pipeline-step">
+                    <div class="step-icon step-inactive" id="step1">1</div>
+                    <span>Collection</span>
+                </div>
+                <div class="pipeline-step">
+                    <div class="step-icon step-inactive" id="step2">2</div>
+                    <span>Normalization</span>
+                </div>
+                <div class="pipeline-step">
+                    <div class="step-icon step-inactive" id="step3">3</div>
+                    <span>Deduplication</span>
+                </div>
+                <div class="pipeline-step">
+                    <div class="step-icon step-inactive" id="step4">4</div>
+                    <span>Vectorization</span>
+                </div>
+                <div class="pipeline-step">
+                    <div class="step-icon step-inactive" id="step5">5</div>
+                    <span>Analysis</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Integration Grid -->
+        <div class="integration-grid">
+            <!-- ExtraHop Integration -->
+            <div class="integration-card" data-integration="extrahop">
+                <div class="card-header extrahop-header">
+                    <div class="integration-icon">🔍</div>
+                    <div class="integration-info">
+                        <h3 class="integration-title">ExtraHop Reveal(x)</h3>
+                        <div class="integration-status status-connected">Connected</div>
+                    </div>
+                    <div class="integration-actions">
+                        <button class="action-btn" onclick="toggleIntegration('extrahop')" title="Toggle Connection">
+                            <span id="extrahop-toggle">🔌</span>
+                        </button>
+                        <button class="action-btn" onclick="configureIntegration('extrahop')" title="Configure">
+                            <span>⚙️</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="card-content">
+                    <p class="integration-description">
+                        Real-time network traffic analysis and application performance monitoring platform for deep visibility into network behavior.
+                    </p>
+                    
+                    <div class="config-section">
+                        <h4>🔧 Configuration</h4>
+                        <div class="input-group">
+                            <label>Server URL</label>
+                            <input type="text" id="extrahopUrl" value="https://extrahop.company.com" placeholder="https://extrahop-server">
+                        </div>
+                        <div class="input-group">
+                            <label>API Key</label>
+                            <input type="password" id="extrahopApiKey" placeholder="Enter API key">
+                        </div>
+                        <div class="input-group">
+                            <label>Data Source</label>
+                            <select id="extrahopSource">
+                                <option value="network">Network Traffic</option>
+                                <option value="applications">Applications</option>
+                                <option value="devices">Devices</option>
+                                <option value="metrics">Metrics</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="integration-metrics">
+                        <div class="metric">
+                            <span class="metric-label">Endpoint:</span>
+                            <span class="metric-value">extrahop.company.com</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Last Sync:</span>
+                            <span class="metric-value" id="extrahopLastUpdate">2 minutes ago</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Data Rate:</span>
+                            <span class="metric-value" id="extrahopRecords">1.2k events/min</span>
+                        </div>
+                    </div>
+
+                    <div class="query-builder">
+                        <h5>📝 Query Builder</h5>
+                        <textarea class="query-input" id="extrahopQuery" placeholder="metrics=network.bytes">metrics=network.bytes,network.pkts
+object_type=device
+filter=device.vendor="Cisco"</textarea>
+                        <button class="btn btn-primary" onclick="executeExtraHopQuery()">▶️ Execute Query</button>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <button class="btn btn-primary" onclick="testConnection('extrahop')">Test Connection</button>
+                    <button class="btn btn-secondary" onclick="viewLogs('extrahop')">View Logs</button>
+                </div>
+
+                <div class="log-console" id="extrahopLog">
+                    > ExtraHop integration ready...<br>
+                    > Configure API settings and click Connect<br>
+                </div>
+            </div>
+
+            <!-- Splunk Integration -->
+            <div class="integration-card" data-integration="splunk">
+                <div class="card-header splunk-header">
+                    <div class="integration-icon">📊</div>
+                    <div class="integration-info">
+                        <h3 class="integration-title">Splunk Enterprise</h3>
+                        <div class="integration-status status-configured">Configured</div>
+                    </div>
+                    <div class="integration-actions">
+                        <button class="action-btn" onclick="toggleIntegration('splunk')" title="Toggle Connection">
+                            <span id="splunk-toggle">🔌</span>
+                        </button>
+                        <button class="action-btn" onclick="configureIntegration('splunk')" title="Configure">
+                            <span>⚙️</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="card-content">
+                    <p class="integration-description">
+                        Enterprise log management and network forensics platform for comprehensive data analysis and security monitoring.
+                    </p>
+                    
+                    <div class="config-section">
+                        <h4>🔧 Configuration</h4>
+                        <div class="input-group">
+                            <label>Server URL</label>
+                            <input type="text" id="splunkUrl" value="https://splunk.company.com:8089" placeholder="https://splunk-server:8089">
+                        </div>
+                        <div class="input-group">
+                            <label>Username</label>
+                            <input type="text" id="splunkUser" value="admin" placeholder="splunk_user">
+                        </div>
+                        <div class="input-group">
+                            <label>Password / Token</label>
+                            <input type="password" id="splunkPass" placeholder="Enter password or token">
+                        </div>
+                        <div class="input-group">
+                            <label>Index</label>
+                            <select id="splunkIndex">
+                                <option value="main">main</option>
+                                <option value="network">network</option>
+                                <option value="security">security</option>
+                                <option value="firewall">firewall</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="integration-metrics">
+                        <div class="metric">
+                            <span class="metric-label">Endpoint:</span>
+                            <span class="metric-value">splunk.company.com:8089</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Last Sync:</span>
+                            <span class="metric-value" id="splunkLastUpdate">15 minutes ago</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Status:</span>
+                            <span class="metric-value">Needs Authentication</span>
+                        </div>
+                    </div>
+
+                    <div class="query-builder">
+                        <h5>📝 SPL Query Builder</h5>
+                        <textarea class="query-input" id="splunkQuery" placeholder="search index=network | head 100">search index=network sourcetype=firewall
+| stats count by src_ip, dest_ip
+| where count > 10
+| table src_ip, dest_ip, count</textarea>
+                        <button class="btn btn-primary" onclick="executeSplunkQuery()">▶️ Execute Query</button>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <button class="btn btn-primary" onclick="connectIntegration('splunk')">Connect</button>
+                    <button class="btn btn-secondary" onclick="viewLogs('splunk')">View Logs</button>
+                </div>
+
+                <div class="log-console" id="splunkLog">
+                    > Splunk integration ready...<br>
+                    > Configure connection settings and click Connect<br>
+                </div>
+            </div>
+
+            <!-- DynaTrace Integration -->
+            <div class="integration-card" data-integration="dynatrace">
+                <div class="card-header dynatrace-header">
+                    <div class="integration-icon">⚡</div>
+                    <div class="integration-info">
+                        <h3 class="integration-title">DynaTrace</h3>
+                        <div class="integration-status status-disconnected">Disconnected</div>
+                    </div>
+                    <div class="integration-actions">
+                        <button class="action-btn" onclick="toggleIntegration('dynatrace')" title="Toggle Connection">
+                            <span id="dynatrace-toggle">🔌</span>
+                        </button>
+                        <button class="action-btn" onclick="configureIntegration('dynatrace')" title="Configure">
+                            <span>⚙️</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="card-content">
+                    <p class="integration-description">
+                        AI-powered application performance monitoring and observability platform for intelligent infrastructure analysis.
+                    </p>
+                    
+                    <div class="config-section">
+                        <h4>🔧 Configuration</h4>
+                        <div class="input-group">
+                            <label>API Key</label>
+                            <input type="password" id="dynatraceApiKey" placeholder="Enter Dynatrace API key">
+                        </div>
+                        <div class="input-group">
+                            <label>Application Key</label>
+                            <input type="password" id="dynatraceAppKey" placeholder="Enter Application key">
+                        </div>
+                        <div class="input-group">
+                            <label>Site</label>
+                            <select id="dynatraceSite">
+                                <option value="https://us1.dynatrace.com">US1 (dynatrace.com)</option>
+                                <option value="https://us3.dynatrace.com">US3 (us3.dynatrace.com)</option>
+                                <option value="https://eu.dynatrace.com">EU (dynatrace.eu)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="integration-metrics">
+                        <div class="metric">
+                            <span class="metric-label">Endpoint:</span>
+                            <span class="metric-value">Not configured</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Last Sync:</span>
+                            <span class="metric-value">Never</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Status:</span>
+                            <span class="metric-value">Setup Required</span>
+                        </div>
+                    </div>
+
+                    <div class="query-builder">
+                        <h5>📝 Log Query Builder</h5>
+                        <textarea class="query-input" id="dynatraceQuery" placeholder="source:nginx status:error">source:network service:firewall
+@network.client.ip:192.168.*
+-@http.status_code:200</textarea>
+                        <button class="btn btn-primary" onclick="executeDynatraceQuery()">▶️ Execute Query</button>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <button class="btn btn-primary" onclick="setupIntegration('dynatrace')">Setup</button>
+                    <button class="btn btn-secondary" onclick="viewDocumentation('dynatrace')">Docs</button>
+                </div>
+
+                <div class="log-console" id="dynatraceLog">
+                    > Dynatrace integration ready...<br>
+                    > Configure API keys and click Connect<br>
+                </div>
+            </div>
+
+            <!-- Custom API Integration -->
+            <div class="integration-card" data-integration="custom-api">
+                <div class="card-header custom-api-header">
+                    <div class="integration-icon">🔗</div>
+                    <div class="integration-info">
+                        <h3 class="integration-title">Custom API</h3>
+                        <div class="integration-status status-connected">Connected</div>
+                    </div>
+                    <div class="integration-actions">
+                        <button class="action-btn" onclick="toggleIntegration('custom-api')" title="Toggle Connection">
+                            <span id="custom-api-toggle">🔌</span>
+                        </button>
+                        <button class="action-btn" onclick="configureIntegration('custom-api')" title="Configure">
+                            <span>⚙️</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="card-content">
+                    <p class="integration-description">
+                        Connect custom data sources via REST API endpoints with flexible data transformation and mapping capabilities.
+                    </p>
+                    
+                    <div class="integration-metrics">
+                        <div class="metric">
+                            <span class="metric-label">Endpoint:</span>
+                            <span class="metric-value">api.internal.com/v1</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Last Sync:</span>
+                            <span class="metric-value">1 minute ago</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Data Rate:</span>
+                            <span class="metric-value">890 records/min</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <button class="btn btn-success" onclick="testConnection('custom-api')">Test</button>
+                    <button class="btn btn-secondary" onclick="viewLogs('custom-api')">Logs</button>
+                </div>
+            </div>
+
+            <!-- File Upload Integration -->
+            <div class="integration-card" data-integration="file-upload">
+                <div class="card-header file-upload-header">
+                    <div class="integration-icon">📁</div>
+                    <div class="integration-info">
+                        <h3 class="integration-title">File Upload</h3>
+                        <div class="integration-status status-ready">Ready</div>
+                    </div>
+                    <div class="integration-actions">
+                        <button class="action-btn" onclick="openFileUpload()" title="Upload Files">
+                            <span>📤</span>
+                        </button>
+                        <button class="action-btn" onclick="configureIntegration('file-upload')" title="Configure">
+                            <span>⚙️</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="card-content">
+                    <p class="integration-description">
+                        Direct file upload for CSV, Excel, and JSON network data with batch processing and validation capabilities.
+                    </p>
+                    
+                    <div class="integration-metrics">
+                        <div class="metric">
+                            <span class="metric-label">Staging Dir:</span>
+                            <span class="metric-value">data_staging/</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Last Upload:</span>
+                            <span class="metric-value">30 minutes ago</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Queue:</span>
+                            <span class="metric-value">3 files pending</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <button class="btn btn-success" onclick="openFileUpload()">Upload Files</button>
+                    <button class="btn btn-secondary" onclick="viewDataStaging()">View Staging</button>
+                </div>
+            </div>
+
+            <!-- Database Integration -->
+            <div class="integration-card" data-integration="database">
+                <div class="card-header database-header">
+                    <div class="integration-icon">🗄️</div>
+                    <div class="integration-info">
+                        <h3 class="integration-title">Database</h3>
+                        <div class="integration-status status-configured">Configured</div>
+                    </div>
+                    <div class="integration-actions">
+                        <button class="action-btn" onclick="toggleIntegration('database')" title="Toggle Connection">
+                            <span id="database-toggle">🔌</span>
+                        </button>
+                        <button class="action-btn" onclick="configureIntegration('database')" title="Configure">
+                            <span>⚙️</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="card-content">
+                    <p class="integration-description">
+                        Direct database connections for network inventory, CMDB data, and configuration management with automated synchronization.
+                    </p>
+                    
+                    <div class="integration-metrics">
+                        <div class="metric">
+                            <span class="metric-label">Connection:</span>
+                            <span class="metric-value">PostgreSQL</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Last Sync:</span>
+                            <span class="metric-value">5 minutes ago</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Records:</span>
+                            <span class="metric-value">12.5k active</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <button class="btn btn-primary" onclick="testConnection('database')">Test</button>
+                    <button class="btn btn-secondary" onclick="viewSchema('database')">Schema</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Unified Controls Panel -->
+        <div class="controls-panel">
+            <div class="controls-header">
+                <h3>🎛️ Unified Data Processing Controls</h3>
+                <p>Orchestrate real-time data collection, normalization, and analysis across all platforms</p>
+            </div>
+
+            <div class="controls-grid">
+                <!-- Real-Time Processing Controls -->
+                <div class="control-section">
+                    <h4>⚡ Real-Time Processing</h4>
+                    <div class="input-group">
+                        <label>Collection Interval (seconds)</label>
+                        <input type="number" id="collectionInterval" value="30" min="10" max="3600">
+                    </div>
+                    <div class="input-group">
+                        <label>Batch Size</label>
+                        <input type="number" id="batchSize" value="100" min="10" max="1000">
+                    </div>
+                    <button class="btn btn-success" onclick="startRealTimeCollection()">▶️ Start Collection</button>
+                    <button class="btn btn-danger" onclick="stopRealTimeCollection()">⏹️ Stop Collection</button>
+                </div>
+
+                <!-- Data Processing Pipeline -->
+                <div class="control-section">
+                    <h4>🔄 Processing Pipeline</h4>
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" id="enableNormalization" checked> Auto-Normalize Data
+                        </label>
+                    </div>
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" id="enableDeduplication" checked> Enable Deduplication
+                        </label>
+                    </div>
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" id="enableVectorization"> Generate Vectors
+                        </label>
+                    </div>
+                    <button class="btn btn-primary" onclick="configurePipeline()">⚙️ Configure Pipeline</button>
+                </div>
+
+                <!-- Export & Integration -->
+                <div class="control-section">
+                    <h4>📤 Export & Integration</h4>
+                    <button class="btn btn-success" onclick="exportToTopologyAnalyzer()">🌐 Send to Topology</button>
+                    <button class="btn btn-warning" onclick="exportToPinecone()">📌 Export to Pinecone</button>
+                    <button class="btn btn-primary" onclick="exportUnifiedData()">💾 Export All Data</button>
+                    <button class="btn btn-warning" onclick="generateReport()">📊 Generate Report</button>
+                </div>
+
+                <!-- System Status -->
+                <div class="control-section">
+                    <h4>📊 System Status</h4>
+                    <div class="metrics-panel">
+                        <div class="metrics-row">
+                            <span>Active Connections:</span>
+                            <span class="metrics-value" id="systemActiveConnections">0</span>
+                        </div>
+                        <div class="metrics-row">
+                            <span>Records Processed:</span>
+                            <span class="metrics-value" id="totalProcessed">0</span>
+                        </div>
+                        <div class="metrics-row">
+                            <span>Processing Rate:</span>
+                            <span class="metrics-value" id="processingRate">0/sec</span>
+                        </div>
+                        <div class="metrics-row">
+                            <span>Error Count:</span>
+                            <span class="metrics-value" id="errorCount" style="color: #ef4444;">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Real-time Data Feed -->
+        <div class="data-feed-section">
+            <div class="section-header">
+                <h3>📡 Real-time Data Feed</h3>
+                <div class="feed-controls">
+                    <button class="btn btn-secondary" onclick="pauseDataFeed()" id="pauseFeedBtn">⏸️ Pause</button>
+                    <button class="btn btn-secondary" onclick="clearDataFeed()">🧹 Clear</button>
+                    <button class="btn btn-primary" onclick="exportDataFeed()">💾 Export</button>
+                </div>
+            </div>
+            
+            <div class="data-feed-container" id="dataFeedContainer">
+                <div class="feed-item">
+                    <span class="feed-timestamp">15:42:33</span>
+                    <span class="feed-source">ExtraHop</span>
+                    <span class="feed-message">New application discovered: Treasury System v2.1</span>
+                    <span class="feed-type type-info">INFO</span>
+                </div>
+                <div class="feed-item">
+                    <span class="feed-timestamp">15:42:28</span>
+                    <span class="feed-source">Custom API</span>
+                    <span class="feed-message">Network topology updated: 47 nodes, 89 connections</span>
+                    <span class="feed-type type-success">SUCCESS</span>
+                </div>
+                <div class="feed-item">
+                    <span class="feed-timestamp">15:42:15</span>
+                    <span class="feed-source">Database</span>
+                    <span class="feed-message">CMDB sync completed: 1,247 records updated</span>
+                    <span class="feed-type type-success">SUCCESS</span>
+                </div>
+                <div class="feed-item">
+                    <span class="feed-timestamp">15:41:52</span>
+                    <span class="feed-source">Splunk</span>
+                    <span class="feed-message">Authentication failed: Invalid API token</span>
+                    <span class="feed-type type-error">ERROR</span>
+                </div>
+                <div class="feed-item">
+                    <span class="feed-timestamp">15:41:45</span>
+                    <span class="feed-source">File Upload</span>
+                    <span class="feed-message">Processing: network_topology_20250717.csv</span>
+                    <span class="feed-type type-info">INFO</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Configuration Modal -->
+    <div class="config-modal" id="configModal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="configModalTitle">Configure Integration</h3>
+                <button class="modal-close" onclick="closeConfigModal()">×</button>
+            </div>
+            <div class="modal-body" id="configModalBody">
+                <!-- Dynamic content will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeConfigModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveIntegrationConfig()">Save Configuration</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Upload Modal -->
+    <div class="upload-modal" id="uploadModal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📁 Upload Network Data Files</h3>
+                <button class="modal-close" onclick="closeUploadModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="upload-zone" id="uploadZone">
+                    <div class="upload-icon">📤</div>
+                    <h4>Drop files here or click to browse</h4>
+                    <p>Supports CSV, Excel, JSON files up to 100MB</p>
+                    <input type="file" id="fileInput" multiple accept=".csv,.xlsx,.xls,.json" style="display: none;">
+                </div>
+                <div class="upload-progress" id="uploadProgress" style="display: none;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-text" id="progressText">Uploading...</div>
+                </div>
+                <div class="upload-results" id="uploadResults"></div>
+            </div>
+        </div>
+    </div>
+
+	<script src="../js/app-data.js"></script>
+	<script src="../js/common.js"></script>
+    <script src="../js/integration.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+</body>
+</html>

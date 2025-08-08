@@ -1,0 +1,52 @@
+{
+  "generation_info": {
+    "app_id": "test_app_1",
+    "generated_at": "2025-07-20T18:57:54.788618",
+    "quality_level": "professional",
+    "total_applications": 3,
+    "total_files": 2
+  },
+  "generated_files": [
+    {
+      "format": "visio",
+      "filename": "test_app_1.vsdx",
+      "file_path": "results\\visio\\test_app_1.vsdx",
+      "absolute_path": "C:\\Users\\AjayPillai\\application_auto_discoverer\\results\\visio\\test_app_1.vsdx",
+      "target_audience": "Technical Teams",
+      "content_size": "1.8 KB",
+      "features": [
+        "Professional XML",
+        "Rich metadata",
+        "Executive quality"
+      ],
+      "quality_level": "professional"
+    },
+    {
+      "format": "lucid",
+      "filename": "test_app_1.lucid",
+      "file_path": "results\\lucid\\test_app_1.lucid",
+      "absolute_path": "C:\\Users\\AjayPillai\\application_auto_discoverer\\results\\lucid\\test_app_1.lucid",
+      "target_audience": "Collaborative Teams",
+      "content_size": "1.2 KB",
+      "features": [
+        "Interactive design",
+        "Team collaboration"
+      ],
+      "quality_level": "professional"
+    }
+  ],
+  "applications": [
+    {
+      "id": "test_app_1",
+      "name": "Test Application 1"
+    },
+    {
+      "id": "test_app_2",
+      "name": "Test Application 2"
+    },
+    {
+      "id": "test_app_3",
+      "name": "Test Application 3"
+    }
+  ]
+}

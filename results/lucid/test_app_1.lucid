@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lucidchart version="2.0" quality_level="professional">
+    <metadata>
+        <title>Professional Network Architecture - test_app_1</title>
+        <created>2025-07-20T18:57:54.787618</created>
+        <application_count>3</application_count>
+    </metadata>
+    
+    <applications>
+        <application id="test_app_1">
+            <name>Test Application 1</name>
+            <geometry>
+                <x>100</x>
+                <y>100</y>
+                <width>150</width>
+                <height>80</height>
+            </geometry>
+        </application>
+        <application id="test_app_2">
+            <name>Test Application 2</name>
+            <geometry>
+                <x>300</x>
+                <y>100</y>
+                <width>150</width>
+                <height>80</height>
+            </geometry>
+        </application>
+        <application id="test_app_3">
+            <name>Test Application 3</name>
+            <geometry>
+                <x>500</x>
+                <y>100</y>
+                <width>150</width>
+                <height>80</height>
+            </geometry>
+        </application>
+    </applications>
+</lucidchart>

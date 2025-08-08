@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VisioDocument xmlns="http://schemas.microsoft.com/office/visio/2003/core" 
+               quality_level="professional" 
+               professional_grade="true">
+    <DocumentProperties>
+        <Title>Professional Network Architecture - test_app_1</Title>
+        <Creator>Professional Banking Network Discovery Platform</Creator>
+        <Created>2025-07-20T18:57:54.786617</Created>
+        <QualityLevel>professional</QualityLevel>
+        <ApplicationCount>3</ApplicationCount>
+    </DocumentProperties>
+    
+    <Pages>
+        <Page Name="Network Architecture">
+            <Shapes>
+                <Shape ID="test_app_1" Name="Test Application 1">
+                    <XForm>
+                        <PinX>100</PinX>
+                        <PinY>100</PinY>
+                        <Width>120</Width>
+                        <Height>60</Height>
+                    </XForm>
+                    <Text>Test Application 1</Text>
+                </Shape>
+                <Shape ID="test_app_2" Name="Test Application 2">
+                    <XForm>
+                        <PinX>250</PinX>
+                        <PinY>100</PinY>
+                        <Width>120</Width>
+                        <Height>60</Height>
+                    </XForm>
+                    <Text>Test Application 2</Text>
+                </Shape>
+                <Shape ID="test_app_3" Name="Test Application 3">
+                    <XForm>
+                        <PinX>400</PinX>
+                        <PinY>100</PinY>
+                        <Width>120</Width>
+                        <Height>60</Height>
+                    </XForm>
+                    <Text>Test Application 3</Text>
+                </Shape>
+            </Shapes>
+        </Page>
+    </Pages>
+</VisioDocument>

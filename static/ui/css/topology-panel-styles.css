@@ -1,0 +1,213 @@
+/* ========================================
+   TOPOLOGY PANEL TOGGLE CSS STYLES
+   ======================================== */
+
+/* Base panel styles with smooth transitions */
+.topology-container #left-panel,
+.topology-container #right-panel {
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+               min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+               padding 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    overflow: hidden !important;
+    position: relative !important;
+}
+
+/* Collapsed state */
+.topology-container #left-panel.collapsed,
+.topology-container #right-panel.collapsed {
+    width: 60px !important;
+    min-width: 60px !important;
+    max-width: 60px !important;
+    padding: 20px 10px !important;
+}
+
+/* Content visibility for collapsed panels */
+.topology-container #left-panel.collapsed > *:not(.hamburger),
+.topology-container #right-panel.collapsed > *:not(.hamburger) {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: translateX(-20px) !important;
+    display: none !important;
+}
+
+/* Content visibility for expanded panels */
+.topology-container #left-panel:not(.collapsed) > *:not(.hamburger),
+.topology-container #right-panel:not(.collapsed) > *:not(.hamburger) {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transform: translateX(0) !important;
+    display: block !important;
+}
+
+/* Hamburger button - always visible */
+.topology-container #left-panel .hamburger,
+.topology-container #right-panel .hamburger {
+    position: relative !important;
+    z-index: 10 !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    display: block !important;
+    transition: background-color 0.2s ease, transform 0.2s ease !important;
+    cursor: pointer !important;
+    background: var(--panel-bg, rgba(15, 23, 42, 0.9)) !important;
+    border: 1px solid var(--border-color, #475569) !important;
+    border-radius: 4px !important;
+    padding: 8px !important;
+    margin-bottom: 10px !important;
+    color: var(--text-primary, #f1f5f9) !important;
+    font-size: 16px !important;
+    text-align: center !important;
+    width: auto !important;
+    min-width: 40px !important;
+    user-select: none !important;
+}
+
+/* Hamburger hover effect */
+.topology-container #left-panel .hamburger:hover,
+.topology-container #right-panel .hamburger:hover {
+    background: var(--accent-blue, #3b82f6) !important;
+    color: white !important;
+    transform: scale(1.05) !important;
+}
+
+/* Hamburger active effect */
+.topology-container #left-panel .hamburger:active,
+.topology-container #right-panel .hamburger:active {
+    transform: scale(0.95) !important;
+}
+
+/* High specificity overrides for collapsed state */
+body .topology-container #left-panel.collapsed {
+    width: 60px !important;
+    min-width: 60px !important;
+    flex: 0 0 60px !important;
+}
+
+body .topology-container #right-panel.collapsed {
+    width: 60px !important;
+    min-width: 60px !important;
+    flex: 0 0 60px !important;
+}
+
+/* High specificity overrides for expanded state */
+body .topology-container #left-panel:not(.collapsed) {
+    width: 300px !important;
+    min-width: 300px !important;
+    flex: 0 0 300px !important;
+}
+
+body .topology-container #right-panel:not(.collapsed) {
+    width: 300px !important;
+    min-width: 300px !important;
+    flex: 0 0 300px !important;
+}
+
+/* Animation keyframes */
+@keyframes slideInRight {
+    from { 
+        transform: translateX(100%); 
+        opacity: 0; 
+    }
+    to { 
+        transform: translateX(0); 
+        opacity: 1; 
+    }
+}
+
+@keyframes slideOutRight {
+    from { 
+        transform: translateX(0); 
+        opacity: 1; 
+    }
+    to { 
+        transform: translateX(100%); 
+        opacity: 0; 
+    }
+}
+
+@keyframes fadeInContent {
+    from { 
+        opacity: 0; 
+        transform: translateX(-20px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateX(0); 
+    }
+}
+
+@keyframes fadeOutContent {
+    from { 
+        opacity: 1; 
+        transform: translateX(0); 
+    }
+    to { 
+        opacity: 0; 
+        transform: translateX(-20px); 
+    }
+}
+
+/* Content transition styles */
+.topology-container .panel-content-transition {
+    transition: opacity 0.3s ease, transform 0.3s ease !important;
+}
+
+/* Notification styles */
+#topology-notifications {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    pointer-events: none;
+}
+
+.topology-notification {
+    background: rgba(15, 23, 42, 0.95);
+    color: #f1f5f9;
+    padding: 8px 12px;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(8px);
+    font-size: 12px;
+    max-width: 300px;
+    animation: slideInRight 0.3s ease;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.topology-notification.info {
+    border-left: 3px solid #3b82f6;
+}
+
+.topology-notification.success {
+    border-left: 3px solid #10b981;
+}
+
+.topology-notification.warning {
+    border-left: 3px solid #f59e0b;
+}
+
+.topology-notification.error {
+    border-left: 3px solid #ef4444;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .topology-container #left-panel:not(.collapsed),
+    .topology-container #right-panel:not(.collapsed) {
+        width: 250px !important;
+        min-width: 250px !important;
+        flex: 0 0 250px !important;
+    }
+    
+    body .topology-container #left-panel:not(.collapsed),
+    body .topology-container #right-panel:not(.collapsed) {
+        width: 250px !important;
+        min-width: 250px !important;
+        flex: 0 0 250px !important;
+    }
+}

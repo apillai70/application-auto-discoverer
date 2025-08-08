@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Topology Dashboard</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/topology.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <div>
+                        <h1 class="header-title">Network Topology Dashboard</h1>
+                        <p class="header-subtitle">Visualize and analyze application network architecture and connections</p>
+                    </div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: var(--accent-blue);" id="totalNodes">248</div>
+                        <div class="stat-label">Total Nodes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: var(--accent-green);" id="activeConnections">1,847</div>
+                        <div class="stat-label">Active Connections</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: var(--accent-orange);" id="networkClusters">12</div>
+                        <div class="stat-label">Network Clusters</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: var(--accent-purple);" id="criticalPaths">5</div>
+                        <div class="stat-label">Critical Paths</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <a href="index.html" class="tab-btn active">
+                <span class="tab-icon">🗂️</span>
+                <span>Topology</span>
+            </a>
+			<a href="#" class="tab-btn disabled">
+				<span class="tab-icon">🔄</span>
+				<span>Convergence</span>
+			</a>
+			<!--Disabled convergence with the a tag above
+            <a href="convergence.html" class="tab-btn">
+                <span class="tab-icon">🔄</span>
+                <span>Convergence</span>
+            </a> -->
+            <a href="archetype.html" class="tab-btn">
+                <span class="tab-icon">🏗️</span>
+                <span>Archetype Classification</span>
+            </a>
+            <a href="integration.html" class="tab-btn">
+                <span class="tab-icon">🔗</span>
+                <span>Integration</span>
+            </a>
+            <a href="model.html" class="tab-btn">
+                <span class="tab-icon">📊</span>
+                <span>Model</span>
+            </a>
+            <a href="documentation.html" class="tab-btn">
+                <span class="tab-icon">📚</span>
+                <span>Documentation</span>
+            </a>
+            <a href="appRationalization.html" class="tab-btn">
+                <span class="tab-icon">7️⃣</span>
+                <span>App Rationalization</span>
+            </a>
+            <a href="recommendations.html" class="tab-btn">
+                <span class="tab-icon">💡</span>
+                <span>Recommendations</span>
+            </a>
+        </div>
+
+        <!-- Topology Main Content -->
+        <div class="topology-container">
+            <!-- Left Panel -->
+            <div id="left-panel">
+                <button class="hamburger" data-panel="left">☰</button>
+                
+                <div class="info-panel">
+                    <h3>🌐 Network Overview</h3>
+                    <ul>
+                        <li>Interactive network topology visualization</li>
+                        <li>Real-time connection mapping</li>
+                        <li>Node clustering and grouping</li>
+                        <li>Traffic flow analysis</li>
+                    </ul>
+                </div>
+
+                <div class="filter-section">
+                    <h4>🔍 Node Filters</h4>
+                    <label class="topology-label">
+                        <input type="checkbox" class="topology-checkbox" id="filter-servers" checked>
+                        Show Servers
+                    </label>
+                    <label class="topology-label">
+                        <input type="checkbox" class="topology-checkbox" id="filter-databases" checked>
+                        Show Databases
+                    </label>
+                    <label class="topology-label">
+                        <input type="checkbox" class="topology-checkbox" id="filter-load-balancers" checked>
+                        Show Load Balancers
+                    </label>
+                    <label class="topology-label">
+                        <input type="checkbox" class="topology-checkbox" id="filter-microservices" checked>
+                        Show Microservices
+                    </label>
+                </div>
+
+                <div class="filter-section">
+                    <h4>🎨 Visualization</h4>
+                    <button class="topology-btn" onclick="setLayout('force')" id="force-btn">Force Layout</button>
+                    <button class="topology-btn" onclick="setLayout('hierarchical')" id="hierarchical-btn">Hierarchical</button>
+                    <button class="topology-btn" onclick="setLayout('circular')" id="circular-btn">Circular</button>
+                    <button class="topology-btn" onclick="setLayout('grid')" id="grid-btn">Grid Layout</button>
+                </div>
+
+                <div class="filter-section">
+                    <h4>📊 Analysis Tools</h4>
+                    <button class="topology-btn" onclick="analyzeTraffic()">Traffic Analysis</button>
+                    <button class="topology-btn" onclick="findCriticalPaths()">Critical Paths</button>
+                    <button class="topology-btn" onclick="detectClusters()">Cluster Detection</button>
+                    <button class="topology-btn" onclick="exportTopology()">Export Data</button>
+                </div>
+            </div>
+
+            <!-- Middle Canvas Area -->
+            <div id="middle-canvas-wrapper">
+                <div id="viz-canvas">
+                    <svg id="graph"></svg>
+                </div>
+                
+                <!-- Overlay Canvas for Analysis -->
+                <div id="overlay-canvas">
+                    <h3>Analysis Results</h3>
+                    <div id="analysis-content"></div>
+                </div>
+
+                <!-- Zoom Controls - Top Right Horizontal -->
+                <div id="zoom-controls">
+                    <button class="control-btn zoom-in" onclick="zoomIn()" title="Zoom In">+</button>
+                    <button class="control-btn zoom-out" onclick="zoomOut()" title="Zoom Out">−</button>
+                    <button class="control-btn reset-view" onclick="resetView()" title="Reset View">⌂</button>
+                </div>
+
+                <!-- Arrow Controls - Bottom Right -->
+                <div id="navigation-controls">
+                    <div id="arrow-controls">
+                        <div></div>
+                        <button class="control-btn" onclick="panDirection('up')" title="Pan Up">↑</button>
+                        <div></div>
+                        <button class="control-btn" onclick="panDirection('left')" title="Pan Left">←</button>
+                        <button class="control-btn" onclick="centerView()" title="Center View">⊙</button>
+                        <button class="control-btn" onclick="panDirection('right')" title="Pan Right">→</button>
+                        <div></div>
+                        <button class="control-btn" onclick="panDirection('down')" title="Pan Down">↓</button>
+                        <div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel -->
+            <div id="right-panel">
+                <button class="hamburger" data-panel="right">☰</button>
+
+                <div class="info-panel">
+                    <h3>📈 Network Statistics</h3>
+                    <div id="network-stats">
+                        <div class="stat-item">
+                            <span>Total Nodes:</span>
+                            <span id="stat-nodes">248</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Total Links:</span>
+                            <span id="stat-links">1,847</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Average Degree:</span>
+                            <span id="stat-avg-degree">7.4</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Network Density:</span>
+                            <span id="stat-density">3.2%</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Clustering Coefficient:</span>
+                            <span id="stat-clustering">0.68</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <h4>🏷️ Node Types</h4>
+                    <div id="node-legend">
+                        <div class="legend-item">
+                            <div style="width: 12px; height: 12px; background: #3b82f6; border-radius: 50%;"></div>
+                            <span>Web Servers</span>
+                        </div>
+                        <div class="legend-item">
+                            <div style="width: 12px; height: 12px; background: #f59e0b; border-radius: 50%;"></div>
+                            <span>Databases</span>
+                        </div>
+                        <div class="legend-item">
+                            <div style="width: 12px; height: 12px; background: #8b5cf6; border-radius: 50%;"></div>
+                            <span>Gateways</span>
+                        </div>
+                        <div class="legend-item">
+                            <div style="width: 12px; height: 12px; background: #ef4444; border-radius: 50%;"></div>
+                            <span>Core Services</span>
+                        </div>
+                        <div class="legend-item">
+                            <div style="width: 12px; height: 12px; background: #10b981; border-radius: 50%;"></div>
+                            <span>Processors</span>
+                        </div>
+                        <div class="legend-item">
+                            <div style="width: 12px; height: 12px; background: #06b6d4; border-radius: 50%;"></div>
+                            <span>Cache/Messaging</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <h4>🔍 Search & Select</h4>
+                    <input type="text" class="file-input" id="node-search" placeholder="Search nodes... (press Enter)">
+                    <select class="topology-select" id="node-selector" size="8">
+                        <optgroup label="Web Servers">
+                            <option value="web-01">Web Server 01</option>
+                            <option value="web-02">Web Server 02</option>
+                            <option value="web-03">Web Server 03</option>
+                        </optgroup>
+                        <optgroup label="Databases">
+                            <option value="db-primary">Primary Database</option>
+                            <option value="db-replica">Replica Database</option>
+                            <option value="db-cache">Cache Database</option>
+                        </div>
+                        <optgroup label="Load Balancers">
+                            <option value="lb-main">Main Load Balancer</option>
+                            <option value="lb-internal">Internal Load Balancer</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div class="filter-section">
+                    <h4>⚙️ Display Options</h4>
+                    <label class="topology-label">
+                        <input type="checkbox" class="topology-checkbox" id="show-labels" checked>
+                        Show Node Labels
+                    </label>
+                    <label class="topology-label">
+                        <input type="checkbox" class="topology-checkbox" id="show-ips">
+                        Show IP Addresses
+                    </label>
+                    <label class="topology-label">
+                        <input type="checkbox" class="topology-checkbox" id="show-link-labels">
+                        Show Connection Types
+                    </label>
+                    <label class="topology-label">
+                        <input type="checkbox" class="topology-checkbox" id="show-traffic">
+                        Show Traffic Flow
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tooltip -->
+        <div class="tooltip" id="tooltip"></div>
+        
+        <!-- Loading Spinner -->
+        <div class="loading-spinner" id="loading-spinner"></div>
+        
+        <!-- Toast Container -->
+        <div id="toast-container"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/app-data.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/topology.js"></script>
+</body>
+</html>

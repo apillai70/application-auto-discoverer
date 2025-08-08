@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Model Development Dashboard</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/model.css">
+    <link rel="stylesheet" href="../css/model-wide.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <div>
+                        <h1 class="header-title">AI Model Development Dashboard</h1>
+                        <p class="header-subtitle">Build, train, and compare machine learning models for network analysis</p>
+                    </div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: var(--accent-blue);" id="totalModels">12</div>
+                        <div class="stat-label">Total Models</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: var(--accent-green);" id="trainedModels">8</div>
+                        <div class="stat-label">Trained Models</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: var(--accent-orange);" id="bestAccuracy">94.2%</div>
+                        <div class="stat-label">Best Accuracy</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: var(--accent-purple);" id="datasetSize">15.2k</div>
+                        <div class="stat-label">Dataset Size</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <a href="index.html" class="tab-btn">
+                <span class="tab-icon">🗂️</span>
+                <span>Topology</span>
+            </a>
+            <a href="convergence.html" class="tab-btn">
+                <span class="tab-icon">🔄</span>
+                <span>Convergence</span>
+            </a>
+            <a href="archetype.html" class="tab-btn">
+                <span class="tab-icon">🏗️</span>
+                <span>Archetype Classification</span>
+            </a>
+            <a href="integration.html" class="tab-btn">
+                <span class="tab-icon">🔗</span>
+                <span>Integration</span>
+            </a>
+            <a href="model.html" class="tab-btn active" id="model-tab">
+                <span class="tab-icon">📊</span>
+                <span>Model</span>
+            </a>
+            <a href="documentation.html" class="tab-btn">
+                <span class="tab-icon">📚</span>
+                <span>Documentation</span>
+            </a>
+            <a href="appRationalization.html" class="tab-btn">
+                <span class="tab-icon">7️⃣</span>
+                <span>App Rationalization</span>
+            </a>
+            <a href="recommendations.html" class="tab-btn">
+                <span class="tab-icon">💡</span>
+                <span>Recommendations</span>
+            </a>
+        </div>
+
+        <!-- Model Development Main Content -->
+        <div class="integrated-model-container">
+            <!-- Main Tab Navigation -->
+            <div class="main-tabs">
+                <div class="main-tab active" data-tab="data-pipeline">📊 Data Pipeline</div>
+                <div class="main-tab" data-tab="network-segmentation">🌐 Network Segmentation</div>
+                <div class="main-tab" data-tab="ml-modeling">🤖 ML Modeling</div>
+                <div class="main-tab" data-tab="comparison">📈 Model Comparison</div>
+            </div>
+
+            <!-- Data Pipeline Tab -->
+            <div class="main-tab-content active" id="data-pipeline-tab">
+                <!-- Sub-tab Navigation for Data Pipeline -->
+                <div class="sub-tabs">
+                    <div class="sub-tab active" data-subtab="upload">📤 Data Upload</div>
+                    <div class="sub-tab" data-subtab="explore">🔍 Data Exploration</div>
+                    <div class="sub-tab" data-subtab="preprocess">⚙️ Preprocessing</div>
+                </div>
+
+                <!-- Upload Sub-tab -->
+                <div class="sub-tab-content active" id="upload-subtab">
+                    <div class="cell">
+                        <div class="cell-header">
+                            <span class="cell-title">📁 Data Upload</span>
+                            <span class="cell-number">Cell [1]</span>
+                        </div>
+                        <div class="upload-zone" id="uploadZone">
+                            <div class="upload-icon">📊</div>
+                            <h3>Drop your CSV file here or click to select</h3>
+                            <p>Supports CSV files up to 100MB with network topology data</p>
+                            <input type="file" id="fileInput" accept=".csv" style="display: none;">
+                        </div>
+                        <div class="progress-bar" id="progressBar" style="display: none;">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div id="fileInfo" class="file-info"></div>
+                    </div>
+                </div>
+
+                <!-- Explore Sub-tab -->
+                <div class="sub-tab-content" id="explore-subtab">
+                    <div class="notebook-container">
+                        <div class="cell">
+                            <div class="cell-header">
+                                <span class="cell-title">📊 Dataset Overview</span>
+                                <span class="cell-number">Cell [2]</span>
+                            </div>
+                            <div id="datasetInfo" class="dataset-info"></div>
+                        </div>
+                        <div class="cell">
+                            <div class="cell-header">
+                                <span class="cell-title">📈 Data Distribution</span>
+                                <span class="cell-number">Cell [3]</span>
+                            </div>
+                            <div class="chart-container" id="distributionChart"></div>
+                        </div>
+                    </div>
+                    <div class="cell full-width">
+                        <div class="cell-header">
+                            <span class="cell-title">🔍 Data Preview</span>
+                            <span class="cell-number">Cell [4]</span>
+                        </div>
+                        <div class="controls-panel">
+                            <button class="btn btn-primary" onclick="showDataHead()">Head</button>
+                            <button class="btn btn-primary" onclick="showDataTail()">Tail</button>
+                            <button class="btn btn-primary" onclick="showDataInfo()">Info</button>
+                            <button class="btn btn-primary" onclick="showDataStats()">Describe</button>
+                        </div>
+                        <div class="data-preview" id="dataPreview"></div>
+                    </div>
+                </div>
+
+                <!-- Preprocess Sub-tab -->
+                <div class="sub-tab-content" id="preprocess-subtab">
+                    <div class="notebook-container">
+                        <div class="cell">
+                            <div class="cell-header">
+                                <span class="cell-title">🔧 Data Preprocessing</span>
+                                <span class="cell-number">Cell [5]</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Target Variable (for ML):</label>
+                                <select id="targetSelect">
+                                    <option value="">Select target column...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Feature Selection:</label>
+                                <select id="featureSelect" multiple size="8">
+                                </select>
+                            </div>
+                            <div class="controls-panel">
+                                <button class="btn btn-primary" onclick="handleMissingValues()">Handle Missing</button>
+                                <button class="btn btn-primary" onclick="scaleFeatures()">Scale Features</button>
+                                <button class="btn btn-primary" onclick="encodeCategories()">Encode Categories</button>
+                            </div>
+                            <div class="code-output" id="preprocessOutput"></div>
+                        </div>
+                        <div class="cell">
+                            <div class="cell-header">
+                                <span class="cell-title">✂️ Train-Test Split</span>
+                                <span class="cell-number">Cell [6]</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Test Size:</label>
+                                <input type="range" id="testSizeSlider" min="10" max="50" value="20" oninput="updateTestSize()">
+                                <span id="testSizeValue">20%</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Split Strategy:</label>
+                                <select id="splitStrategy">
+                                    <option value="random">Random Split</option>
+                                    <option value="stratified">Stratified Split</option>
+                                    <option value="temporal">Temporal Split</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-success" onclick="createTrainTestSplit()">Create Split</button>
+                            <div id="splitInfo" class="split-info"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Network Segmentation Tab -->
+            <div class="main-tab-content" id="network-segmentation-tab">
+                <div class="cell full-width">
+                    <div class="cell-header">
+                        <span class="cell-title">🌐 Network Segmentation Algorithms</span>
+                        <span class="cell-number">Unsupervised Learning</span>
+                    </div>
+                    
+                    <!-- Algorithm Selection -->
+                    <div class="algorithm-selection">
+                        <h3>Select Segmentation Algorithms</h3>
+                        <div class="algorithm-grid">
+                            <div class="algorithm-card" data-algorithm="kmeans">
+                                <div class="algorithm-icon">🎯</div>
+                                <h4>K-Means Clustering</h4>
+                                <p>Partition network into k clusters based on similarity</p>
+                                <div class="algorithm-params">
+                                    <label>Number of Clusters (k):</label>
+                                    <input type="number" id="kmeans-k" value="3" min="2" max="10">
+                                </div>
+                            </div>
+                            
+                            <div class="algorithm-card" data-algorithm="dbscan">
+                                <div class="algorithm-icon">🌐</div>
+                                <h4>DBSCAN</h4>
+                                <p>Density-based clustering for irregular network segments</p>
+                                <div class="algorithm-params">
+                                    <label>Epsilon:</label>
+                                    <input type="number" id="dbscan-eps" value="0.5" step="0.1" min="0.1" max="2">
+                                    <label>Min Samples:</label>
+                                    <input type="number" id="dbscan-min-samples" value="5" min="2" max="20">
+                                </div>
+                            </div>
+                            
+                            <div class="algorithm-card" data-algorithm="hierarchical">
+                                <div class="algorithm-icon">🌳</div>
+                                <h4>Hierarchical Clustering</h4>
+                                <p>Build hierarchy of network segments</p>
+                                <div class="algorithm-params">
+                                    <label>Linkage Method:</label>
+                                    <select id="hierarchical-linkage">
+                                        <option value="ward">Ward</option>
+                                        <option value="complete">Complete</option>
+                                        <option value="average">Average</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="algorithm-card" data-algorithm="spectral">
+                                <div class="algorithm-icon">🔬</div>
+                                <h4>Spectral Clustering</h4>
+                                <p>Graph-based clustering using eigenvectors</p>
+                                <div class="algorithm-params">
+                                    <label>Number of Clusters:</label>
+                                    <input type="number" id="spectral-clusters" value="3" min="2" max="10">
+                                    <label>Gamma:</label>
+                                    <input type="number" id="spectral-gamma" value="1.0" step="0.1" min="0.1" max="5">
+                                </div>
+                            </div>
+                            
+                            <div class="algorithm-card" data-algorithm="community">
+                                <div class="algorithm-icon">👥</div>
+                                <h4>Community Detection</h4>
+                                <p>Detect natural communities in network topology</p>
+                                <div class="algorithm-params">
+                                    <label>Resolution:</label>
+                                    <input type="number" id="community-resolution" value="1.0" step="0.1" min="0.1" max="2">
+                                </div>
+                            </div>
+                            
+                            <div class="algorithm-card" data-algorithm="isolation">
+                                <div class="algorithm-icon">🛡️</div>
+                                <h4>Isolation Forest</h4>
+                                <p>Anomaly-based network segmentation</p>
+                                <div class="algorithm-params">
+                                    <label>Contamination:</label>
+                                    <input type="number" id="isolation-contamination" value="0.1" step="0.01" min="0.01" max="0.5">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Training Controls -->
+                    <div class="controls-panel">
+                        <button class="btn primary" onclick="trainSelectedSegmentationModels()">
+                            <span class="btn-icon">🚀</span>
+                            Train Selected Models
+                        </button>
+                        <button class="btn secondary" onclick="trainAllSegmentationModels()">
+                            <span class="btn-icon">⚡</span>
+                            Train All Segmentation
+                        </button>
+                    </div>
+                    
+                    <!-- Model Results Grid -->
+                    <div class="model-results-grid" id="segmentationResults"></div>
+                </div>
+            </div>
+
+            <!-- ML Modeling Tab -->
+            <div class="main-tab-content" id="ml-modeling-tab">
+                <div class="cell full-width">
+                    <div class="cell-header">
+                        <span class="cell-title">🤖 Machine Learning Models</span>
+                        <span class="cell-number">Supervised Learning</span>
+                    </div>
+                    
+                    <!-- ML Algorithm Selection -->
+                    <div class="algorithm-selection">
+                        <h3>Select ML Algorithms</h3>
+                        <div class="algorithm-grid">
+                            <div class="algorithm-card ml-algorithm" data-algorithm="randomForest">
+                                <div class="algorithm-icon">🌳</div>
+                                <h4>Random Forest</h4>
+                                <p>Ensemble method using multiple decision trees</p>
+                                <div class="algorithm-params">
+                                    <label>Number of Trees:</label>
+                                    <input type="number" id="rf-trees" value="100" min="10" max="500">
+                                    <label>Max Depth:</label>
+                                    <input type="number" id="rf-depth" value="10" min="3" max="50">
+                                </div>
+                            </div>
+                            
+                            <div class="algorithm-card ml-algorithm" data-algorithm="xgboost">
+                                <div class="algorithm-icon">⚡</div>
+                                <h4>XGBoost</h4>
+                                <p>Gradient boosting framework for high performance</p>
+                                <div class="algorithm-params">
+                                    <label>Learning Rate:</label>
+                                    <input type="number" id="xgb-lr" value="0.1" step="0.01" min="0.01" max="1">
+                                    <label>Max Depth:</label>
+                                    <input type="number" id="xgb-depth" value="6" min="3" max="15">
+                                </div>
+                            </div>
+                            
+                            <div class="algorithm-card ml-algorithm" data-algorithm="svm">
+                                <div class="algorithm-icon">🎯</div>
+                                <h4>Support Vector Machine</h4>
+                                <p>Find optimal hyperplane for classification</p>
+                                <div class="algorithm-params">
+                                    <label>Kernel:</label>
+                                    <select id="svm-kernel">
+                                        <option value="rbf">RBF</option>
+                                        <option value="linear">Linear</option>
+                                        <option value="poly">Polynomial</option>
+                                    </select>
+                                    <label>C Parameter:</label>
+                                    <input type="number" id="svm-c" value="1.0" step="0.1" min="0.1" max="10">
+                                </div>
+                            </div>
+                            
+                            <div class="algorithm-card ml-algorithm" data-algorithm="neuralNetwork">
+                                <div class="algorithm-icon">🧠</div>
+                                <h4>Neural Network</h4>
+                                <p>Multi-layer perceptron for complex patterns</p>
+                                <div class="algorithm-params">
+                                    <label>Hidden Layers:</label>
+                                    <input type="text" id="nn-layers" value="100,50" placeholder="100,50">
+                                    <label>Learning Rate:</label>
+                                    <input type="number" id="nn-lr" value="0.001" step="0.001" min="0.001" max="0.1">
+                                </div>
+                            </div>
+                            
+                            <div class="algorithm-card ml-algorithm" data-algorithm="logistic">
+                                <div class="algorithm-icon">📈</div>
+                                <h4>Logistic Regression</h4>
+                                <p>Linear model for probabilistic classification</p>
+                                <div class="algorithm-params">
+                                    <label>Regularization:</label>
+                                    <select id="lr-penalty">
+                                        <option value="l2">L2</option>
+                                        <option value="l1">L1</option>
+                                        <option value="elasticnet">ElasticNet</option>
+                                    </select>
+                                    <label>C Parameter:</label>
+                                    <input type="number" id="lr-c" value="1.0" step="0.1" min="0.1" max="10">
+                                </div>
+                            </div>
+                            
+                            <div class="algorithm-card ml-algorithm" data-algorithm="gradientBoosting">
+                                <div class="algorithm-icon">🚀</div>
+                                <h4>Gradient Boosting</h4>
+                                <p>Sequential ensemble method</p>
+                                <div class="algorithm-params">
+                                    <label>Number of Estimators:</label>
+                                    <input type="number" id="gb-estimators" value="100" min="50" max="300">
+                                    <label>Learning Rate:</label>
+                                    <input type="number" id="gb-lr" value="0.1" step="0.01" min="0.01" max="0.5">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- ML Training Controls -->
+                    <div class="controls-panel">
+                        <button class="btn primary" onclick="trainSelectedMLModels()">
+                            <span class="btn-icon">🚀</span>
+                            Train Selected Models
+                        </button>
+                        <button class="btn secondary" onclick="trainAllMLModels()">
+                            <span class="btn-icon">⚡</span>
+                            Train All ML Models
+                        </button>
+                    </div>
+                    
+                    <!-- ML Model Results Grid -->
+                    <div class="model-results-grid" id="mlResults"></div>
+                </div>
+            </div>
+
+            <!-- Replace the Model Comparison section in your model.html with this: -->
+
+<!-- Comparison Tab -->
+<div class="main-tab-content" id="comparison-tab">
+    <div class="cell full-width">
+        <div class="cell-header">
+            <span class="cell-title">📈 Comprehensive Model Comparison</span>
+            <!-- MOVED BUTTONS TO HEADER -->
+            <div class="comparison-controls">
+                <button class="btn primary" onclick="generateComprehensiveComparison()">
+                    <span class="btn-icon">📊</span>
+                    Generate Comparison
+                </button>
+                <button class="btn secondary" onclick="exportAllResults()">
+                    <span class="btn-icon">💾</span>
+                    Export All Results
+                </button>
+                <button class="btn secondary" onclick="generateReport()">
+                    <span class="btn-icon">📄</span>
+                    Generate Report
+                </button>
+            </div>
+        </div>
+        
+        <!-- REMOVED THE OLD COMPARISON-CONTROLS DIV -->
+        
+        <div class="comprehensive-comparison" id="comprehensiveComparison">
+            <div class="comparison-grid">
+                <div class="comparison-chart">
+                    <h4>🎯 Model Performance Overview</h4>
+                    <div class="chart-container" id="overallPerformanceChart"></div>
+                </div>
+                
+                <div class="comparison-chart">
+                    <h4>⚡ Computational Efficiency</h4>
+                    <div class="chart-container" id="efficiencyChart"></div>
+                </div>
+                
+                <div class="comparison-chart">
+                    <h4>🔍 Segmentation Quality vs ML Accuracy</h4>
+                    <div class="chart-container" id="qualityVsAccuracyChart"></div>
+                </div>
+                
+                <div class="comparison-chart">
+                    <h4>🏆 Model Recommendations</h4>
+                    <div class="recommendations-container" id="comprehensiveRecommendations"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+            <!-- Global Training Progress -->
+            <div class="global-training-progress" id="globalTrainingProgress" style="display: none;">
+                <div class="training-header">
+                    <h3>🚀 Training Progress</h3>
+                    <button class="btn btn-danger btn-sm" onclick="stopTraining()">Stop Training</button>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="globalProgress"></div>
+                    </div>
+                    <div class="progress-text" id="globalProgressText">Initializing...</div>
+                </div>
+                <div class="training-logs" id="globalTrainingLogs"></div>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div class="loading-spinner" id="loadingSpinner"></div>
+
+            <!-- Toast Container -->
+            <div id="toast-container"></div>
+        </div>
+
+        <!-- Tooltip -->
+        <div class="tooltip" id="tooltip"></div>
+    </div>
+
+    <script src="../js/app-data.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/model.js"></script>
+</body>
+</html>

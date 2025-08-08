@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Segmentation & Zero Trust Recommendations</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/recommendations.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.min.js"></script>
+</head>
+<body data-theme="dark">
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <div>
+                        <h1 class="header-title">🔐 Network Segmentation Analysis</h1>
+                        <p class="header-subtitle">Strategic roadmap for microsegmentation and zero trust implementation</p>
+                    </div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: var(--accent-blue);" id="total-applications">32</div>
+                        <div class="stat-label">Banking Applications</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: var(--accent-red);">0</div>
+                        <div class="stat-label">Properly Segmented</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: var(--accent-purple);" id="network-components">147</div>
+                        <div class="stat-label">Network Components</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: var(--accent-green);">89%</div>
+                        <div class="stat-label">Risk Reduction Potential</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <a href="index.html" class="tab-btn">
+                <span class="tab-icon">🗂️</span>
+                <span>Topology</span>
+            </a>
+            <a href="#" class="tab-btn disabled">
+                <span class="tab-icon">🔄</span>
+                <span>Convergence</span>
+            </a>
+            <a href="archetype.html" class="tab-btn">
+                <span class="tab-icon">🏗️</span>
+                <span>Archetype Classification</span>
+            </a>
+            <a href="integration.html" class="tab-btn">
+                <span class="tab-icon">🔗</span>
+                <span>Integration</span>
+            </a>
+            <a href="model.html" class="tab-btn">
+                <span class="tab-icon">📊</span>
+                <span>Model</span>
+            </a>
+            <a href="documentation.html" class="tab-btn">
+                <span class="tab-icon">📚</span>
+                <span>Documentation</span>
+            </a>
+            <a href="appRationalization.html" class="tab-btn">
+                <span class="tab-icon">7️⃣</span>
+                <span>App Rationalization</span>
+            </a>
+            <a href="recommendations.html" class="tab-btn active">
+                <span class="tab-icon">🔐</span>
+                <span>Network Security</span>
+            </a>
+        </div>
+
+        <!-- Sub-Navigation for Recommendations -->
+        <div class="sub-nav-tabs">
+            <a href="#overview" class="sub-tab-btn active" data-tab="overview">
+                <span class="tab-icon">📊</span>
+                <span>Overview</span>
+            </a>
+            <a href="#segmentation" class="sub-tab-btn" data-tab="segmentation">
+                <span class="tab-icon">🏗️</span>
+                <span>Segmentation</span>
+            </a>
+            <a href="#roadmap" class="sub-tab-btn" data-tab="roadmap">
+                <span class="tab-icon">🗺️</span>
+                <span>Roadmap</span>
+            </a>
+            <a href="#compliance" class="sub-tab-btn" data-tab="compliance">
+                <span class="tab-icon">✅</span>
+                <span>Compliance</span>
+            </a>
+            <a href="#implementation" class="sub-tab-btn" data-tab="implementation">
+                <span class="tab-icon">⚙️</span>
+                <span>Implementation</span>
+            </a>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Overview Tab -->
+            <div id="overview-tab" class="tab-content active">
+                <div class="alert-banner">
+                    <span class="alert-icon">⚠️</span>
+                    <div class="alert-content">
+                        <div class="alert-title">Critical Security Gap Identified</div>
+                        <div class="alert-text">Current network architecture lacks proper segmentation for banking applications handling sensitive financial data. Immediate action required.</div>
+                    </div>
+                </div>
+
+                <div class="metrics-container">
+                    <div class="metric-card">
+                        <div class="metric-value" id="total-apps-metric">32</div>
+                        <div class="metric-label">Banking Applications</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">0</div>
+                        <div class="metric-label">Properly Segmented</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="components-metric">147</div>
+                        <div class="metric-label">Network Components</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">89%</div>
+                        <div class="metric-label">Risk Reduction Potential</div>
+                    </div>
+                </div>
+
+                <div class="analysis-grid">
+                    <div class="card">
+                        <div class="section-header">
+                            <span class="section-icon">🎯</span>
+                            <h2 class="section-title">Current State Analysis</h2>
+                        </div>
+                        <div class="risk-matrix" id="current-state-matrix">
+                            <div class="risk-card risk-high">
+                                <div class="risk-title">Critical Apps</div>
+                                <div class="risk-score">8</div>
+                                <div class="risk-desc">ACDA, FAPI, BCA, KYCP</div>
+                            </div>
+                            <div class="risk-card risk-medium">
+                                <div class="risk-title">High Priority</div>
+                                <div class="risk-score">12</div>
+                                <div class="risk-desc">FCMS, ALE, BP, BLZE</div>
+                            </div>
+                            <div class="risk-card risk-low">
+                                <div class="risk-title">Standard</div>
+                                <div class="risk-score">12</div>
+                                <div class="risk-desc">Support & Analytics</div>
+                            </div>
+                        </div>
+                        <p style="margin-top: 16px; color: var(--text-secondary);" id="current-state-summary">
+                            <strong>Key Finding:</strong> Banking applications handling dispute processing, fraud detection, 
+                            and customer authentication are deployed in a flat network architecture with minimal isolation.
+                        </p>
+                    </div>
+
+                    <div class="card">
+                        <div class="section-header">
+                            <span class="section-icon">🚨</span>
+                            <h2 class="section-title">Security Risks</h2>
+                        </div>
+                        <div id="security-risks" style="display: grid; gap: 12px;">
+                            <div class="action-item" style="border-left-color: #ef4444;">
+                                <div class="action-title">Lateral Movement Risk</div>
+                                <div class="action-desc">Compromise of one application could lead to full network access across all banking systems</div>
+                            </div>
+                            <div class="action-item" style="border-left-color: #f59e0b;">
+                                <div class="action-title">Compliance Violations</div>
+                                <div class="action-desc">Current architecture may not meet PCI DSS, SOX, and banking regulatory requirements</div>
+                            </div>
+                            <div class="action-item" style="border-left-color: #ef4444;">
+                                <div class="action-title">Data Exfiltration</div>
+                                <div class="action-desc">Fraud detection and customer data systems lack proper data flow controls</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card full-width-section">
+                    <div class="section-header">
+                        <span class="section-icon">🏗️</span>
+                        <h2 class="section-title">Recommended Architecture</h2>
+                    </div>
+                    <div class="architecture-diagram">
+                        <div class="arch-title">Zero Trust Banking Network Architecture</div>
+                        <div class="arch-layers">
+                            <div class="arch-layer">
+                                <div class="layer-name">🌐 External Zone (DMZ)</div>
+                                <div class="layer-tech">Customer portals, public APIs - AWS ALB, CloudFront</div>
+                            </div>
+                            <div class="arch-layer">
+                                <div class="layer-name">🔒 Critical Banking Zone</div>
+                                <div class="layer-tech">ACDA, FAPI, BCA - Private subnets, Security Groups</div>
+                            </div>
+                            <div class="arch-layer">
+                                <div class="layer-name">💳 Payment Processing Zone</div>
+                                <div class="layer-tech">Card disputes, fraud detection - Isolated VPC</div>
+                            </div>
+                            <div class="arch-layer">
+                                <div class="layer-name">📊 Analytics & Reporting Zone</div>
+                                <div class="layer-tech">Business intelligence, dashboards - Restricted access</div>
+                            </div>
+                            <div class="arch-layer">
+                                <div class="layer-name">🗄️ Data Zone</div>
+                                <div class="layer-tech">Databases, data lakes - Encrypted, access-controlled</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Segmentation Tab -->
+            <div id="segmentation-tab" class="tab-content">
+                <div class="section-header">
+                    <span class="section-icon">🏗️</span>
+                    <h2 class="section-title">Network Segmentation Strategy</h2>
+                </div>
+
+                <div class="card">
+                    <h3 class="panel-title">🎯 Segmentation Zones</h3>
+                    <div class="segmentation-matrix" id="segmentation-zones">
+                        <div class="zone-card critical">
+                            <div class="zone-title">Critical Banking</div>
+                            <div class="zone-apps">8</div>
+                            <div class="zone-desc">Authentication, fraud, disputes</div>
+                        </div>
+                        <div class="zone-card high">
+                            <div class="zone-title">Customer Services</div>
+                            <div class="zone-apps">7</div>
+                            <div class="zone-desc">CRM, advisory, support</div>
+                        </div>
+                        <div class="zone-card medium">
+                            <div class="zone-title">Operations</div>
+                            <div class="zone-apps">9</div>
+                            <div class="zone-desc">Internal tools, reporting</div>
+                        </div>
+                        <div class="zone-card low">
+                            <div class="zone-title">Analytics</div>
+                            <div class="zone-apps">8</div>
+                            <div class="zone-desc">BI, data processing</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analysis-grid">
+                    <div class="card">
+                        <h3 class="panel-title">🔥 Critical Banking Zone</h3>
+                        <div id="critical-zone-apps" style="display: grid; gap: 8px; margin-bottom: 16px;">
+                            <div class="app-item critical">
+                                <span>ACDA - ATM Disputes</span>
+                                <span class="criticality">Critical</span>
+                            </div>
+                            <div class="app-item critical">
+                                <span>FAPI - Fraud API</span>
+                                <span class="criticality">Critical</span>
+                            </div>
+                            <div class="app-item critical">
+                                <span>BCA - Branch Auth</span>
+                                <span class="criticality">Critical</span>
+                            </div>
+                            <div class="app-item critical">
+                                <span>KYCP - Know Your Customer</span>
+                                <span class="criticality">Critical</span>
+                            </div>
+                        </div>
+                        <p style="color: var(--text-secondary); font-size: 14px;">
+                            <strong>Requirements:</strong> Isolated VPC, dedicated subnets, WAF, DDoS protection, 
+                            encrypted inter-service communication, audit logging, MFA-gated access.
+                        </p>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="panel-title">💼 Implementation Strategy</h3>
+                        <div class="implementation-strategies">
+                            <div class="action-item" style="margin-bottom: 12px;">
+                                <div class="action-title">AWS VPC Architecture</div>
+                                <div class="action-desc">Deploy separate VPCs per zone with Transit Gateway for controlled routing</div>
+                            </div>
+                            <div class="action-item" style="margin-bottom: 12px;">
+                                <div class="action-title">Security Groups & NACLs</div>
+                                <div class="action-desc">Implement least privilege access with application-specific rules</div>
+                            </div>
+                            <div class="action-item" style="margin-bottom: 12px;">
+                                <div class="action-title">Service Mesh</div>
+                                <div class="action-desc">Deploy Istio/AWS App Mesh for microsegmentation and mTLS</div>
+                            </div>
+                            <div class="action-item">
+                                <div class="action-title">Network Monitoring</div>
+                                <div class="action-desc">VPC Flow Logs, GuardDuty, and SIEM integration for threat detection</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card full-width-section">
+                    <h3 class="panel-title">🔗 Inter-Zone Communication Rules</h3>
+                    <div id="inter-zone-rules" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-top: 16px;">
+                        <div class="action-item" style="border-left-color: #ef4444;">
+                            <div class="action-title">Critical ↔ Customer Services</div>
+                            <div class="action-desc">HTTPS only, API Gateway with OAuth 2.0, rate limiting, request/response logging</div>
+                        </div>
+                        <div class="action-item" style="border-left-color: #f59e0b;">
+                            <div class="action-title">Critical ↔ Operations</div>
+                            <div class="action-desc">Read-only dashboard access via dedicated service accounts, no direct DB access</div>
+                        </div>
+                        <div class="action-item" style="border-left-color: #10b981;">
+                            <div class="action-title">Operations ↔ Analytics</div>
+                            <div class="action-desc">Scheduled ETL processes, anonymized data feeds, no real-time access</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Roadmap Tab -->
+            <div id="roadmap-tab" class="tab-content">
+                <div class="section-header">
+                    <span class="section-icon">🗺️</span>
+                    <h2 class="section-title">Zero Trust Implementation Roadmap</h2>
+                </div>
+
+                <div class="roadmap-timeline">
+                    <div class="timeline-line"></div>
+                    <div id="roadmap-phases">
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                <div class="phase-title">
+                                    Phase 1: Foundation
+                                    <span class="phase-duration">0-3 months</span>
+                                </div>
+                                <div class="phase-description">
+                                    Establish basic network segmentation and security controls for critical banking applications.
+                                </div>
+                                <div class="phase-actions">
+                                    <div class="action-item">
+                                        <div class="action-title">Network Assessment</div>
+                                        <div class="action-desc">Complete inventory and dependency mapping of all 32 applications</div>
+                                    </div>
+                                    <div class="action-item">
+                                        <div class="action-title">Critical Zone Isolation</div>
+                                        <div class="action-desc">Deploy separate VPC for ACDA, FAPI, BCA, KYCP applications</div>
+                                    </div>
+                                    <div class="action-item">
+                                        <div class="action-title">Identity Infrastructure</div>
+                                        <div class="action-desc">Implement centralized identity provider with MFA requirements</div>
+                                    </div>
+                                    <div class="action-item">
+                                        <div class="action-title">Security Monitoring</div>
+                                        <div class="action-desc">Deploy SIEM, enable VPC Flow Logs, configure GuardDuty</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                <div class="phase-title">
+                                    Phase 2: Microsegmentation
+                                    <span class="phase-duration">3-6 months</span>
+                                </div>
+                                <div class="phase-description">
+                                    Implement application-level microsegmentation and zero trust network access controls.
+                                </div>
+                                <div class="phase-actions">
+                                    <div class="action-item">
+                                        <div class="action-title">Service Mesh Deployment</div>
+                                        <div class="action-desc">Roll out Istio service mesh for mTLS and traffic policies</div>
+                                    </div>
+                                    <div class="action-item">
+                                        <div class="action-title">API Gateway Implementation</div>
+                                        <div class="action-desc">Centralize API management with authentication and rate limiting</div>
+                                    </div>
+                                    <div class="action-item">
+                                        <div class="action-title">Database Segmentation</div>
+                                        <div class="action-desc">Isolate databases with encryption and access controls</div>
+                                    </div>
+                                    <div class="action-item">
+                                        <div class="action-title">Workload Identity</div>
+                                        <div class="action-desc">Implement service-to-service authentication certificates</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                <div class="phase-title">
+                                    Phase 3: Zero Trust Enforcement
+                                    <span class="phase-duration">6-12 months</span>
+                                </div>
+                                <div class="phase-description">
+                                    Complete zero trust architecture with continuous verification and adaptive access controls.
+                                </div>
+                                <div class="phase-actions">
+                                    <div class="action-item">
+                                        <div class="action-title">Policy Engine</div>
+                                        <div class="action-desc">Deploy attribute-based access control (ABAC) policies</div>
+                                    </div>
+                                    <div class="action-item">
+                                        <div class="action-title">Continuous Authentication</div>
+                                        <div class="action-desc">Risk-based adaptive authentication for all access</div>
+                                    </div>
+                                    <div class="action-item">
+                                        <div class="action-title">Data Classification</div>
+                                        <div class="action-desc">Implement data loss prevention and classification systems</div>
+                                    </div>
+                                    <div class="action-item">
+                                        <div class="action-title">Behavioral Analytics</div>
+                                        <div class="action-desc">Deploy UEBA for anomaly detection and threat hunting</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                <div class="phase-title">
+                                    Phase 4: Optimization & Automation
+                                    <span class="phase-duration">12-18 months</span>
+                                </div>
+                                <div class="phase-description">
+                                    Optimize performance, automate security operations, and achieve compliance certification.
+                                </div>
+                                <div class="phase-actions">
+                                    <div class="action-item">
+                                        <div class="action-title">Security Automation</div>
+                                        <div class="action-desc">Implement SOAR for incident response automation</div>
+                                    </div>
+                                    <div class="action-item">
+                                        <div class="action-title">Compliance Validation</div>
+                                        <div class="action-desc">Complete SOC 2, PCI DSS, and regulatory assessments</div>
+                                    </div>
+                                    <div class="action-item">
+                                        <div class="action-title">Performance Optimization</div>
+                                        <div class="action-desc">Tune network policies and eliminate performance bottlenecks</div>
+                                    </div>
+                                    <div class="action-item">
+                                        <div class="action-title">Disaster Recovery</div>
+                                        <div class="action-desc">Test and validate segmented network disaster recovery procedures</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Compliance Tab -->
+            <div id="compliance-tab" class="tab-content">
+                <div class="section-header">
+                    <span class="section-icon">✅</span>
+                    <h2 class="section-title">Compliance & Regulatory Alignment</h2>
+                </div>
+
+                <div class="compliance-grid" id="compliance-scores">
+                    <div class="compliance-card">
+                        <div class="compliance-score compliance-poor">25%</div>
+                        <div class="metric-label">PCI DSS Compliance</div>
+                        <div style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">
+                            Card data processing lacks proper segmentation
+                        </div>
+                    </div>
+                    <div class="compliance-card">
+                        <div class="compliance-score compliance-needs-work">40%</div>
+                        <div class="metric-label">SOX Controls</div>
+                        <div style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">
+                            Financial reporting systems need isolation
+                        </div>
+                    </div>
+                    <div class="compliance-card">
+                        <div class="compliance-score compliance-needs-work">35%</div>
+                        <div class="metric-label">FFIEC Guidelines</div>
+                        <div style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">
+                            Banking security architecture gaps
+                        </div>
+                    </div>
+                    <div class="compliance-card">
+                        <div class="compliance-score compliance-good">65%</div>
+                        <div class="metric-label">NIST Framework</div>
+                        <div style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">
+                            Basic security controls in place
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analysis-grid">
+                    <div class="card">
+                        <h3 class="panel-title">🏛️ Regulatory Requirements</h3>
+                        <div id="regulatory-requirements">
+                            <div class="action-item" style="border-left-color: #ef4444; margin-bottom: 12px;">
+                                <div class="action-title">PCI DSS Requirement 1.3</div>
+                                <div class="action-desc">Card data must be isolated from other networks with proper firewall configurations</div>
+                            </div>
+                            <div class="action-item" style="border-left-color: #f59e0b; margin-bottom: 12px;">
+                                <div class="action-title">SOX Section 404</div>
+                                <div class="action-desc">Financial reporting systems require segregated controls and access logging</div>
+                            </div>
+                            <div class="action-item" style="border-left-color: #ef4444; margin-bottom: 12px;">
+                                <div class="action-title">FFIEC Cybersecurity</div>
+                                <div class="action-desc">Multi-layered security architecture with network segmentation mandatory</div>
+                            </div>
+                            <div class="action-item" style="border-left-color: #f59e0b;">
+                                <div class="action-title">GLBA Safeguards Rule</div>
+                                <div class="action-desc">Customer financial information must be protected with access controls</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="panel-title">📋 Compliance Gaps</h3>
+                        <div id="compliance-gaps" style="display: grid; gap: 12px;">
+                            <div class="gap-item high-risk">
+                                <strong>High Risk:</strong> ACDA and FAPI systems handling card disputes lack PCI DSS network isolation
+                            </div>
+                            <div class="gap-item medium-risk">
+                                <strong>Medium Risk:</strong> Financial reporting applications need SOX-compliant access controls
+                            </div>
+                            <div class="gap-item medium-risk">
+                                <strong>Medium Risk:</strong> Customer authentication systems require FFIEC-compliant logging
+                            </div>
+                            <div class="gap-item remediation">
+                                <strong>Remediation:</strong> Implement zone-based architecture to address all compliance gaps
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card full-width-section">
+                    <h3 class="panel-title">📊 Compliance Roadmap Impact</h3>
+                    <div id="compliance-roadmap" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 16px;">
+                        <div class="phase-impact phase-1">
+                            <div class="phase-number">Phase 1</div>
+                            <div class="compliance-improvement">PCI DSS: 60%</div>
+                            <div class="phase-focus">Critical zone isolation</div>
+                        </div>
+                        <div class="phase-impact phase-2">
+                            <div class="phase-number">Phase 2</div>
+                            <div class="compliance-improvement">SOX: 75%</div>
+                            <div class="phase-focus">Access controls</div>
+                        </div>
+                        <div class="phase-impact phase-3">
+                            <div class="phase-number">Phase 3</div>
+                            <div class="compliance-improvement">FFIEC: 85%</div>
+                            <div class="phase-focus">Zero trust enforcement</div>
+                        </div>
+                        <div class="phase-impact phase-4">
+                            <div class="phase-number">Phase 4</div>
+                            <div class="compliance-improvement">Full: 95%</div>
+                            <div class="phase-focus">Audit ready</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Implementation Tab -->
+            <div id="implementation-tab" class="tab-content">
+                <div class="section-header">
+                    <span class="section-icon">⚙️</span>
+                    <h2 class="section-title">Implementation Guidelines</h2>
+                </div>
+
+                <div class="progress-section">
+                    <div class="progress-header">
+                        <h3 class="panel-title">📊 Implementation Progress</h3>
+                        <div class="progress-percentage" id="implementation-progress">12%</div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill" style="width: 12%;"></div>
+                    </div>
+                    <p style="color: var(--text-muted); margin-top: 8px;" id="progress-description">
+                        Basic monitoring and identity infrastructure in place
+                    </p>
+                </div>
+
+                <div class="implementation-checklist" id="implementation-checklist">
+                    <div class="checklist-section">
+                        <div class="checklist-title">
+                            <span>🔐</span>
+                            Critical Banking Zone
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                            <span>Deploy isolated VPC for ACDA, FAPI, BCA, KYCP</span>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                            <span>Configure security groups with least privilege</span>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checkbox checked" onclick="toggleCheckbox(this)"></div>
+                            <span>Enable VPC Flow Logs and GuardDuty</span>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                            <span>Implement WAF for web applications</span>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                            <span>Set up encrypted database connections</span>
+                        </div>
+                    </div>
+
+                    <div class="checklist-section">
+                        <div class="checklist-title">
+                            <span>🌐</span>
+                            Network Controls
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                            <span>Deploy AWS Transit Gateway</span>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                            <span>Configure Network ACLs</span>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                            <span>Implement service mesh (Istio)</span>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checkbox checked" onclick="toggleCheckbox(this)"></div>
+                            <span>Set up centralized DNS</span>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                            <span>Deploy network load balancers</span>
+                        </div>
+                    </div>
+
+                    <div class="checklist-section">
+                        <div class="checklist-title">
+                            <span>👤</span>
+                            Identity & Access
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checkbox checked" onclick="toggleCheckbox(this)"></div>
+                            <span>Deploy centralized identity provider</span>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checkbox checked" onclick="toggleCheckbox(this)"></div>
+                            <span>Enable multi-factor authentication</span>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                            <span>Implement service-to-service auth</span>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                            <span>Configure RBAC policies</span>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                            <span>Set up privileged access management</span>
+                        </div>
+                    </div>
+
+                    <div class="checklist-section">
+                        <div class="checklist-title">
+                            <span>📊</span>
+                            Monitoring & Analytics
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checkbox checked" onclick="toggleCheckbox(this)"></div>
+                            <span>Deploy SIEM solution</span>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                            <span>Configure security dashboards</span>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                            <span>Set up behavioral analytics</span>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                            <span>Implement threat hunting tools</span>
+                        </div>
+                        <div class="checklist-item">
+                            <div class="checkbox" onclick="toggleCheckbox(this)"></div>
+                            <span>Configure automated alerting</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card full-width-section">
+                    <h3 class="panel-title">🚀 Quick Start Guide</h3>
+                    <div id="quick-start-guide" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px;">
+                        <div class="quick-start-phase">
+                            <h4 class="phase-header">Week 1-2: Assessment</h4>
+                            <ul class="phase-checklist">
+                                <li class="phase-item">
+                                    <span>📋</span>
+                                    <span>Complete application inventory and dependency mapping</span>
+                                </li>
+                                <li class="phase-item">
+                                    <span>🔍</span>
+                                    <span>Analyze current network traffic patterns</span>
+                                </li>
+                                <li class="phase-item">
+                                    <span>⚠️</span>
+                                    <span>Identify high-risk communication paths</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="quick-start-phase">
+                            <h4 class="phase-header">Week 3-4: Critical Zone</h4>
+                            <ul class="phase-checklist">
+                                <li class="phase-item">
+                                    <span>🏗️</span>
+                                    <span>Deploy isolated VPC for critical applications</span>
+                                </li>
+                                <li class="phase-item">
+                                    <span>🔒</span>
+                                    <span>Configure security groups and NACLs</span>
+                                </li>
+                                <li class="phase-item">
+                                    <span>📊</span>
+                                    <span>Enable comprehensive logging and monitoring</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="quick-start-phase">
+                            <h4 class="phase-header">Month 2: Microsegmentation</h4>
+                            <ul class="phase-checklist">
+                                <li class="phase-item">
+                                    <span>🕸️</span>
+                                    <span>Deploy service mesh for mTLS encryption</span>
+                                </li>
+                                <li class="phase-item">
+                                    <span>🚪</span>
+                                    <span>Implement API gateway with authentication</span>
+                                </li>
+                                <li class="phase-item">
+                                    <span>🔑</span>
+                                    <span>Roll out workload identity certificates</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Include JavaScript -->
+    <script src="../js/app-data.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/recommendations.js"></script>
+</body>
+</html>

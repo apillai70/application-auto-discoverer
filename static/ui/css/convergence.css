@@ -1,0 +1,446 @@
+/* Convergence-specific styles */
+
+.main-grid {
+    display: grid;
+    grid-template-columns: 280px 1fr 280px;
+    gap: 20px;
+    height: calc(100vh - 180px);
+}
+
+.panel {
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid #334155;
+    overflow-y: auto;
+}
+
+.convergence-container {
+    background: #1e293b;
+    border-radius: 12px;
+    border: 1px solid #334155;
+    position: relative;
+    overflow: hidden;
+}
+
+.convergence-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #334155;
+}
+
+.view-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.view-controls .btn {
+    font-size: 12px;
+    padding: 6px 12px;
+}
+
+.metric-section, .status-section {
+    margin-bottom: 24px;
+}
+
+.filter-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #cbd5e1;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #334155;
+}
+
+/* Target Progress */
+.progress-items {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.progress-item {
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.progress-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: #e2e8f0;
+}
+
+.progress-percentage {
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 6px;
+    background: #374151;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6, #10b981);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+/* Timeline Tracking */
+.timeline-items {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.timeline-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    font-size: 11px;
+}
+
+.timeline-phase {
+    color: #e2e8f0;
+    font-weight: 600;
+}
+
+.timeline-date {
+    color: #94a3b8;
+}
+
+.timeline-item.active {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.1);
+}
+
+.timeline-item.completed {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.1);
+}
+
+/* Cost Breakdown */
+.cost-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.cost-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    font-size: 11px;
+}
+
+.cost-category {
+    color: #e2e8f0;
+}
+
+.cost-amount {
+    color: #10b981;
+    font-weight: 600;
+}
+
+/* Canvas */
+#convergenceCanvas {
+    width: 100%;
+    height: calc(100% - 80px);
+    display: block;
+}
+
+/* Convergence Details */
+.convergence-details {
+    position: absolute;
+    top: 80px;
+    right: 20px;
+    width: 300px;
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 16px;
+    backdrop-filter: blur(8px);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s;
+    z-index: 100;
+}
+
+.convergence-details.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.detail-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #334155;
+}
+
+.detail-info {
+    margin-bottom: 8px;
+    font-size: 12px;
+    color: #cbd5e1;
+}
+
+.detail-info strong {
+    color: #e2e8f0;
+}
+
+.milestones-list, .dependencies-list {
+    margin-top: 12px;
+    padding-top: 8px;
+    border-top: 1px solid #334155;
+}
+
+.milestone-tag, .dependency-tag {
+    display: inline-block;
+    background: #374151;
+    color: #d1d5db;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    margin: 2px 4px 2px 0;
+}
+
+/* Status Panel */
+.status-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Migration Stages */
+#migrationStages {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.stage-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    font-size: 11px;
+}
+
+.stage-name {
+    color: #e2e8f0;
+}
+
+.stage-count {
+    background: #374151;
+    color: #9ca3af;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 9px;
+    font-weight: 600;
+}
+
+.stage-item.current {
+    border-color: #f59e0b;
+    background: rgba(245, 158, 11, 0.1);
+}
+
+.stage-item.completed {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.1);
+}
+
+/* Risk Assessment */
+.risk-items {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.risk-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+}
+
+.risk-item.high {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid #ef4444;
+}
+
+.risk-item.medium {
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid #f59e0b;
+}
+
+.risk-item.low {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid #10b981;
+}
+
+.risk-label {
+    color: #e2e8f0;
+}
+
+.risk-level {
+    font-weight: 600;
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+.risk-item.high .risk-level {
+    background: #ef4444;
+    color: #ffffff;
+}
+
+.risk-item.medium .risk-level {
+    background: #f59e0b;
+    color: #ffffff;
+}
+
+.risk-item.low .risk-level {
+    background: #10b981;
+    color: #ffffff;
+}
+
+/* Milestones */
+.milestone-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    font-size: 11px;
+    margin-bottom: 6px;
+}
+
+.milestone-name {
+    color: #e2e8f0;
+}
+
+.milestone-date {
+    color: #94a3b8;
+    font-size: 10px;
+}
+
+/* KPI Tracking */
+.kpi-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.kpi-item {
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    padding: 10px;
+}
+
+.kpi-name {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: #e2e8f0;
+    margin-bottom: 6px;
+}
+
+.kpi-progress {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.kpi-progress .progress-bar {
+    flex: 1;
+    height: 4px;
+}
+
+.kpi-value {
+    font-size: 10px;
+    color: #94a3b8;
+    font-weight: 600;
+    min-width: 30px;
+    text-align: right;
+}
+
+/* Responsive design */
+@media (max-width: 1400px) {
+    .main-grid {
+        grid-template-columns: 260px 1fr 260px;
+    }
+    
+    .convergence-details {
+        width: 280px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .main-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto 1fr;
+        height: auto;
+        min-height: calc(100vh - 180px);
+    }
+    
+    .panel, .convergence-container {
+        height: auto;
+        min-height: 300px;
+    }
+    
+    .convergence-details {
+        position: relative;
+        top: auto;
+        right: auto;
+        width: 100%;
+        margin-top: 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .convergence-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+    }
+    
+    .view-controls {
+        justify-content: center;
+    }
+}

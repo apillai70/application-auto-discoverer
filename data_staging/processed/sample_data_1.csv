@@ -1,0 +1,2 @@
+src,dst,port,protocol,application,service_definition,bytes_in,bytes_out
+10.0.1.100,10.0.1.200,80,HTTP,SAMPLE_WEB_APP,Web Service,1024,2048

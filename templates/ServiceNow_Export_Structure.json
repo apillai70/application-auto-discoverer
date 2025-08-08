@@ -1,0 +1,1043 @@
+{
+  "export_metadata": {
+    "export_timestamp": "2025-07-11T09:39:13.377961",
+    "format_version": "1.0",
+    "source_system": "ServiceNow CMDB",
+    "total_tables": 15,
+    "data_classification": "Internal",
+    "export_type": "Full",
+    "compliance_notes": "Ensure PII masking applied"
+  },
+  "applications": [
+    {
+      "sys_id": "abc123def456ghi789",
+      "name": "Customer Portal",
+      "short_description": "External customer portal application",
+      "description": "Web-based portal for customer self-service",
+      "version": "2.1.0",
+      "vendor": "Internal Development",
+      "category": "Web Application",
+      "subcategory": "Customer Facing",
+      "business_criticality": "High",
+      "operational_status": "Operational",
+      "install_status": "Installed",
+      "lifecycle_stage": "Production",
+      "environment": "Production",
+      "ownership": {
+        "owner": "john.doe@company.com",
+        "owned_by": "John Doe",
+        "managed_by": "IT Operations",
+        "supported_by": "Application Support Team",
+        "technical_owner": "bob.jones@company.com"
+      },
+      "business_context": {
+        "business_service": "Customer Services",
+        "cost_center": "CC001",
+        "business_unit": "Sales",
+        "service_owner": "jane.smith@company.com",
+        "business_owner": "Jane Smith"
+      },
+      "technical_configuration": {
+        "tcp_port": [
+          "443",
+          "8080"
+        ],
+        "udp_port": [],
+        "version_number": "2.1.0",
+        "attributes": [
+          "Load Balanced",
+          "SSL Enabled"
+        ],
+        "monitoring_tool": "Nagios",
+        "used_for": "Customer Self-Service"
+      },
+      "compliance": {
+        "data_classification": "Confidential",
+        "sarbanes_oxley": true,
+        "pci": true,
+        "sox": true,
+        "hipaa": false,
+        "gdpr": true,
+        "security_domain": "DMZ",
+        "encryption_method": "TLS 1.2"
+      },
+      "operations": {
+        "disaster_recovery_tier": "Tier 1",
+        "backup_type": "Full Daily",
+        "backup_frequency": "Daily",
+        "availability_requirement": "99.9%",
+        "service_level_requirement": "Gold",
+        "maintenance_schedule": "Sunday 2-4 AM",
+        "patching_group": "Group A"
+      },
+      "discovery": {
+        "discovery_source": "Manual",
+        "first_discovered": "2023-01-15T09:30:00",
+        "last_discovered": "2024-01-15T09:30:00"
+      },
+      "audit": {
+        "sys_created_on": "2023-01-15T09:30:00",
+        "sys_updated_on": "2024-01-15T09:30:00",
+        "sys_created_by": "admin",
+        "sys_updated_by": "admin"
+      },
+      "additional_info": {
+        "comments": "Critical customer-facing application",
+        "location": "Data Center 1"
+      }
+    }
+  ],
+  "servers": [
+    {
+      "sys_id": "server123abc456def789",
+      "identity": {
+        "name": "web-server-01",
+        "fqdn": "web-server-01.company.com",
+        "host_name": "web-server-01",
+        "dns_domain": "company.com",
+        "asset_tag": "ASSET001",
+        "serial_number": "SN123456789",
+        "service_tag": "ST123456"
+      },
+      "hardware": {
+        "manufacturer": "Dell",
+        "model_number": "PowerEdge R740",
+        "cpu_count": 2,
+        "cpu_core_count": 16,
+        "cpu_core_thread": 32,
+        "cpu_speed": "2.4 GHz",
+        "cpu_type": "Intel Xeon",
+        "memory": "64 GB",
+        "ram": "64 GB",
+        "disk_space": "1000 GB",
+        "disk_space_used": "400 GB",
+        "storage_type": "SSD",
+        "power_consumption": "500W"
+      },
+      "network": {
+        "ip_address": "10.1.1.100",
+        "mac_address": "00:11:22:33:44:55",
+        "network_adapter": "Intel Ethernet",
+        "default_gateway": "10.1.1.1",
+        "dns_server": "10.1.1.10",
+        "domain": "company.com"
+      },
+      "operating_system": {
+        "os": "Red Hat Enterprise Linux",
+        "os_version": "8.5",
+        "os_service_pack": "",
+        "os_address_width": "64-bit",
+        "kernel_release": "4.18.0",
+        "os_domain": "company.com"
+      },
+      "infrastructure": {
+        "classification": "Production",
+        "category": "Hardware",
+        "subcategory": "Computer",
+        "virtual": false,
+        "vm_inst_id": "",
+        "hypervisor": "",
+        "cluster": "",
+        "data_center": "DC1",
+        "location": "Data Center 1",
+        "rack": "R001",
+        "rack_units": "2U"
+      },
+      "management": {
+        "operational_status": "Operational",
+        "install_status": "Installed",
+        "environment": "Production",
+        "owned_by": "IT Infrastructure",
+        "managed_by": "Server Team",
+        "supported_by": "Infrastructure Support",
+        "cost_center": "CC002"
+      },
+      "lifecycle": {
+        "warranty_expiration": "2026-12-31",
+        "purchase_date": "2023-01-01",
+        "lease_id": ""
+      },
+      "operations": {
+        "monitoring": "Enabled",
+        "backup_method": "Veeam",
+        "dr_tier": "Tier 1",
+        "security_domain": "Internal",
+        "network_domain": "Production",
+        "patch_group": "Group B"
+      },
+      "discovery": {
+        "discovery_source": "Discovery Tool",
+        "first_discovered": "2023-01-15T10:00:00",
+        "last_discovered": "2024-01-15T10:00:00"
+      },
+      "cloud_attributes": {
+        "instance_id": "",
+        "instance_type": "",
+        "availability_zone": "",
+        "subnet_id": "",
+        "vpc_id": "",
+        "security_groups": [],
+        "region": "",
+        "account_id": "",
+        "instance_state": "",
+        "key_name": "",
+        "image_id": "",
+        "launch_time": ""
+      },
+      "audit": {
+        "sys_created_on": "2023-01-15T10:00:00",
+        "sys_updated_on": "2024-01-15T10:00:00"
+      }
+    }
+  ],
+  "databases": [
+    {
+      "sys_id": "db123abc456def789ghi",
+      "identity": {
+        "name": "CustomerDB",
+        "database_name": "customer_portal_db",
+        "instance_name": "CUSTPROD01"
+      },
+      "database_info": {
+        "version": "13.7",
+        "edition": "Enterprise",
+        "vendor": "PostgreSQL",
+        "category": "Database",
+        "database_type": "OLTP",
+        "character_set": "UTF8",
+        "collation": "en_US.UTF-8"
+      },
+      "connectivity": {
+        "tcp_port": 5432,
+        "udp_port": null,
+        "connection_string": "postgresql://custprod01:5432/customer_portal_db",
+        "ssl_enabled": true
+      },
+      "schema_info": {
+        "schema": [
+          "public",
+          "customer",
+          "audit"
+        ],
+        "tablespace": "pg_default"
+      },
+      "configuration": {
+        "max_connections": 200,
+        "buffer_pool_size": "2GB",
+        "log_file_size": "1GB"
+      },
+      "infrastructure": {
+        "installed_on": "db-server-01",
+        "runs_on": "db-server-01.company.com",
+        "cluster": "DB-Cluster-01",
+        "cluster_type": "Master-Slave",
+        "replication_type": "Streaming"
+      },
+      "backup_recovery": {
+        "backup_method": "pg_dump",
+        "backup_frequency": "Daily",
+        "backup_location": "/backup/postgresql",
+        "point_in_time_recovery": true,
+        "archiving_method": "WAL-E"
+      },
+      "security": {
+        "data_classification": "Confidential",
+        "encryption_method": "TDE",
+        "encrypted": true,
+        "audit_log_enabled": true,
+        "authentication_method": "MD5"
+      },
+      "compliance": {
+        "compliance_requirements": [
+          "PCI DSS",
+          "SOX"
+        ]
+      },
+      "operations": {
+        "operational_status": "Operational",
+        "environment": "Production",
+        "dba": "db.admin@company.com",
+        "database_administrator": "Database Admin Team",
+        "maintenance_window": "Sunday 1-3 AM",
+        "performance_monitoring": true,
+        "monitoring_tool": "pgAdmin",
+        "disaster_recovery_tier": "Tier 1"
+      },
+      "discovery": {
+        "discovery_source": "Database Discovery",
+        "first_discovered": "2023-01-20T11:00:00",
+        "last_discovered": "2024-01-20T11:00:00"
+      },
+      "audit": {
+        "sys_created_on": "2023-01-20T11:00:00",
+        "sys_updated_on": "2024-01-20T11:00:00"
+      }
+    }
+  ],
+  "load_balancers": [
+    {
+      "sys_id": "lb123abc456def789ghi",
+      "identity": {
+        "name": "Customer-Portal-LB",
+        "dns_name": "portal-lb.company.com",
+        "ip_address": "10.1.1.50"
+      },
+      "hardware_info": {
+        "vendor": "F5",
+        "model_number": "BIG-IP i4800",
+        "version": "16.1.0"
+      },
+      "load_balancing": {
+        "load_balancing_method": "Round Robin",
+        "ssl_offloading": true,
+        "virtual_servers": [
+          "portal-vs-443",
+          "portal-vs-80"
+        ],
+        "pools": [
+          "portal-pool-web"
+        ],
+        "monitors": [
+          "http-monitor",
+          "https-monitor"
+        ]
+      },
+      "f5_specific": {
+        "modules_licensed": [
+          "LTM",
+          "ASM",
+          "APM"
+        ],
+        "irules": [
+          "redirect-to-https"
+        ],
+        "ssl_profiles": [
+          "clientssl",
+          "serverssl"
+        ],
+        "persistence_profiles": [
+          "cookie-persistence"
+        ],
+        "health_monitors": [
+          "http",
+          "https",
+          "tcp"
+        ],
+        "ssl_offload": true,
+        "compression": true,
+        "management_ip": "10.1.1.51",
+        "cluster_member": true,
+        "failover_state": "Active",
+        "license_status": "Valid"
+      },
+      "aws_specific": {
+        "scheme": "internet-facing",
+        "type": "Application",
+        "availability_zones": [
+          "us-east-1a",
+          "us-east-1b"
+        ],
+        "vpc_id": "vpc-12345678",
+        "security_groups": [
+          "sg-lb-web"
+        ],
+        "listeners": [
+          "80:HTTP",
+          "443:HTTPS"
+        ],
+        "target_groups": [
+          "tg-web-servers"
+        ],
+        "health_check": "/health",
+        "access_logs_enabled": true,
+        "cross_zone_load_balancing": true,
+        "idle_timeout": 60,
+        "account": "AWS-PROD-001",
+        "region": "us-east-1",
+        "tags": "Environment=Prod,Application=Portal"
+      },
+      "management": {
+        "operational_status": "Operational",
+        "environment": "Production",
+        "owned_by": "Network Team",
+        "managed_by": "F5 Administrators",
+        "location": "Data Center 1",
+        "configuration": "HA Pair"
+      },
+      "discovery": {
+        "discovery_source": "F5 Discovery"
+      },
+      "audit": {
+        "sys_created_on": "2023-01-25T12:00:00",
+        "sys_updated_on": "2024-01-25T12:00:00"
+      }
+    }
+  ],
+  "firewalls": [
+    {
+      "sys_id": "fw123abc456def789ghi",
+      "identity": {
+        "name": "FW-DMZ-01",
+        "ip_address": "10.1.1.1",
+        "management_interface": "10.1.1.2"
+      },
+      "hardware_info": {
+        "vendor": "Palo Alto",
+        "model_number": "PA-3220",
+        "version": "10.1.0",
+        "firewall_type": "Next Generation"
+      },
+      "configuration": {
+        "rules_count": 150,
+        "policy_name": "DMZ-Security-Policy",
+        "zones": [
+          "Trust",
+          "Untrust",
+          "DMZ"
+        ],
+        "interfaces": [
+          "ethernet1/1",
+          "ethernet1/2",
+          "ethernet1/3"
+        ],
+        "configuration": "HA Active-Passive"
+      },
+      "capabilities": {
+        "logging_enabled": true,
+        "intrusion_detection": true,
+        "high_availability": true,
+        "cluster_member": "Primary",
+        "throughput_capacity": "2 Gbps",
+        "concurrent_sessions": 64000
+      },
+      "management": {
+        "operational_status": "Operational",
+        "managed_by": "Security Team",
+        "location": "Data Center 1",
+        "environment": "Production"
+      },
+      "discovery": {
+        "discovery_source": "SNMP Discovery"
+      },
+      "audit": {
+        "sys_created_on": "2023-01-30T13:00:00",
+        "sys_updated_on": "2024-01-30T13:00:00"
+      }
+    }
+  ],
+  "network_equipment": [
+    {
+      "sys_id": "net123abc456def789ghi",
+      "identity": {
+        "name": "SW-Core-01",
+        "ip_address": "10.1.1.10",
+        "mac_address": "00:22:33:44:55:66",
+        "management_ip": "10.1.1.11"
+      },
+      "hardware_info": {
+        "vendor": "Cisco",
+        "model_number": "Catalyst 9300",
+        "serial_number": "FCW2140L0AK",
+        "version": "16.12.04",
+        "firmware_version": "16.12.04",
+        "device_type": "Switch"
+      },
+      "network_capabilities": {
+        "ports": 48,
+        "interfaces": [
+          "GigabitEthernet1/0/1-48"
+        ],
+        "protocols_supported": [
+          "STP",
+          "VLAN",
+          "LACP"
+        ],
+        "vlan_support": true
+      },
+      "physical_location": {
+        "location": "Data Center 1",
+        "rack": "R002",
+        "rack_units": "1U",
+        "power_consumption": "195W"
+      },
+      "management": {
+        "operational_status": "Operational",
+        "managed_by": "Network Team",
+        "configuration": "Stack Member"
+      },
+      "discovery": {
+        "discovery_source": "SNMP Discovery"
+      },
+      "audit": {
+        "sys_created_on": "2023-02-01T14:00:00",
+        "sys_updated_on": "2024-02-01T14:00:00"
+      }
+    }
+  ],
+  "discovered_services": [
+    {
+      "sys_id": "svc123abc456def789ghi",
+      "service_info": {
+        "name": "Apache HTTP Server",
+        "service_name": "httpd",
+        "display_name": "Apache HTTP Server",
+        "classification": "Web Server",
+        "version": "2.4.53",
+        "vendor": "Apache Software Foundation",
+        "service_type": "Service"
+      },
+      "process_info": {
+        "running_process_command": "/usr/sbin/httpd -DFOREGROUND",
+        "pid": 1234,
+        "state": "Running",
+        "start_type": "Automatic",
+        "running_process": "httpd"
+      },
+      "network_info": {
+        "tcp_port": [
+          80,
+          443
+        ],
+        "udp_port": [],
+        "protocol": [
+          "HTTP",
+          "HTTPS"
+        ]
+      },
+      "endpoint_info": {
+        "url": "https://portal.company.com",
+        "path": "/health",
+        "description": "Health check endpoint",
+        "type": "Health Check",
+        "status": "Active",
+        "response_time": "50ms",
+        "availability": "99.9%",
+        "authentication_required": false,
+        "ssl_enabled": true
+      },
+      "host_info": {
+        "computer": "web-server-01",
+        "discovered_on": "web-server-01.company.com"
+      },
+      "application_mapping": {
+        "application": "Customer Portal",
+        "service": "Web Service"
+      },
+      "discovery": {
+        "discovery_source": "Service Discovery",
+        "first_discovered": "2023-02-05T15:00:00",
+        "last_discovered": "2024-02-05T15:00:00"
+      },
+      "audit": {
+        "sys_created_on": "2023-02-05T15:00:00",
+        "sys_updated_on": "2024-02-05T15:00:00"
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "sys_id": "rel123abc456def789ghi",
+      "relationship": {
+        "parent": "abc123def456ghi789",
+        "child": "server123abc456def789",
+        "type": "Runs on::Runs",
+        "dependency_type": "Hard"
+      },
+      "connection_details": {
+        "port": "443",
+        "connection_strength": "100",
+        "percent_outage": "100"
+      },
+      "audit": {
+        "sys_created_on": "2023-02-10T16:00:00",
+        "sys_updated_on": "2024-02-10T16:00:00"
+      }
+    }
+  ],
+  "ip_addresses": [
+    {
+      "sys_id": "ip123abc456def789ghi",
+      "network_info": {
+        "ip_address": "10.1.1.100",
+        "netmask": "255.255.255.0",
+        "network": "10.1.1.0/24",
+        "type": "Primary"
+      },
+      "dns_info": {
+        "dns_name": "web-server-01",
+        "fqdn": "web-server-01.company.com"
+      },
+      "assignment": {
+        "ci": "server123abc456def789",
+        "nic": "eth0"
+      },
+      "discovery": {
+        "discovery_source": "Network Discovery",
+        "first_discovered": "2023-02-15T17:00:00",
+        "last_discovered": "2024-02-15T17:00:00"
+      },
+      "audit": {
+        "sys_created_on": "2023-02-15T17:00:00",
+        "sys_updated_on": "2024-02-15T17:00:00"
+      }
+    }
+  ],
+  "aws_resources": {
+    "ec2_instances": [
+      {
+        "sys_id": "ec2123abc456def789ghi",
+        "instance_info": {
+          "name": "portal-web-01",
+          "instance_id": "i-0123456789abcdef0",
+          "instance_type": "t3.large",
+          "state": "running",
+          "instance_lifecycle": "normal"
+        },
+        "network_info": {
+          "public_ip_address": "54.123.45.67",
+          "private_ip_address": "10.0.1.100",
+          "availability_zone": "us-east-1a",
+          "subnet_id": "subnet-12345678",
+          "vpc_id": "vpc-12345678",
+          "security_groups": [
+            "sg-web-servers"
+          ]
+        },
+        "launch_info": {
+          "key_name": "portal-keypair",
+          "image_id": "ami-0123456789abcdef0",
+          "launch_time": "2023-03-01T18:00:00"
+        },
+        "aws_metadata": {
+          "account": "123456789012",
+          "region": "us-east-1",
+          "tags": "Name=portal-web-01,Environment=Production",
+          "monitoring": "enabled",
+          "spot_instance_request_id": "",
+          "placement_group": ""
+        },
+        "audit": {
+          "sys_created_on": "2023-03-01T18:00:00",
+          "sys_updated_on": "2024-03-01T18:00:00"
+        }
+      }
+    ],
+    "rds_instances": [
+      {
+        "sys_id": "rds123abc456def789ghi",
+        "database_info": {
+          "name": "portal-database",
+          "db_instance_identifier": "portal-prod-db",
+          "db_name": "portaldb",
+          "engine": "postgres",
+          "engine_version": "13.7",
+          "license_model": "postgresql-license"
+        },
+        "instance_details": {
+          "instance_class": "db.r5.xlarge",
+          "allocated_storage": 500,
+          "storage_type": "gp2",
+          "storage_encrypted": true
+        },
+        "connectivity": {
+          "endpoint_address": "portal-prod-db.cluster-xyz.us-east-1.rds.amazonaws.com",
+          "endpoint_port": 5432,
+          "publicly_accessible": false
+        },
+        "network_placement": {
+          "availability_zone": "us-east-1a",
+          "subnet_group": "portal-db-subnet-group",
+          "vpc_security_groups": [
+            "sg-database"
+          ],
+          "db_security_groups": []
+        },
+        "backup_maintenance": {
+          "backup_retention_period": 7,
+          "backup_window": "03:00-04:00",
+          "maintenance_window": "sun:04:00-sun:05:00",
+          "multi_az": true,
+          "auto_minor_version_upgrade": true
+        },
+        "configuration": {
+          "option_group_name": "default:postgres-13",
+          "character_set_name": ""
+        },
+        "aws_metadata": {
+          "account": "123456789012",
+          "region": "us-east-1",
+          "tags": "Environment=Production,Application=Portal"
+        },
+        "audit": {
+          "sys_created_on": "2023-03-05T19:00:00",
+          "sys_updated_on": "2024-03-05T19:00:00"
+        }
+      }
+    ],
+    "lambda_functions": [
+      {
+        "sys_id": "lambda123abc456def789",
+        "function_info": {
+          "name": "portal-auth-function",
+          "function_name": "portal-auth-validator",
+          "runtime": "python3.9",
+          "handler": "lambda_function.lambda_handler",
+          "description": "Authentication validation for portal users"
+        },
+        "configuration": {
+          "timeout": 30,
+          "memory_size": 256,
+          "code_size": 1024000,
+          "last_modified": "2023-03-10T15:30:00",
+          "code_sha256": "abc123def456ghi789",
+          "version": "$LATEST"
+        },
+        "security": {
+          "role": "arn:aws:iam::123456789012:role/lambda-execution-role",
+          "kms_key_arn": "arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012"
+        },
+        "environment": {
+          "environment_variables": {
+            "DB_HOST": "portal-prod-db.cluster-xyz.us-east-1.rds.amazonaws.com",
+            "DB_PORT": "5432",
+            "CACHE_ENDPOINT": "portal-cache.xyz.cache.amazonaws.com"
+          }
+        },
+        "network": {
+          "vpc_config": {
+            "subnet_ids": [
+              "subnet-12345678",
+              "subnet-87654321"
+            ],
+            "security_group_ids": [
+              "sg-lambda-functions"
+            ]
+          }
+        },
+        "monitoring": {
+          "dead_letter_queue": "arn:aws:sqs:us-east-1:123456789012:lambda-dlq",
+          "tracing_config": "Active",
+          "layers": [
+            "arn:aws:lambda:us-east-1:123456789012:layer:portal-common-libs:1"
+          ]
+        },
+        "aws_metadata": {
+          "account": "123456789012",
+          "region": "us-east-1",
+          "tags": "Environment=Production,Application=Portal,Function=Auth"
+        },
+        "audit": {
+          "sys_created_on": "2023-03-10T15:30:00",
+          "sys_updated_on": "2024-03-10T15:30:00"
+        }
+      }
+    ]
+  },
+  "containers": {
+    "containers": [
+      {
+        "sys_id": "cnt123abc456def789ghi",
+        "container_info": {
+          "name": "portal-web-container",
+          "container_id": "abc123def456",
+          "image": "portal-web",
+          "image_tag": "v2.1.0",
+          "state": "running",
+          "status": "Up 5 days"
+        },
+        "configuration": {
+          "command": "nginx -g daemon off",
+          "entrypoint": "/docker-entrypoint.sh",
+          "working_directory": "/app"
+        },
+        "network": {
+          "ports": [
+            "8080:80",
+            "8443:443"
+          ]
+        },
+        "environment": {
+          "environment_variables": {
+            "DB_HOST": "portal-db",
+            "DB_PORT": "5432",
+            "REDIS_HOST": "portal-cache"
+          }
+        },
+        "storage": {
+          "volumes": [
+            "/app/logs",
+            "/app/config"
+          ]
+        },
+        "metadata": {
+          "labels": {
+            "app": "portal",
+            "tier": "web",
+            "version": "v2.1.0"
+          }
+        },
+        "orchestration": {
+          "host": "k8s-worker-01",
+          "cluster": "portal-cluster",
+          "namespace": "production",
+          "pod": "portal-web-pod-12345"
+        },
+        "lifecycle": {
+          "created": "2023-03-10T20:00:00",
+          "started_at": "2023-03-10T20:05:00"
+        },
+        "discovery": {
+          "discovery_source": "Kubernetes Discovery"
+        },
+        "audit": {
+          "sys_created_on": "2023-03-10T20:00:00",
+          "sys_updated_on": "2024-03-10T20:00:00"
+        }
+      }
+    ],
+    "kubernetes_clusters": [
+      {
+        "sys_id": "k8s123abc456def789ghi",
+        "cluster_info": {
+          "name": "portal-cluster",
+          "version": "1.24.0",
+          "endpoint": "https://portal-k8s-api.company.com:6443",
+          "api_server_url": "https://portal-k8s-api.company.com:6443"
+        },
+        "nodes": {
+          "node_count": 5,
+          "master_nodes": 3,
+          "worker_nodes": 2
+        },
+        "network_configuration": {
+          "network_plugin": "Calico",
+          "service_subnet": "10.96.0.0/12",
+          "pod_subnet": "10.244.0.0/16",
+          "dns_service_ip": "10.96.0.10"
+        },
+        "resources": {
+          "namespace_count": 8,
+          "service_count": 25,
+          "pod_count": 45
+        },
+        "infrastructure": {
+          "location": "Data Center 1",
+          "cloud_provider": "AWS"
+        },
+        "discovery": {
+          "discovery_source": "Kubernetes API Discovery"
+        },
+        "audit": {
+          "sys_created_on": "2023-03-15T16:00:00",
+          "sys_updated_on": "2024-03-15T16:00:00"
+        }
+      }
+    ],
+    "kubernetes_pods": [
+      {
+        "sys_id": "pod123abc456def789ghi",
+        "pod_info": {
+          "name": "portal-web-pod-12345",
+          "namespace": "production",
+          "node": "k8s-worker-01",
+          "phase": "Running"
+        },
+        "network": {
+          "pod_ip": "10.244.1.15",
+          "host_ip": "10.1.1.105"
+        },
+        "containers": {
+          "containers": [
+            "portal-web-container",
+            "logging-sidecar"
+          ]
+        },
+        "storage": {
+          "volumes": [
+            "config-volume",
+            "logs-volume"
+          ]
+        },
+        "metadata": {
+          "labels": {
+            "app": "portal",
+            "tier": "web",
+            "version": "v2.1.0"
+          },
+          "annotations": {
+            "deployment.kubernetes.io/revision": "3"
+          }
+        },
+        "configuration": {
+          "cluster": "portal-cluster",
+          "restart_policy": "Always",
+          "service_account": "portal-web-sa",
+          "node_selector": {
+            "node-type": "worker"
+          },
+          "tolerations": [],
+          "affinity": {},
+          "priority_class": "high-priority",
+          "runtime_class": "runc"
+        },
+        "lifecycle": {
+          "created": "2023-03-15T17:30:00",
+          "started_at": "2023-03-15T17:31:00"
+        },
+        "discovery": {
+          "discovery_source": "Kubernetes API Discovery"
+        },
+        "audit": {
+          "sys_created_on": "2023-03-15T17:30:00",
+          "sys_updated_on": "2024-03-15T17:30:00"
+        }
+      }
+    ]
+  },
+  "business_services": [
+    {
+      "sys_id": "biz123abc456def789ghi",
+      "service_info": {
+        "name": "Customer Self-Service",
+        "description": "Online portal for customer account management",
+        "service_classification": "Customer Facing",
+        "category": "Business Service",
+        "subcategory": "Customer Portal",
+        "lifecycle_stage": "Production",
+        "version": "2.1.0",
+        "vendor": "Internal"
+      },
+      "business_context": {
+        "business_criticality": "High",
+        "service_tier": "1",
+        "cost_center": "CC003",
+        "business_unit": "Customer Services"
+      },
+      "ownership": {
+        "service_owner": "jane.smith@company.com",
+        "business_owner": "Customer Service Director",
+        "technical_owner": "IT Application Team",
+        "supported_by": "Customer Service Support",
+        "owned_by": "Customer Services"
+      },
+      "service_levels": {
+        "service_level_requirement": "Gold",
+        "availability_requirement": "99.9%",
+        "disaster_recovery_tier": "Tier 1"
+      },
+      "compliance": {
+        "compliance_requirements": [
+          "PCI DSS",
+          "SOX",
+          "GDPR"
+        ]
+      },
+      "operations": {
+        "operational_status": "Operational"
+      },
+      "audit": {
+        "sys_created_on": "2023-03-15T21:00:00",
+        "sys_updated_on": "2024-03-15T21:00:00"
+      }
+    }
+  ],
+  "network_connections": [
+    {
+      "sys_id": "tcp123abc456def789ghi",
+      "connection_info": {
+        "local_ip": "10.1.1.100",
+        "local_port": 443,
+        "remote_ip": "10.1.1.200",
+        "remote_port": 5432,
+        "state": "ESTABLISHED",
+        "protocol": "TCP"
+      },
+      "process_info": {
+        "process": "httpd",
+        "computer": "web-server-01"
+      },
+      "discovery": {
+        "discovery_source": "Network Discovery"
+      },
+      "audit": {
+        "sys_created_on": "2023-03-20T22:00:00"
+      }
+    }
+  ],
+  "reference_data": {
+    "locations": [
+      {
+        "sys_id": "loc123abc456def789ghi",
+        "location_info": {
+          "name": "Data Center 1",
+          "full_name": "Primary Data Center - East Coast",
+          "code": "DC1"
+        },
+        "address": {
+          "city": "Ashburn",
+          "state": "Virginia",
+          "country": "United States",
+          "zip": "20147",
+          "address": "123 Data Center Drive"
+        },
+        "coordinates": {
+          "latitude": 39.0458,
+          "longitude": -77.4874
+        },
+        "operational": {
+          "time_zone": "America/New_York",
+          "contact": "datacenter.ops@company.com",
+          "phone_number": "+1-555-123-4567"
+        },
+        "audit": {
+          "sys_created_on": "2023-01-01T00:00:00",
+          "sys_updated_on": "2024-01-01T00:00:00"
+        }
+      }
+    ],
+    "cost_centers": [
+      {
+        "sys_id": "cc123abc456def789ghi",
+        "cost_center_info": {
+          "name": "IT Infrastructure",
+          "code": "CC002",
+          "account_number": "4001-2000-1000"
+        },
+        "management": {
+          "manager": "it.manager@company.com",
+          "description": "Information Technology Infrastructure Operations"
+        },
+        "validity": {
+          "valid_from": "2023-01-01",
+          "valid_to": "2024-12-31"
+        },
+        "hierarchy": {
+          "parent": ""
+        },
+        "audit": {
+          "sys_created_on": "2023-01-01T00:00:00",
+          "sys_updated_on": "2024-01-01T00:00:00"
+        }
+      }
+    ],
+    "companies": [
+      {
+        "sys_id": "com123abc456def789ghi",
+        "company_info": {
+          "name": "Company ABC Inc.",
+          "customer": true,
+          "vendor": false,
+          "manufacturer": false,
+          "partner": false
+        },
+        "contact": {
+          "primary_contact": "contact@companyabc.com"
+        },
+        "audit": {
+          "sys_created_on": "2023-01-01T00:00:00",
+          "sys_updated_on": "2024-01-01T00:00:00"
+        }
+      }
+    ]
+  }
+}

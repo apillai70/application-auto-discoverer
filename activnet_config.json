@@ -1,0 +1,36 @@
+{
+  "web_application": {
+    "static_directory": "static/ui",
+    "templates_directory": "templates",
+    "data_files": {
+      "json_data": "templates/activnet_data.json",
+      "master_excel": "static/ui/data/synthetic_flows_apps_archetype_mapped.xlsx",
+      "app_data_js": "static/ui/js/app_data.js"
+    }
+  },
+  "data_processing": {
+    "staging_directory": "data_staging",
+    "processed_directory": "data_staging/processed",
+    "failed_directory": "data_staging/failed",
+    "auto_refresh_interval": 60000,
+    "supported_formats": [
+      ".json",
+      ".csv",
+      ".xlsx",
+      ".xls"
+    ]
+  },
+  "features": {
+    "file_name_agnostic": true,
+    "duplicate_detection": true,
+    "auto_append_excel": true,
+    "port_research": true,
+    "real_time_updates": true,
+    "web_integration": true
+  },
+  "logging": {
+    "level": "INFO",
+    "file": "data_staging/processing.log",
+    "web_access_log": "static/access.log"
+  }
+}

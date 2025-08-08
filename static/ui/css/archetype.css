@@ -1,0 +1,837 @@
+/* Archetype Classification Dashboard Styles - COMPLETE FILE */
+
+/* Main Grid Layout */
+.archetype-main-grid {
+    display: grid;
+    grid-template-columns: 280px 1fr 250px;
+    gap: 20px;
+    height: calc(100vh - 200px);
+    padding: 0 20px 20px 20px;
+}
+
+.panel {
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid #334155;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.graph-container {
+    background: #1e293b;
+    border-radius: 12px;
+    border: 1px solid #334155;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.graph-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #334155;
+}
+
+.view-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.view-controls .btn {
+    font-size: 12px;
+    padding: 6px 12px;
+}
+
+/* Search Components */
+.search-container {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #64748b;
+    z-index: 1;
+}
+
+.search-box {
+    width: 100%;
+    padding: 10px 12px 10px 40px;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    color: #e2e8f0;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.search-box:focus {
+    outline: none;
+    border-color: #3b82f6;
+}
+
+.search-box::placeholder {
+    color: #64748b;
+}
+
+/* Search Dropdown */
+.search-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+}
+
+.search-dropdown.show {
+    display: block;
+}
+
+.dropdown-section {
+    border-bottom: 1px solid #334155;
+}
+
+.dropdown-section:last-child {
+    border-bottom: none;
+}
+
+.dropdown-header {
+    padding: 12px 16px;
+    background: #334155;
+    color: #e2e8f0;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.dropdown-item {
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    color: #e2e8f0;
+    font-size: 14px;
+}
+
+.dropdown-item:hover {
+    background: #334155;
+}
+
+.dropdown-item.selected {
+    background: #3b82f6;
+}
+
+.app-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* Selected Apps Display */
+.selected-apps-container {
+    display: none;
+    margin-top: 12px;
+    padding: 12px;
+    background: #1e293b;
+    border-radius: 8px;
+    border: 1px solid #334155;
+}
+
+.selected-apps-container.show {
+    display: block;
+}
+
+.selected-apps-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #cbd5e1;
+    margin-bottom: 8px;
+}
+
+.selected-apps-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.selected-app-tag {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #334155;
+    color: #e2e8f0;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+}
+
+.remove-btn {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    padding: 0;
+    margin-left: 4px;
+}
+
+.remove-btn:hover {
+    color: #ef4444;
+}
+
+.clear-all-btn {
+    background: #374151;
+    border: 1px solid #4b5563;
+    color: #e2e8f0;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.clear-all-btn:hover {
+    background: #4b5563;
+}
+
+/* Filter Section */
+.filter-section {
+    margin-bottom: 20px;
+}
+
+.filter-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #cbd5e1;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #334155;
+}
+
+.archetype-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* Archetype List Items */
+.archetype-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    margin-bottom: 4px;
+    background: #1e293b;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.archetype-item:hover {
+    background: #334155;
+    border-color: #475569;
+}
+
+.archetype-item.active {
+    background: #3b82f6;
+    border-color: #60a5fa;
+}
+
+.archetype-name {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #e2e8f0;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.archetype-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.archetype-count {
+    background: #374151;
+    color: #d1d5db;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.reset-btn {
+    width: 100%;
+    background: #374151;
+    color: #e2e8f0;
+    border: 1px solid #4b5563;
+    margin-top: auto;
+}
+
+.reset-btn:hover {
+    background: #4b5563;
+}
+
+/* Canvas - FIXED SIZING */
+#appCanvas {
+    width: 100%;
+    height: calc(100% - 80px);
+    min-height: 400px;
+    display: block;
+    background: #0f172a;
+    border-radius: 8px;
+}
+
+/* Archetype Cards Container - FIXED 3 PER ROW */
+.archetype-cards-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    padding: 16px;
+    height: calc(100% - 80px);
+    overflow-y: auto;
+    background: #0f172a;
+}
+
+/* Archetype Cards - COMPACT LAYOUT */
+.archetype-card {
+    background: #1e293b;
+    border-radius: 12px;
+    border-left: 4px solid #3b82f6;
+    padding: 16px;
+    min-height: 280px;
+    max-height: 350px;
+    display: flex;
+    flex-direction: column;
+}
+
+.archetype-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #334155;
+}
+
+.archetype-card-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.archetype-icon {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.archetype-card-title h3 {
+    margin: 0;
+    color: #e2e8f0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.archetype-count {
+    background: #334155;
+    color: #e2e8f0;
+    padding: 4px 10px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.archetype-stats {
+    margin-bottom: 6px;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 3px;
+    color: #94a3b8;
+    font-size: 10px;
+}
+
+.stat-value {
+    color: #e2e8f0;
+    font-weight: 600;
+    font-size: 10px;
+}
+
+.stat-value.active {
+    color: #10b981;
+}
+
+/* Applications Grid - REASONABLE COMPACT */
+.applications-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 9px);
+    gap: 2px;
+    margin-bottom: 6px;
+    padding: 6px;
+    background: #0f172a;
+    border-radius: 4px;
+    min-height: 42px;
+    max-height: 48px;
+    overflow: hidden;
+}
+
+.app-node {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.2s ease;
+}
+
+.app-node:hover {
+    transform: scale(1.3);
+}
+
+.app-node.active {
+    box-shadow: 0 0 0 2px #ffffff;
+}
+
+.app-node.migrating {
+    box-shadow: 0 0 0 1px #f59e0b;
+}
+
+.app-node.inactive {
+    opacity: 0.5;
+}
+
+.app-node.flow-high {
+    box-shadow: 0 0 4px rgba(59, 130, 246, 0.6);
+}
+
+.app-node.flow-medium {
+    box-shadow: 0 0 2px rgba(59, 130, 246, 0.4);
+}
+
+.app-node.flow-low {
+    opacity: 0.8;
+}
+
+.app-node-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Traffic Pattern Tags - READABLE */
+.traffic-pattern-tags {
+    margin-bottom: 2px;
+    padding-top: 4px;
+    border-top: 1px solid #334155;
+}
+
+.traffic-pattern-title {
+    font-size: 9px;
+    font-weight: 600;
+    color: #cbd5e1;
+    margin-bottom: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.traffic-pattern-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+}
+
+.traffic-pattern-tag {
+    background: linear-gradient(135deg, #374151, #4b5563);
+    color: #e2e8f0;
+    padding: 2px 5px;
+    border-radius: 6px;
+    font-size: 8px;
+    font-weight: 500;
+    border: 1px solid #4b5563;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+    line-height: 1.3;
+}
+
+/* Archetype Patterns - READABLE WITH 2PX GAP */
+.archetype-patterns {
+    border-top: 1px solid #334155;
+    padding-top: 2px;
+    margin-top: 2px;
+}
+
+.pattern-title {
+    font-size: 9px;
+    font-weight: 600;
+    color: #cbd5e1;
+    margin-bottom: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.pattern-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+}
+
+.pattern-tag {
+    background: #334155;
+    color: #cbd5e1;
+    padding: 2px 5px;
+    border-radius: 5px;
+    font-size: 8px;
+    font-weight: 500;
+    border: 1px solid #475569;
+    line-height: 1.3;
+}
+
+/* App Details Panel */
+.app-details {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(30, 41, 59, 0.95);
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 16px;
+    min-width: 250px;
+    backdrop-filter: blur(8px);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 100;
+}
+
+.app-details.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.app-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #e2e8f0;
+    margin-bottom: 8px;
+}
+
+.app-info {
+    color: #94a3b8;
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.app-info strong {
+    color: #cbd5e1;
+}
+
+.indicators-list,
+.ports-list {
+    margin-top: 12px;
+}
+
+.indicator-tag,
+.port-tag {
+    display: inline-block;
+    background: #334155;
+    color: #cbd5e1;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    margin-right: 4px;
+    margin-bottom: 4px;
+}
+
+/* Legend Panel */
+.legend-panel {
+    background: #1e293b;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    color: #e2e8f0;
+    font-size: 12px;
+}
+
+.legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.pattern-legend {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #334155;
+}
+
+.traffic-pattern {
+    color: #94a3b8;
+    font-size: 11px;
+    margin-bottom: 4px;
+}
+
+/* Loading Spinner Styles */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+}
+
+.loading-spinner {
+    text-align: center;
+    color: #e2e8f0;
+}
+
+.spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid #334155;
+    border-top: 4px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-message {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.loading-progress {
+    width: 300px;
+    margin: 0 auto;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #334155;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6, #10b981);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    font-size: 14px;
+    color: #94a3b8;
+}
+
+/* Responsive Design - FIXED 3 COLUMN LAYOUT */
+@media (max-width: 1400px) {
+    .archetype-cards-container {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        padding: 14px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .archetype-main-grid {
+        grid-template-columns: 260px 1fr 220px;
+        gap: 16px;
+    }
+    
+    .archetype-cards-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        padding: 12px;
+    }
+    
+    .app-details {
+        width: 240px;
+    }
+}
+
+@media (max-width: 968px) {
+    .archetype-main-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto 1fr;
+        height: auto;
+        min-height: calc(100vh - 200px);
+        gap: 16px;
+    }
+    
+    .archetype-cards-container {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 10px;
+    }
+    
+    .panel, .graph-container {
+        height: auto;
+        min-height: 300px;
+    }
+    
+    .app-details {
+        position: relative;
+        top: auto;
+        right: auto;
+        width: 100%;
+        margin-top: 16px;
+    }
+}
+
+@media (max-width: 640px) {
+    .archetype-card {
+        padding: 12px;
+        min-height: 240px;
+    }
+    
+    .archetype-card-title h3 {
+        font-size: 14px;
+    }
+    
+    .applications-grid {
+        grid-template-columns: repeat(auto-fill, 8px);
+        gap: 2px;
+        min-height: 50px;
+    }
+    
+    .app-node {
+        width: 8px;
+        height: 8px;
+    }
+}
+
+/* Animation for migrating apps */
+@keyframes pulse {
+    0% { 
+        box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
+    }
+    70% { 
+        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0);
+    }
+    100% { 
+        box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+    }
+}
+
+.app-node.migrating {
+    animation: pulse 2s infinite;
+}
+
+/* Canvas rounded rectangle polyfill for older browsers */
+CanvasRenderingContext2D.prototype.roundRect = CanvasRenderingContext2D.prototype.roundRect || function (x, y, w, h, r) {
+    if (w < 2 * r) r = w / 2;
+    if (h < 2 * r) r = h / 2;
+    this.beginPath();
+    this.moveTo(x + r, y);
+    this.arcTo(x + w, y, x + w, y + h, r);
+    this.arcTo(x + w, y + h, x, y + h, r);
+    this.arcTo(x, y + h, x, y, r);
+    this.arcTo(x, y, x + w, y, r);
+    this.closePath();
+    return this;
+};
+
+/* Additional utility classes */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.mt-1 { margin-top: 0.25rem; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-4 { margin-top: 1rem; }
+
+.mb-1 { margin-bottom: 0.25rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-4 { margin-bottom: 1rem; }
+
+.p-2 { padding: 0.5rem; }
+.p-4 { padding: 1rem; }
+
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+
+.hidden { display: none !important; }
+.visible { visibility: visible !important; }
+
+/* Focus states for accessibility */
+.search-box:focus,
+.archetype-item:focus,
+.dropdown-item:focus,
+.btn:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .archetype-card {
+        border: 2px solid #fff;
+    }
+    
+    .app-node {
+        border: 2px solid #fff;
+    }
+    
+    .pattern-tag {
+        border: 1px solid #fff;
+    }
+}
+/* Add to the end of archetype.css */
+.loading-overlay * { 
+    animation: none !important; 
+}
+.loading-overlay .spinner { 
+    animation: spin 1s linear infinite !important; 
+}
+.loading-message, .progress-text { 
+    transform: none !important; 
+}

@@ -1,0 +1,452 @@
+/* Topology Tab Styles - Dark Theme */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #111;
+    color: #eee;
+    overflow: hidden;
+}
+
+/* Main Topology Container */
+.topology-container {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+    width: 100vw;
+    background: #111;
+    color: #eee;
+}
+
+/* Left and Right Panels */
+#left-panel, #right-panel {
+    width: 300px;
+    background: rgba(28, 28, 28, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    z-index: 10;
+    transition: width 0.3s ease;
+    overflow-y: auto;
+    color: #eee;
+}
+
+#left-panel.collapsed, #right-panel.collapsed {
+    width: 40px !important;
+}
+
+#left-panel.collapsed > *:not(.hamburger),
+#right-panel.collapsed > *:not(.hamburger) {
+    display: none;
+}
+
+#left-panel {
+    border-right: 1px solid #444;
+}
+
+#right-panel {
+    border-left: 1px solid #444;
+}
+
+/* Middle Canvas Area */
+#middle-canvas-wrapper {
+    position: relative;
+    flex: 1;
+    background: #0a0a0a;
+}
+
+#viz-canvas {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: #0a0a0a;
+}
+
+#graph {
+    width: 100%;
+    height: 100%;
+    background: #0a0a0a;
+}
+
+/* Overlay Canvas */
+#overlay-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(25, 25, 25, 0.95);
+    color: #0f0;
+    font-family: monospace;
+    padding: 20px;
+    display: none;
+    overflow-y: auto;
+    z-index: 100;
+}
+
+/* Hamburger Buttons */
+.hamburger {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 999;
+    cursor: pointer;
+    padding: 8px 12px;
+    font-size: 16px;
+    background: #333;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    transition: background 0.3s ease;
+}
+
+.hamburger:hover {
+    background: #555;
+}
+
+/* Info Panels */
+.info-panel {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid #444;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.info-panel h3 {
+    color: #4CAF50;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.info-panel ul {
+    padding-left: 20px;
+    line-height: 1.6;
+}
+
+.info-panel li {
+    margin-bottom: 5px;
+}
+
+/* Filter Sections */
+.filter-section {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.filter-section h4 {
+    margin-bottom: 10px;
+    color: #4CAF50;
+}
+
+/* Buttons */
+.topology-btn {
+    background: #333;
+    color: #fff;
+    border: 1px solid #555;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    margin: 2px 0;
+    width: 100%;
+}
+
+.topology-btn:hover {
+    background: #444;
+    border-color: #666;
+}
+
+.topology-btn.active {
+    background: #007bff;
+    border-color: #007bff;
+}
+
+.topology-btn-small {
+    background: #333;
+    color: #fff;
+    border: 1px solid #555;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.3s ease;
+}
+
+.topology-btn-small:hover {
+    background: #444;
+}
+
+/* Select Elements */
+.topology-select {
+    background: #222;
+    color: #fff;
+    border: 1px solid #444;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 12px;
+    width: 100%;
+    max-height: 120px;
+}
+
+.topology-select optgroup {
+    background: #1a1a1a;
+    color: #fff;
+    font-weight: bold;
+}
+
+.topology-select option {
+    background: #222;
+    color: #fff;
+    padding: 4px 8px;
+}
+
+.topology-select option:hover {
+    background: #333;
+}
+
+/* Form Elements */
+.topology-checkbox {
+    margin-right: 8px;
+    transform: scale(1.1);
+}
+
+.topology-label {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 12px;
+    color: #ddd;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.file-input {
+    background: #222;
+    color: #fff;
+    border: 1px solid #444;
+    padding: 6px;
+    border-radius: 4px;
+    width: 100%;
+    font-size: 12px;
+}
+
+/* Tooltip */
+.tooltip {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+    max-width: 250px;
+    border: 1px solid #333;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+/* Node and Link Styles */
+.nodes circle {
+    stroke: #fff;
+    stroke-width: 1.5px;
+    cursor: pointer;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
+    transition: all 0.2s ease;
+}
+
+.nodes circle:hover {
+    stroke-width: 2px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+}
+
+.links line {
+    stroke-opacity: 0.8;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.links line:hover {
+    stroke-opacity: 1.0 !important;
+    stroke-width: 3px !important;
+}
+
+/* High traffic link animations */
+.links line[stroke="#ff6b6b"] {
+    animation: pulse-red 2s infinite;
+}
+
+.links line[stroke="#ffa726"] {
+    animation: pulse-orange 2s infinite;
+}
+
+@keyframes pulse-red {
+    0%, 100% { stroke-opacity: 0.8; }
+    50% { stroke-opacity: 1.0; }
+}
+
+@keyframes pulse-orange {
+    0%, 100% { stroke-opacity: 0.7; }
+    50% { stroke-opacity: 0.9; }
+}
+
+.node-labels text {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    fill: #ffffff;
+    text-anchor: middle;
+    pointer-events: none;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+}
+
+.ip-labels text {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 9px;
+    fill: #aaa;
+    text-anchor: middle;
+    pointer-events: none;
+}
+
+.link-labels text {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 8px;
+    fill: #999;
+    text-anchor: middle;
+    pointer-events: none;
+}
+
+/* Legend */
+.legend-item {
+    margin: 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+}
+
+/* Statistics */
+.stat-item {
+    margin: 8px 0;
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Arrow Controls */
+#arrow-controls {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    display: grid;
+    grid-template-columns: 40px 40px 40px;
+    grid-template-rows: 40px 40px 40px;
+    gap: 5px;
+    z-index: 9999;
+}
+
+.arrow-btn {
+    width: 40px;
+    height: 40px;
+    background-color: #333;
+    color: white;
+    font-size: 18px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.arrow-btn:hover {
+    background-color: #555;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #667eea;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    z-index: 10000;
+    display: none;
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Toast Container */
+#toast-container {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.toast {
+    background: rgba(28, 28, 28, 0.95);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    animation: slideIn 0.3s ease;
+    border: 1px solid #444;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    #left-panel, #right-panel {
+        width: 250px;
+    }
+}
+
+@media (max-width: 768px) {
+    #left-panel, #right-panel {
+        width: 200px;
+    }
+    
+    .topology-container {
+        flex-direction: column;
+    }
+    
+    #arrow-controls {
+        display: none;
+    }
+}

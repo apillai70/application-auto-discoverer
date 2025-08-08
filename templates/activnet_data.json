@@ -1,0 +1,731 @@
+{
+  "metadata": {
+    "export_date": "2025-07-31T14:38:26.444101",
+    "source_file": "ACTIVnet_Sample_with_auto_research.csv",
+    "total_records": 172,
+    "version": "1.0.0",
+    "last_updated": "2025-07-31T14:38:26.444101"
+  },
+  "applications": [
+    {
+      "id": "HASH",
+      "name": "HASH",
+      "total_records": 62,
+      "unique_sources": 8,
+      "unique_destinations": 20,
+      "complexity": "medium",
+      "ports": [],
+      "protocols": [
+        "DNS",
+        "HTTP"
+      ]
+    },
+    {
+      "id": "DAD",
+      "name": "DAD",
+      "total_records": 60,
+      "unique_sources": 2,
+      "unique_destinations": 4,
+      "complexity": "medium",
+      "ports": [
+        "10247.0",
+        "10355.0",
+        "10518.0",
+        "10648.0",
+        "11827.0",
+        "12106.0",
+        "12270.0",
+        "12427.0",
+        "13335.0",
+        "16107.0"
+      ],
+      "protocols": [
+        "CIFS",
+        "HTTps",
+        "MSRPC",
+        "SSL",
+        "TCP",
+        "TDS"
+      ]
+    },
+    {
+      "id": "ACDM",
+      "name": "ACDM",
+      "total_records": 50,
+      "unique_sources": 1,
+      "unique_destinations": 18,
+      "complexity": "medium",
+      "ports": [
+        "138.0",
+        "177.0",
+        "26001.0",
+        "26198.0",
+        "27019.0",
+        "27025.0",
+        "27961.0",
+        "30721.0",
+        "3231.0",
+        "37.0"
+      ],
+      "protocols": [
+        "006T:dpn",
+        "HTTP2-SSL",
+        "HTTPS",
+        "ICMPv6",
+        "NTP",
+        "SSL",
+        "UDP",
+        "tc107143",
+        "tcp8090",
+        "tcp88"
+      ]
+    }
+  ],
+  "port_services": {
+    "UDP:26198.0": {
+      "port": "26198.0",
+      "protocol": "UDP",
+      "service": "Unknown UDP Service on port 26198",
+      "count": 1
+    },
+    "UDP:9100.0": {
+      "port": "9100.0",
+      "protocol": "UDP",
+      "service": "hp-pdl-datastr - PDL Data Streaming Port",
+      "count": 1
+    },
+    "UDP:3231.0": {
+      "port": "3231.0",
+      "protocol": "UDP",
+      "service": "vidigo - VidiGo communication (previous was: Delta Solutions Direct)",
+      "count": 1
+    },
+    "UDP:523.0": {
+      "port": "523.0",
+      "protocol": "UDP",
+      "service": "ibm-db2 - IBM-DB2",
+      "count": 1
+    },
+    "UDP:7.0": {
+      "port": "7.0",
+      "protocol": "UDP",
+      "service": "Echo Protocol",
+      "count": 1
+    },
+    "UDP:27025.0": {
+      "port": "27025.0",
+      "protocol": "UDP",
+      "service": "Unknown UDP Service on port 27025",
+      "count": 1
+    },
+    "UDP:30721.0": {
+      "port": "30721.0",
+      "protocol": "UDP",
+      "service": "Unknown UDP Service on port 30721",
+      "count": 1
+    },
+    "UDP:138.0": {
+      "port": "138.0",
+      "protocol": "UDP",
+      "service": "netbios-dgm - NETBIOS Datagram Service",
+      "count": 1
+    },
+    "UDP:27961.0": {
+      "port": "27961.0",
+      "protocol": "UDP",
+      "service": "Unknown UDP Service on port 27961",
+      "count": 1
+    },
+    "UDP:177.0": {
+      "port": "177.0",
+      "protocol": "UDP",
+      "service": "xdmcp - X Display Manager Control Protocol",
+      "count": 1
+    },
+    "UDP:37.0": {
+      "port": "37.0",
+      "protocol": "UDP",
+      "service": "time - Time",
+      "count": 1
+    },
+    "UDP:631.0": {
+      "port": "631.0",
+      "protocol": "UDP",
+      "service": "ipp - IPP (Internet Printing Protocol)",
+      "count": 1
+    },
+    "UDP:27019.0": {
+      "port": "27019.0",
+      "protocol": "UDP",
+      "service": "Unknown UDP Service on port 27019",
+      "count": 1
+    },
+    "UDP:26001.0": {
+      "port": "26001.0",
+      "protocol": "UDP",
+      "service": "applications - Vulnerabilities in IGI 2: Covert Strike can be exploited to compromise a vulnerable system. A format string error within the logging functionality when processing RCON commands can be e",
+      "count": 1
+    },
+    "SSL:443.0": {
+      "port": "443.0",
+      "protocol": "SSL",
+      "service": "HTTPS (HTTP over SSL/TLS)",
+      "count": 13
+    },
+    "SSL:8090.0": {
+      "port": "8090.0",
+      "protocol": "SSL",
+      "service": "SSL/TLS Service on port 8090",
+      "count": 1
+    },
+    "TCP:6412.0": {
+      "port": "6412.0",
+      "protocol": "TCP",
+      "service": "Unknown TCP Service on port 6412",
+      "count": 1
+    },
+    "TCP:9467.0": {
+      "port": "9467.0",
+      "protocol": "TCP",
+      "service": "Unknown TCP Service on port 9467",
+      "count": 1
+    },
+    "TCP:9439.0": {
+      "port": "9439.0",
+      "protocol": "TCP",
+      "service": "Unknown TCP Service on port 9439",
+      "count": 1
+    },
+    "TCP:7054.0": {
+      "port": "7054.0",
+      "protocol": "TCP",
+      "service": "Unknown TCP Service on port 7054",
+      "count": 1
+    },
+    "TCP:10518.0": {
+      "port": "10518.0",
+      "protocol": "TCP",
+      "service": "Unknown TCP Service on port 10518",
+      "count": 1
+    },
+    "TCP:10247.0": {
+      "port": "10247.0",
+      "protocol": "TCP",
+      "service": "Unknown TCP Service on port 10247",
+      "count": 1
+    },
+    "TCP:5297.0": {
+      "port": "5297.0",
+      "protocol": "TCP",
+      "service": "applications - Apple iChat (local traffic), Bonjour\n\r\nBackdoor.Win32.GateHell.21 / Authentication Bypass - the malware runs an FTP server on TCP ports 5301,5432,5300,5299,5298,5297,5296 and 5295. Thir",
+      "count": 1
+    },
+    "TCP:7990.0": {
+      "port": "7990.0",
+      "protocol": "TCP",
+      "service": "applications - Atlassian Bitbucket",
+      "count": 1
+    },
+    "TCP:8122.0": {
+      "port": "8122.0",
+      "protocol": "TCP",
+      "service": "apollo-admin - Apollo Admin Port",
+      "count": 1
+    },
+    "TCP:11827.0": {
+      "port": "11827.0",
+      "protocol": "TCP",
+      "service": "Unknown TCP Service on port 11827",
+      "count": 1
+    },
+    "TCP:6705.0": {
+      "port": "6705.0",
+      "protocol": "TCP",
+      "service": "Reserved",
+      "count": 1
+    },
+    "TCP:6974.0": {
+      "port": "6974.0",
+      "protocol": "TCP",
+      "service": "malware - Backdoor.Win32.Danton.43 / Weak Hardcoded Credentials RCE - The malware listens on TCP port 6974 and stores several pairs of weak hardcoded credentials in plaintext within the executable. Fi",
+      "count": 1
+    },
+    "TCP:10355.0": {
+      "port": "10355.0",
+      "protocol": "TCP",
+      "service": "Unknown TCP Service on port 10355",
+      "count": 1
+    },
+    "TCP:7076.0": {
+      "port": "7076.0",
+      "protocol": "TCP",
+      "service": "Unknown TCP Service on port 7076",
+      "count": 1
+    },
+    "TCP:5773.0": {
+      "port": "5773.0",
+      "protocol": "TCP",
+      "service": "Unknown TCP Service on port 5773",
+      "count": 1
+    },
+    "TCP:5474.0": {
+      "port": "5474.0",
+      "protocol": "TCP",
+      "service": "Reserved",
+      "count": 1
+    },
+    "TCP:13335.0": {
+      "port": "13335.0",
+      "protocol": "TCP",
+      "service": "Unknown TCP Service on port 13335",
+      "count": 1
+    },
+    "TCP:8329.0": {
+      "port": "8329.0",
+      "protocol": "TCP",
+      "service": "trojan - DLP trojan",
+      "count": 1
+    },
+    "TCP:6783.0": {
+      "port": "6783.0",
+      "protocol": "TCP",
+      "service": "applications - Splashtop Remote",
+      "count": 1
+    },
+    "TCP:10648.0": {
+      "port": "10648.0",
+      "protocol": "TCP",
+      "service": "Unknown TCP Service on port 10648",
+      "count": 1
+    },
+    "TCP:8725.0": {
+      "port": "8725.0",
+      "protocol": "TCP",
+      "service": "Unknown TCP Service on port 8725",
+      "count": 1
+    },
+    "TCP:12106.0": {
+      "port": "12106.0",
+      "protocol": "TCP",
+      "service": "Unknown TCP Service on port 12106",
+      "count": 1
+    },
+    "TCP:7311.0": {
+      "port": "7311.0",
+      "protocol": "TCP",
+      "service": "swx - Swiss Exchange",
+      "count": 1
+    },
+    "TCP:5795.0": {
+      "port": "5795.0",
+      "protocol": "TCP",
+      "service": "Unknown TCP Service on port 5795",
+      "count": 1
+    },
+    "TCP:5496.0": {
+      "port": "5496.0",
+      "protocol": "TCP",
+      "service": "Unknown TCP Service on port 5496",
+      "count": 1
+    },
+    "TCP:12270.0": {
+      "port": "12270.0",
+      "protocol": "TCP",
+      "service": "Unknown TCP Service on port 12270",
+      "count": 1
+    },
+    "TCP:6420.0": {
+      "port": "6420.0",
+      "protocol": "TCP",
+      "service": "nim-vdrshell - NIM_VDRShell",
+      "count": 1
+    },
+    "TCP:9206.0": {
+      "port": "9206.0",
+      "protocol": "TCP",
+      "service": "wap-vcard-s - WAP vCard Secure",
+      "count": 1
+    },
+    "TCP:12427.0": {
+      "port": "12427.0",
+      "protocol": "TCP",
+      "service": "Unknown TCP Service on port 12427",
+      "count": 1
+    },
+    "TCP:35692.0": {
+      "port": "35692.0",
+      "protocol": "TCP",
+      "service": "Unknown TCP Service on port 35692",
+      "count": 1
+    },
+    "TCP:16144.0": {
+      "port": "16144.0",
+      "protocol": "TCP",
+      "service": "Unknown TCP Service on port 16144",
+      "count": 1
+    },
+    "SSL:16184.0": {
+      "port": "16184.0",
+      "protocol": "SSL",
+      "service": "SSL/TLS Service on port 16184",
+      "count": 1
+    },
+    "SSL:16156.0": {
+      "port": "16156.0",
+      "protocol": "SSL",
+      "service": "SSL/TLS Service on port 16156",
+      "count": 1
+    },
+    "TCP:16138.0": {
+      "port": "16138.0",
+      "protocol": "TCP",
+      "service": "Unknown TCP Service on port 16138",
+      "count": 1
+    },
+    "SSL:16167.0": {
+      "port": "16167.0",
+      "protocol": "SSL",
+      "service": "SSL/TLS Service on port 16167",
+      "count": 1
+    },
+    "SSL:16131.0": {
+      "port": "16131.0",
+      "protocol": "SSL",
+      "service": "SSL/TLS Service on port 16131",
+      "count": 1
+    },
+    "SSL:16170.0": {
+      "port": "16170.0",
+      "protocol": "SSL",
+      "service": "SSL/TLS Service on port 16170",
+      "count": 1
+    },
+    "TCP:16107.0": {
+      "port": "16107.0",
+      "protocol": "TCP",
+      "service": "Unknown TCP Service on port 16107",
+      "count": 1
+    },
+    "SSL:16147.0": {
+      "port": "16147.0",
+      "protocol": "SSL",
+      "service": "SSL/TLS Service on port 16147",
+      "count": 1
+    },
+    "SSL:16119.0": {
+      "port": "16119.0",
+      "protocol": "SSL",
+      "service": "SSL/TLS Service on port 16119",
+      "count": 1
+    },
+    "TCP:16121.0": {
+      "port": "16121.0",
+      "protocol": "TCP",
+      "service": "Unknown TCP Service on port 16121",
+      "count": 1
+    },
+    "TCP:16171.0": {
+      "port": "16171.0",
+      "protocol": "TCP",
+      "service": "Unknown TCP Service on port 16171",
+      "count": 1
+    },
+    "SSL:16144.0": {
+      "port": "16144.0",
+      "protocol": "SSL",
+      "service": "SSL/TLS Service on port 16144",
+      "count": 1
+    },
+    "SSL:16138.0": {
+      "port": "16138.0",
+      "protocol": "SSL",
+      "service": "SSL/TLS Service on port 16138",
+      "count": 1
+    },
+    "SSL:16107.0": {
+      "port": "16107.0",
+      "protocol": "SSL",
+      "service": "SSL/TLS Service on port 16107",
+      "count": 1
+    },
+    "TCP:16184.0": {
+      "port": "16184.0",
+      "protocol": "TCP",
+      "service": "Unknown TCP Service on port 16184",
+      "count": 1
+    },
+    "TCP:16156.0": {
+      "port": "16156.0",
+      "protocol": "TCP",
+      "service": "Unknown TCP Service on port 16156",
+      "count": 1
+    },
+    "TCP:16167.0": {
+      "port": "16167.0",
+      "protocol": "TCP",
+      "service": "Unknown TCP Service on port 16167",
+      "count": 1
+    },
+    "SSL:16121.0": {
+      "port": "16121.0",
+      "protocol": "SSL",
+      "service": "SSL/TLS Service on port 16121",
+      "count": 1
+    },
+    "TCP:16131.0": {
+      "port": "16131.0",
+      "protocol": "TCP",
+      "service": "Unknown TCP Service on port 16131",
+      "count": 1
+    },
+    "TCP:16170.0": {
+      "port": "16170.0",
+      "protocol": "TCP",
+      "service": "Unknown TCP Service on port 16170",
+      "count": 1
+    },
+    "SSL:16171.0": {
+      "port": "16171.0",
+      "protocol": "SSL",
+      "service": "SSL/TLS Service on port 16171",
+      "count": 1
+    },
+    "TCP:16147.0": {
+      "port": "16147.0",
+      "protocol": "TCP",
+      "service": "Unknown TCP Service on port 16147",
+      "count": 1
+    },
+    "TCP:16119.0": {
+      "port": "16119.0",
+      "protocol": "TCP",
+      "service": "Unknown TCP Service on port 16119",
+      "count": 1
+    },
+    "TCP:49667.0": {
+      "port": "49667.0",
+      "protocol": "TCP",
+      "service": "Unknown TCP Service on port 49667",
+      "count": 1
+    }
+  },
+  "summary_stats": {
+    "unique_sources": 11,
+    "unique_destinations": 41,
+    "unique_protocols": 18,
+    "unique_ports": 59,
+    "total_bytes": 37149660488.0
+  },
+  "raw_data_sample": [
+    {
+      "src": "10.165.145.110",
+      "dst": "10.165.109.169",
+      "port": 26198.0,
+      "tier": "Service",
+      "archetype": "Network Service",
+      "application": "ACDM",
+      "protocol": "UDP",
+      "timestamp": 1753969996,
+      "info": "Unknown UDP Service on port 26198",
+      "behavior": "Network Communication",
+      "application_original": "ACDM",
+      "review_required": false,
+      "is_known_app": 1,
+      "service_definition": "Unknown UDP Service on port 26198",
+      "bytes_in": "966",
+      "bytes_out": "0",
+      "original_protocol": "udp:26198",
+      "peer_info": "10.165.109.169(upvulnapp11a.unix.rgbk.com)",
+      "device_name": "VMware AGC746"
+    },
+    {
+      "src": "10.165.145.110",
+      "dst": "10.165.109.169",
+      "port": 9100.0,
+      "tier": "Service",
+      "archetype": "Network Service",
+      "application": "ACDM",
+      "protocol": "UDP",
+      "timestamp": 1753969997,
+      "info": "hp-pdl-datastr - PDL Data Streaming Port",
+      "behavior": "Network Communication",
+      "application_original": "ACDM",
+      "review_required": false,
+      "is_known_app": 1,
+      "service_definition": "hp-pdl-datastr - PDL Data Streaming Port",
+      "bytes_in": "774",
+      "bytes_out": "0",
+      "original_protocol": "udp:9100",
+      "peer_info": "10.165.109.169(upvulnapp11a.unix.rgbk.com)",
+      "device_name": "VMware AGC747"
+    },
+    {
+      "src": "10.165.145.110",
+      "dst": "10.165.109.169",
+      "port": 3231.0,
+      "tier": "Service",
+      "archetype": "Network Service",
+      "application": "ACDM",
+      "protocol": "UDP",
+      "timestamp": 1753969997,
+      "info": "vidigo - VidiGo communication (previous was: Delta Solutions Direct)",
+      "behavior": "Network Communication",
+      "application_original": "ACDM",
+      "review_required": false,
+      "is_known_app": 1,
+      "service_definition": "vidigo - VidiGo communication (previous was: Delta Solutions Direct)",
+      "bytes_in": "546",
+      "bytes_out": "0",
+      "original_protocol": "udp:3231",
+      "peer_info": "10.165.109.169(upvulnapp11a.unix.rgbk.com)",
+      "device_name": "VMware AGC748"
+    },
+    {
+      "src": "10.165.145.110",
+      "dst": "10.165.109.169",
+      "port": 523.0,
+      "tier": "Service",
+      "archetype": "Network Service",
+      "application": "ACDM",
+      "protocol": "UDP",
+      "timestamp": 1753969997,
+      "info": "ibm-db2 - IBM-DB2",
+      "behavior": "Network Communication",
+      "application_original": "ACDM",
+      "review_required": false,
+      "is_known_app": 1,
+      "service_definition": "ibm-db2 - IBM-DB2",
+      "bytes_in": "690",
+      "bytes_out": "0",
+      "original_protocol": "udp:523",
+      "peer_info": "10.165.109.169(upvulnapp11a.unix.rgbk.com)",
+      "device_name": "VMware AGC749"
+    },
+    {
+      "src": "10.165.145.110",
+      "dst": "10.165.109.169",
+      "port": 7.0,
+      "tier": "Service",
+      "archetype": "Network Service",
+      "application": "ACDM",
+      "protocol": "UDP",
+      "timestamp": 1753969997,
+      "info": "Echo Protocol",
+      "behavior": "Network Communication",
+      "application_original": "ACDM",
+      "review_required": false,
+      "is_known_app": 1,
+      "service_definition": "Echo Protocol",
+      "bytes_in": "678",
+      "bytes_out": "0",
+      "original_protocol": "udp:7",
+      "peer_info": "10.165.109.169(upvulnapp11a.unix.rgbk.com)",
+      "device_name": "VMware AGC750"
+    },
+    {
+      "src": "10.165.145.110",
+      "dst": "10.165.109.169",
+      "port": NaN,
+      "tier": "Service",
+      "archetype": "Network Service",
+      "application": "ACDM",
+      "protocol": "NTP",
+      "timestamp": 1753969997,
+      "info": "Network Time Protocol",
+      "behavior": "Network Communication",
+      "application_original": "ACDM",
+      "review_required": false,
+      "is_known_app": 1,
+      "service_definition": "Network Time Protocol",
+      "bytes_in": "1518",
+      "bytes_out": "0",
+      "original_protocol": "NTP",
+      "peer_info": "10.165.109.169(upvulnapp11a.unix.rgbk.com)",
+      "device_name": "VMware AGC751"
+    },
+    {
+      "src": "10.165.145.110",
+      "dst": "10.165.109.169",
+      "port": 27025.0,
+      "tier": "Service",
+      "archetype": "Network Service",
+      "application": "ACDM",
+      "protocol": "UDP",
+      "timestamp": 1753970001,
+      "info": "Unknown UDP Service on port 27025",
+      "behavior": "Network Communication",
+      "application_original": "ACDM",
+      "review_required": false,
+      "is_known_app": 1,
+      "service_definition": "Unknown UDP Service on port 27025",
+      "bytes_in": "696",
+      "bytes_out": "0",
+      "original_protocol": "udp:27025",
+      "peer_info": "10.165.109.169(upvulnapp11a.unix.rgbk.com)",
+      "device_name": "VMware AGC752"
+    },
+    {
+      "src": "10.165.145.110",
+      "dst": "10.165.109.169",
+      "port": 30721.0,
+      "tier": "Service",
+      "archetype": "Network Service",
+      "application": "ACDM",
+      "protocol": "UDP",
+      "timestamp": 1753970004,
+      "info": "Unknown UDP Service on port 30721",
+      "behavior": "Network Communication",
+      "application_original": "ACDM",
+      "review_required": false,
+      "is_known_app": 1,
+      "service_definition": "Unknown UDP Service on port 30721",
+      "bytes_in": "747",
+      "bytes_out": "0",
+      "original_protocol": "udp:30721",
+      "peer_info": "10.165.109.169(upvulnapp11a.unix.rgbk.com)",
+      "device_name": "VMware AGC753"
+    },
+    {
+      "src": "10.165.145.110",
+      "dst": "10.165.109.169",
+      "port": NaN,
+      "tier": "Service",
+      "archetype": "Network Service",
+      "application": "ACDM",
+      "protocol": "006T:dpn",
+      "timestamp": 1753970004,
+      "info": "Unknown Service (006T:dpn)",
+      "behavior": "Network Communication",
+      "application_original": "ACDM",
+      "review_required": false,
+      "is_known_app": 1,
+      "service_definition": "Unknown Service (006T:dpn)",
+      "bytes_in": "378",
+      "bytes_out": "0",
+      "original_protocol": "006T:dpn",
+      "peer_info": "10.165.109.169(upvulnapp11a.unix.rgbk.com)",
+      "device_name": "VMware AGC754"
+    },
+    {
+      "src": "10.165.145.110",
+      "dst": "10.165.109.169",
+      "port": 138.0,
+      "tier": "Service",
+      "archetype": "Network Service",
+      "application": "ACDM",
+      "protocol": "UDP",
+      "timestamp": 1753970005,
+      "info": "netbios-dgm - NETBIOS Datagram Service",
+      "behavior": "Network Communication",
+      "application_original": "ACDM",
+      "review_required": false,
+      "is_known_app": 1,
+      "service_definition": "netbios-dgm - NETBIOS Datagram Service",
+      "bytes_in": "546",
+      "bytes_out": "0",
+      "original_protocol": "udp:138",
+      "peer_info": "10.165.109.169(upvulnapp11a.unix.rgbk.com)",
+      "device_name": "VMware AGC755"
+    }
+  ]
+}

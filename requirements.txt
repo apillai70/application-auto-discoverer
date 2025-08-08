@@ -1,0 +1,122 @@
+# FastAPI and web framework
+fastapi[all]
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+
+# Pydantic for data validation
+pydantic==2.5.0
+pydantic-settings==2.1.0
+
+# Database
+sqlalchemy==2.0.23
+alembic==1.12.1
+psycopg2-binary==2.9.9
+
+# Data processing and analysis (Python 3.11 optimized)
+pandas==2.1.4
+numpy==1.24.3
+openpyxl==3.1.2
+xlrd==2.0.1
+
+# Log analysis and parsing
+python-dateutil==2.8.2
+pytz==2023.3
+
+# API clients for data sources
+requests==2.31.0
+splunk-sdk==1.7.4
+
+# Documentation generation (Enhanced for comprehensive document generation)
+jinja2==3.1.2
+markdown==3.5.1
+weasyprint==60.1
+reportlab==4.0.7
+python-docx==0.8.11
+
+# Diagram generation
+graphviz==0.20.1
+matplotlib==3.8.2
+networkx==3.2.1
+pillow==10.1.0
+
+# Utilities
+aiofiles==23.2.1
+httpx==0.25.2
+aiohttp==3.9.1
+pyyaml==6.0.1
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-dotenv==1.0.0
+
+# Background tasks
+celery==5.3.4
+redis==5.0.1
+
+# Testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+
+# Development
+black==23.11.0
+flake8==6.1.0
+mypy==1.7.1
+
+
+# Logging and monitoring
+structlog==23.2.0
+
+# Optional: For advanced ML features
+scikit-learn==1.3.2
+tensorflow==2.14.0  # Optional for tensor operations
+torch==2.1.1  # Optional for PyTorch export
+
+# Additional dependencies for comprehensive document generation
+# XML processing for enhanced Visio/Lucid generation
+lxml==4.9.3
+
+# Enhanced document formatting
+pypdf2==3.0.1
+
+# Optional: Network scanning (only if needed for future features)
+# python-nmap==0.7.1
+# netaddr==0.10.1
+# scapy==2.5.0
+# paramiko==3.4.0
+# pysnmp==7.1.21
+PyJWT==2.8.0
+
+# App Rationalization specific dependencies
+# Enhanced data analysis for migration planning
+scipy==1.11.4
+seaborn==0.12.2
+
+# Enhanced Excel export capabilities
+xlsxwriter==3.1.9
+
+# Financial modeling and cost analysis
+sympy==1.12  # For advanced mathematical calculations
+
+# Enhanced chart generation for migration reports
+plotly==5.17.0
+
+# For advanced data visualization in reports
+bokeh==3.3.0
+
+# For PowerPoint generation (if needed for executive reports)
+python-pptx==0.6.23
+
+# For enhanced JSON handling in migration analysis
+jsonschema==4.20.0
+
+# For data validation in cost models
+marshmallow==3.20.2
+
+# For statistical analysis in migration planning
+statsmodels==0.14.0
+
+boto3
+botocore
+
+beautifulsoup4
+watchdog

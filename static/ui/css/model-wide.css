@@ -1,0 +1,183 @@
+/* model-wide.css - Width Fix and Sub-tab Layout for Model Page */
+
+/* Make container wider */
+.integrated-model-container {
+    max-width: 1920px !important;
+    width: 100% !important;
+}
+
+/* Force sub-tabs to stay in one row and match main tab height */
+.integrated-model-container .sub-tabs {
+    min-width: 800px !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    padding: 8px !important;
+}
+
+/* Make sub-tabs same height as main tabs and prevent wrapping */
+.integrated-model-container .sub-tab {
+    white-space: nowrap !important;
+    min-width: 180px !important;
+    padding: 15px 20px !important; /* Same as main-tab padding */
+    font-size: 0.95rem !important; /* Slightly larger font */
+    height: auto !important;
+    flex-shrink: 0 !important; /* Prevent shrinking */
+}
+
+/* Ensure main tabs and sub-tabs have consistent styling */
+.integrated-model-container .main-tabs {
+    min-width: 800px !important;
+    flex-wrap: nowrap !important;
+}
+
+.integrated-model-container .main-tab {
+    white-space: nowrap !important;
+    min-width: 200px !important;
+    flex-shrink: 0 !important;
+}
+
+/* ===== COMPACT ALGORITHM CARDS - 60% SIZE REDUCTION ===== */
+
+/* Make algorithm cards compact to fit in one row */
+.integrated-model-container .algorithm-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important; /* Was 350px */
+    gap: 12px !important; /* Was 20px */
+    margin-bottom: 20px !important; /* Was 25px */
+}
+
+.integrated-model-container .algorithm-card {
+    padding: 15px !important; /* Was 25px */
+    border-radius: 10px !important; /* Was 15px */
+}
+
+.integrated-model-container .algorithm-icon {
+    font-size: 2rem !important; /* Was 3rem */
+    margin-bottom: 10px !important; /* Was 15px */
+}
+
+.integrated-model-container .algorithm-card h4 {
+    margin: 10px 0 !important; /* Was 15px 0 */
+    font-size: 1rem !important; /* Was 1.2rem */
+}
+
+.integrated-model-container .algorithm-card p {
+    font-size: 0.8rem !important; /* Was 0.95rem */
+    margin-bottom: 12px !important; /* Was 20px */
+    line-height: 1.3 !important; /* Was 1.5 */
+}
+
+.integrated-model-container .algorithm-params {
+    margin-top: 12px !important; /* Was 20px */
+}
+
+.integrated-model-container .algorithm-params label {
+    margin: 8px 0 4px 0 !important; /* Was 12px 0 6px 0 */
+    font-size: 0.8rem !important; /* Was 0.9rem */
+}
+
+.integrated-model-container .algorithm-params input,
+.integrated-model-container .algorithm-params select {
+    padding: 6px 8px !important; /* Was 10px 14px */
+    font-size: 0.8rem !important; /* Was 0.9rem */
+    border-radius: 6px !important; /* Was 8px */
+}
+
+/* Force algorithm cards into specific layouts by screen size */
+@media (min-width: 1400px) {
+    .integrated-model-container .algorithm-grid {
+        grid-template-columns: repeat(6, 1fr) !important; /* Force 6 columns for 6 algorithms */
+    }
+}
+
+@media (max-width: 1399px) and (min-width: 1000px) {
+    .integrated-model-container .algorithm-grid {
+        grid-template-columns: repeat(3, 1fr) !important; /* 3 columns for medium screens */
+    }
+}
+
+@media (max-width: 999px) {
+    .integrated-model-container .algorithm-grid {
+        grid-template-columns: repeat(2, 1fr) !important; /* 2 columns for smaller screens */
+    }
+}
+
+/* Make comparison grid more compact too */
+.integrated-model-container .comparison-grid {
+    grid-template-columns: repeat(4, 1fr) !important; /* Force 4 columns in ONE ROW */
+    gap: 15px !important; /* Reasonable gaps */
+    margin-top: 20px !important; /* More top margin */
+}
+
+.integrated-model-container .comparison-chart {
+    padding: 20px !important; /* More padding for better spacing */
+}
+
+.integrated-model-container .comparison-chart h4 {
+    margin-bottom: 15px !important; /* More space below headers */
+    font-size: 1rem !important; /* Readable font size */
+}
+
+/* ===== OPTIMAL HEIGHT COMPARISON PANELS - NO SCROLL BAR ===== */
+
+/* Make chart containers tall but not too tall */
+.integrated-model-container .chart-container {
+    height: 300px !important; /* Sweet spot - no scroll needed */
+    min-height: 300px !important;
+    padding: 15px !important;
+    font-size: 0.9rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Optimal comparison chart panel height */
+.integrated-model-container .comparison-chart {
+    height: 380px !important; /* Fits nicely without scroll */
+    max-height: 380px !important;
+    min-height: 380px !important;
+}
+
+/* Match recommendation containers to optimal height */
+.integrated-model-container .recommendations-container {
+    padding: 15px !important;
+    height: 300px !important; /* Match chart height exactly */
+    max-height: 300px !important;
+    overflow-y: auto !important;
+    font-size: 0.9rem !important;
+}
+
+/* Make the comprehensive comparison container fit perfectly */
+.integrated-model-container .comprehensive-comparison {
+    min-height: 400px !important; /* Just enough, no more */
+    max-height: 400px !important; /* Prevent overflow */
+    padding: 15px 0 !important;
+}
+
+/* Responsive: adjust on smaller screens */
+@media (max-width: 1400px) {
+    .integrated-model-container .comparison-grid {
+        grid-template-columns: repeat(2, 1fr) !important; /* 2x2 on smaller screens */
+    }
+    
+    .integrated-model-container .comparison-chart {
+        height: 350px !important; /* Slightly shorter for 2x2 */
+    }
+    
+    .integrated-model-container .chart-container {
+        height: 250px !important;
+    }
+    
+    .integrated-model-container .recommendations-container {
+        height: 250px !important;
+    }
+}
+
+@media (max-width: 900px) {
+    .integrated-model-container .comparison-grid {
+        grid-template-columns: 1fr !important; /* Single column on mobile */
+    }
+    
+    .integrated-model-container .comparison-chart {
+        height: 380px !important; /* Good height for mobile */
+    }
+}

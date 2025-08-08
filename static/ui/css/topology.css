@@ -1,0 +1,615 @@
+/* Fixed Topology CSS - topology.css */
+
+.topology-container {
+    display: flex;
+    flex-direction: row;
+    height: calc(100vh - 140px);
+    width: 100%;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    position: relative;
+}
+
+/* 1. REPLACE the panel base styles section */
+#left-panel, #right-panel {
+    width: 300px;
+    min-width: 300px;
+    max-width: 300px;
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 10;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
+    overflow-x: hidden;
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    position: relative;
+    height: calc(100vh - 160px);
+    flex-shrink: 0; /* ADDED: This is the key fix */
+}
+
+#left-panel {
+    border-right: 1px solid var(--border-color);
+    border-left: none;
+}
+
+#right-panel {
+    border-left: 1px solid var(--border-color);
+    border-right: none;
+}
+
+/* 2. REPLACE the collapsed panel states section */
+#left-panel.collapsed {
+    width: 60px !important;
+    min-width: 60px !important;
+    max-width: 60px !important;
+    padding: 20px 10px !important;
+}
+
+#right-panel.collapsed {
+    width: 60px !important;
+    min-width: 60px !important;
+    max-width: 60px !important;
+    padding: 20px 10px !important;
+}
+
+/* 3. REPLACE the content hiding/showing rules */
+#left-panel.collapsed > *:not(.hamburger),
+#right-panel.collapsed > *:not(.hamburger) {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transform: translateX(-20px) !important;
+    transition: all 0.3s ease !important;
+    pointer-events: none !important;
+}
+
+#left-panel:not(.collapsed) > *:not(.hamburger),
+#right-panel:not(.collapsed) > *:not(.hamburger) {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateX(0) !important;
+    transition: all 0.3s ease 0.1s !important;
+    pointer-events: auto !important;
+}
+
+/* 4. REPLACE the hamburger button styles */
+.hamburger {
+    background: var(--card-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+    flex-shrink: 0; /* ADDED: Prevents shrinking */
+    text-align: center;
+    user-select: none;
+    width: 100%;
+    box-sizing: border-box;
+    z-index: 1000; /* ADDED: Always on top */
+}
+
+.hamburger:hover {
+    background: var(--bg-tertiary);
+    border-color: var(--accent-blue);
+    transform: scale(1.05);
+}
+
+.hamburger:active {
+    transform: scale(0.95);
+}
+
+/* Middle Canvas Area */
+#middle-canvas-wrapper {
+    position: relative;
+    flex: 1;
+    background: var(--bg-primary);
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+    min-width: 0; /* ADDED: Allows flex item to shrink */
+}
+
+#viz-canvas {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: var(--bg-primary);
+}
+
+#graph {
+    width: 100%;
+    height: 100%;
+    background: var(--bg-primary);
+}
+
+/* Overlay Canvas */
+#overlay-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 10, 10, 0.95);
+    color: var(--accent-green);
+    font-family: 'Courier New', monospace;
+    padding: 20px;
+    display: none;
+    overflow-y: auto;
+    z-index: 100;
+    border: 1px solid var(--border-color);
+}
+
+/* Info Panels */
+.info-panel {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.info-panel:hover {
+    border-color: var(--accent-blue);
+}
+
+.info-panel h3 {
+    color: var(--accent-green);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.info-panel ul {
+    padding-left: 16px;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.info-panel li {
+    margin-bottom: 4px;
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+/* Filter Sections */
+.filter-section {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.filter-section:hover {
+    border-color: var(--accent-blue);
+}
+
+.filter-section h4 {
+    margin-bottom: 8px;
+    color: var(--accent-green);
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Buttons */
+.topology-btn {
+    background: var(--card-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    margin: 1px 0;
+    width: 100%;
+}
+
+.topology-btn:hover {
+    background: var(--bg-tertiary);
+    border-color: var(--accent-blue);
+    transform: translateY(-1px);
+}
+
+.topology-btn.active {
+    background: var(--accent-blue);
+    border-color: var(--accent-blue);
+    color: white;
+}
+
+.topology-btn-small {
+    background: var(--card-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.3s ease;
+}
+
+.topology-btn-small:hover {
+    background: var(--bg-tertiary);
+    border-color: var(--accent-blue);
+}
+
+/* Select Elements */
+.topology-select {
+    background: var(--card-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 12px;
+    width: 100%;
+    max-height: 120px;
+    transition: all 0.3s ease;
+}
+
+.topology-select:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+}
+
+.topology-select optgroup {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-weight: bold;
+}
+
+.topology-select option {
+    background: var(--card-bg);
+    color: var(--text-primary);
+    padding: 4px 8px;
+}
+
+.topology-select option:hover {
+    background: var(--bg-tertiary);
+}
+
+/* Form Elements */
+.topology-checkbox {
+    margin-right: 8px;
+    transform: scale(1.1);
+    accent-color: var(--accent-blue);
+}
+
+.topology-label {
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+    transition: color 0.3s ease;
+}
+
+.topology-label:hover {
+    color: var(--text-primary);
+}
+
+.file-input {
+    background: var(--card-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    padding: 8px 12px;
+    border-radius: 4px;
+    width: 100%;
+    font-size: 12px;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+.file-input:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+}
+
+.file-input::placeholder {
+    color: var(--text-muted);
+}
+
+/* Tooltip */
+.tooltip {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.95);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-family: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+    max-width: 250px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    backdrop-filter: blur(10px);
+}
+
+/* Node and Link Styles */
+.nodes circle {
+    stroke: #fff;
+    stroke-width: 2px;
+    cursor: pointer;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    transition: all 0.3s ease;
+}
+
+.nodes circle:hover {
+    stroke-width: 3px;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+}
+
+.links line {
+    stroke: var(--text-muted);
+    stroke-opacity: 0.6;
+    stroke-width: 1px;
+    transition: all 0.3s ease;
+}
+
+.links line:hover {
+    stroke-opacity: 1;
+    stroke-width: 2px;
+}
+
+.node-labels text {
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 600;
+    fill: var(--text-primary);
+    text-anchor: middle;
+    pointer-events: none;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+}
+
+.ip-labels text {
+    font-family: inherit;
+    font-size: 8px;
+    fill: var(--text-muted);
+    text-anchor: middle;
+    pointer-events: none;
+}
+
+.link-labels text {
+    font-family: inherit;
+    font-size: 7px;
+    fill: var(--text-muted);
+    text-anchor: middle;
+    pointer-events: none;
+}
+
+/* Legend */
+.legend-item {
+    margin: 6px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+}
+
+.legend-item:hover {
+    color: var(--text-primary);
+}
+
+/* Statistics */
+.stat-item {
+    margin: 6px 0;
+    font-size: 11px;
+    display: flex;
+    justify-content: space-between;
+    color: var(--text-secondary);
+}
+
+.stat-item span:last-child {
+    color: var(--accent-blue);
+    font-weight: 600;
+}
+
+/* Enhanced Navigation Controls */
+#navigation-controls {
+    position: absolute;
+    bottom: 80px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 9999;
+    transition: right 0.3s ease;
+}
+
+/* Zoom Controls - Top Right Horizontal */
+#zoom-controls {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    z-index: 9999;
+    transition: right 0.3s ease;
+}
+
+/* Arrow Controls */
+#arrow-controls {
+    display: grid;
+    grid-template-columns: 40px 40px 40px;
+    grid-template-rows: 40px 40px 40px;
+    gap: 5px;
+}
+
+/* Control Button Base Styles */
+.control-btn, .arrow-btn {
+    width: 40px;
+    height: 40px;
+    background: var(--card-bg);
+    color: var(--text-primary);
+    font-size: 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    font-weight: bold;
+}
+
+.control-btn:hover, .arrow-btn:hover {
+    background: var(--bg-tertiary);
+    border-color: var(--accent-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.control-btn:active, .arrow-btn:active {
+    transform: translateY(0);
+}
+
+/* Special styling for zoom buttons */
+.zoom-in {
+    color: var(--accent-green);
+}
+
+.zoom-out {
+    color: var(--accent-orange);
+}
+
+.reset-view {
+    color: var(--accent-blue);
+    font-size: 14px;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 4px solid var(--border-color);
+    border-top: 4px solid var(--accent-blue);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    z-index: 10000;
+    display: none;
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Toast Container */
+#toast-container {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.toast {
+    background: var(--panel-bg);
+    color: var(--text-primary);
+    padding: 12px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    animation: slideIn 0.3s ease;
+    border: 1px solid var(--border-color);
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+/* FIXED: Scrollbar styles */
+#left-panel::-webkit-scrollbar,
+#right-panel::-webkit-scrollbar {
+    width: 8px;
+}
+
+#left-panel::-webkit-scrollbar-track,
+#right-panel::-webkit-scrollbar-track {
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+}
+
+#left-panel::-webkit-scrollbar-thumb,
+#right-panel::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+
+#left-panel::-webkit-scrollbar-thumb:hover,
+#right-panel::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-blue);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    #left-panel, #right-panel {
+        width: 250px;
+        min-width: 250px;
+    }
+    
+    #left-panel.collapsed, #right-panel.collapsed {
+        width: 60px !important;
+        min-width: 60px !important;
+    }
+}
+
+@media (max-width: 900px) {
+    .topology-container {
+        flex-direction: column;
+        height: auto;
+    }
+    
+    #left-panel, #right-panel {
+        width: 100%;
+        min-width: unset;
+        height: 200px;
+        border: 1px solid var(--border-color);
+    }
+    
+    #middle-canvas-wrapper {
+        height: 400px;
+        min-height: 400px;
+    }
+    
+    #navigation-controls,
+    #zoom-controls {
+        display: none;
+    }
+}

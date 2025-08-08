@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Rationalization Dashboard - 7 Rs AWS Migration</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/appRationalization.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1 class="header-title">App Rationalization Dashboard</h1>
+                    <p class="header-subtitle">7 Rs AWS Cloud Migration Strategy Analysis</p>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: var(--accent-blue);" id="totalApps">51</div>
+                        <div class="stat-label">Total Applications</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: var(--accent-green);" id="readyToMigrate">46</div>
+                        <div class="stat-label">Ready to Migrate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: var(--aws-orange);" id="estimatedSavings">$3.2M</div>
+                        <div class="stat-label">Est. Annual Savings</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: var(--accent-purple);" id="migrationTime">24</div>
+                        <div class="stat-label">Months Timeline</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <a href="index.html" class="tab-btn">
+                <span class="tab-icon">🗂️</span>
+                <span>Topology</span>
+            </a>
+            <a href="convergence.html" class="tab-btn disabled">
+                <span class="tab-icon">🔄</span>
+                <span>Convergence</span>
+            </a>
+            <a href="archetype.html" class="tab-btn">
+                <span class="tab-icon">🏗️</span>
+                <span>Archetype</span>
+            </a>
+            <a href="integration.html" class="tab-btn">
+                <span class="tab-icon">🔗</span>
+                <span>Integration</span>
+            </a>
+            <a href="model.html" class="tab-btn">
+                <span class="tab-icon">📊</span>
+                <span>Model</span>
+            </a>
+            <a href="documentation.html" class="tab-btn">
+                <span class="tab-icon">📚</span>
+                <span>Documentation</span>
+            </a>
+            <a href="appRationalization.html" class="tab-btn active">
+                <span class="tab-icon">7️⃣</span>
+                <span>App Rationalization</span>
+            </a>
+            <a href="recommendations.html" class="tab-btn">
+                <span class="tab-icon">💡</span>
+                <span>Recommendations</span>
+            </a>
+        </div>
+
+        <!-- Main Content Layout -->
+        <div class="main-layout">
+            <!-- Left Panel - Application Selection -->
+            <div class="side-panel">
+                <div class="panel-title">📱 Application Portfolio</div>
+                
+                <div class="app-selector">
+                    <label for="appSelect">Select Applications:</label>
+                    <select id="appSelect" multiple size="12">
+                        <option value="all" selected>All Applications (51)</option>
+                    </select>
+                </div>
+
+                <div class="rs-filter">
+                    <div class="panel-title">🏷️ 7 Rs Strategy Filter</div>
+                    
+                    <div class="rs-item selected" data-strategy="rehost">
+                        <input type="checkbox" class="rs-checkbox" checked>
+                        <span class="rs-label">Rehost (Lift & Shift)</span>
+                        <span class="rs-count" id="rehostCount">33</span>
+                    </div>
+                    
+                    <div class="rs-item selected" data-strategy="replatform">
+                        <input type="checkbox" class="rs-checkbox" checked>
+                        <span class="rs-label">Replatform</span>
+                        <span class="rs-count" id="replatformCount">13</span>
+                    </div>
+                    
+                    <div class="rs-item selected" data-strategy="refactor">
+                        <input type="checkbox" class="rs-checkbox" checked>
+                        <span class="rs-label">Refactor/Re-architect</span>
+                        <span class="rs-count" id="refactorCount">3</span>
+                    </div>
+                    
+                    <div class="rs-item selected" data-strategy="retire">
+                        <input type="checkbox" class="rs-checkbox" checked>
+                        <span class="rs-label">Retire</span>
+                        <span class="rs-count" id="retireCount">2</span>
+                    </div>
+                    
+                    <div class="rs-item" data-strategy="retain">
+                        <input type="checkbox" class="rs-checkbox">
+                        <span class="rs-label">Retain</span>
+                        <span class="rs-count" id="retainCount">0</span>
+                    </div>
+                    
+                    <div class="rs-item" data-strategy="repurchase">
+                        <input type="checkbox" class="rs-checkbox">
+                        <span class="rs-label">Repurchase</span>
+                        <span class="rs-count" id="repurchaseCount">0</span>
+                    </div>
+                    
+                    <div class="rs-item" data-strategy="relocate">
+                        <input type="checkbox" class="rs-checkbox">
+                        <span class="rs-label">Relocate</span>
+                        <span class="rs-count" id="relocateCount">0</span>
+                    </div>
+                </div>
+
+                <div class="summary-cards">
+                    <div class="summary-card">
+                        <div class="summary-value" style="color: var(--accent-green);" id="totalCostSavings">$1.8M</div>
+                        <div class="summary-label">Cost Savings</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-value" style="color: var(--accent-blue);" id="cloudReadyPercent">90%</div>
+                        <div class="summary-label">Cloud Ready</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center Panel - Document Viewer -->
+            <div class="document-viewer">
+                <!-- Document Toolbar -->
+                <div class="document-toolbar">
+                    <div class="toolbar-group">
+                        <button class="toolbar-btn active" id="editBtn" onclick="toggleEdit()">✏️ Edit</button>
+                        <button class="toolbar-btn" onclick="exportDoc()">📥 Export</button>
+                        <button class="toolbar-btn" onclick="printDoc()">🖨️ Print</button>
+                    </div>
+                    <div class="toolbar-group">
+                        <button class="toolbar-btn approach-toggle" id="approachToggle" onclick="toggleApproach()">📋 Switch to Big Bang</button>
+                        <button class="toolbar-btn" onclick="generateSummary()">📊 Generate Summary</button>
+                        <button class="toolbar-btn" onclick="refreshAnalysis()">🔄 Refresh Analysis</button>
+                    </div>
+                </div>
+
+                <!-- Document Content -->
+                <div class="document-content" id="documentContent" contenteditable="true">
+                    <div class="doc-header">
+                        <h1 class="doc-title">Banking Application Rationalization Analysis</h1>
+                        <p class="doc-subtitle">7 Rs AWS Cloud Migration Strategy Report <span class="aws-badge">AWS Optimized</span></p>
+                        <p class="doc-date">Generated: <span id="reportDate"></span> | Approach: <span id="currentApproach">Phased Migration</span></p>
+                    </div>
+
+                    <div class="executive-summary">
+                        <h2 style="margin-top: 0; color: var(--aws-orange);">Executive Summary</h2>
+                        <p><strong>Migration Overview:</strong> This comprehensive analysis evaluates 51 banking applications for AWS cloud migration using the proven 7 Rs framework. Our assessment identifies optimal migration strategies that balance risk, cost, and business value while leveraging AWS native services.</p>
+                        
+                        <p><strong>Key Findings:</strong></p>
+                        <ul id="keyFindings">
+                            <li><strong>Portfolio Readiness:</strong> 90% of applications (46 out of 51) are cloud-ready with minimal to moderate effort</li>
+                            <li><strong>Cost Optimization:</strong> Projected annual savings of $3.2M through strategic AWS adoption</li>
+                            <li><strong>Risk Mitigation:</strong> Phased approach reduces business disruption while maximizing AWS benefits</li>
+                            <li><strong>Timeline:</strong> <span id="timelineText">24-month phased migration ensuring business continuity</span></li>
+                            <li><strong>Strategic Focus:</strong> Prioritization of customer-facing applications for maximum business impact</li>
+                        </ul>
+
+                        <p><strong>Recommendation:</strong> <span id="recommendationText">Proceed with phased Wave 1 migrations (Rehost/Replatform) while developing detailed refactoring plans for complex SOA applications. Leverage AWS migration tools and services for accelerated adoption.</span></p>
+                    </div>
+
+                    <div id="migrationContent">
+                        <!-- Dynamic content will be loaded here -->
+                    </div>
+
+                    <h2 class="section-title">📊 Approach Comparison</h2>
+                    
+                    <table class="comparison-table" id="comparisonTable">
+                        <thead>
+                            <tr>
+                                <th>Factor</th>
+                                <th>Phased Migration</th>
+                                <th>Big Bang Migration</th>
+                            </tr>
+                        </thead>
+                        <tbody id="comparisonTableBody">
+                            <!-- Dynamic comparison data will be loaded here -->
+                        </tbody>
+                    </table>
+
+                    <h2 class="section-title">💰 Financial Impact Analysis</h2>
+                    
+                    <div id="financialContent">
+                        <!-- Dynamic financial analysis will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Analysis Tools -->
+            <div class="side-panel">
+                <div class="panel-title">🔧 Analysis Tools</div>
+                
+                <div style="margin-bottom: 20px;">
+                    <button class="toolbar-btn" onclick="generateDetailedReport()" style="width: 100%; margin-bottom: 8px;">📑 Detailed Report</button>
+                    <button class="toolbar-btn" onclick="generateCostAnalysis()" style="width: 100%; margin-bottom: 8px;">💰 Cost Analysis</button>
+                    <button class="toolbar-btn" onclick="generateTimeline()" style="width: 100%; margin-bottom: 8px;">📅 Timeline View</button>
+                    <button class="toolbar-btn" onclick="generateRiskMatrix()" style="width: 100%; margin-bottom: 8px;">⚠️ Risk Matrix</button>
+                </div>
+
+                <div class="panel-title">📊 Quick Stats</div>
+                
+                <div class="summary-cards">
+                    <div class="summary-card">
+                        <div class="summary-value" style="color: var(--accent-blue);" id="quickRehostCount">33</div>
+                        <div class="summary-label">Rehost Apps</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-value" style="color: var(--accent-orange);" id="quickReplatformCount">13</div>
+                        <div class="summary-label">Replatform Apps</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-value" style="color: var(--accent-red);" id="quickRefactorCount">3</div>
+                        <div class="summary-label">Refactor Apps</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-value" style="color: var(--accent-green);" id="quickROI">203%</div>
+                        <div class="summary-label">3-Year ROI</div>
+                    </div>
+                </div>
+
+                <div class="panel-title">📋 Action Items</div>
+                <ul style="font-size: 13px; color: var(--text-muted); line-height: 1.6;" id="actionItems">
+                    <li>• Finalize AWS account setup</li>
+                    <li>• Complete security assessment</li>
+                    <li>• Establish migration team</li>
+                    <li>• Begin Wave 1 planning</li>
+                    <li>• Schedule stakeholder reviews</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loadingSpinner" style="display: none;"></div>
+    
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
+
+    <!-- Scripts -->
+	<script src="../js/app-data.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/appRationalization.js"></script>
+</body>
+</html>

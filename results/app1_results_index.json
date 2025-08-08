@@ -1,0 +1,99 @@
+{
+  "generation_info": {
+    "app_id": "app1",
+    "generated_at": "2025-07-23T15:24:46.511670",
+    "quality_level": "professional",
+    "professional_grade": true,
+    "banking_optimized": true
+  },
+  "executive_metadata": {
+    "document_classification": "CONFIDENTIAL - EXECUTIVE REVIEW",
+    "prepared_for": "C-Suite Leadership Team",
+    "document_type": "Network Architecture Executive Summary",
+    "preparation_date": "July 23, 2025",
+    "next_review_date": "October 23, 2025",
+    "document_owner": "Chief Technology Officer",
+    "distribution_list": [
+      "CTO",
+      "CISO",
+      "CRO",
+      "Chief Architect"
+    ],
+    "confidentiality_notice": "This document contains confidential and proprietary information"
+  },
+  "executive_insights": {
+    "total_applications": 1,
+    "critical_applications": 0,
+    "security_zones": 1,
+    "compliance_frameworks": [
+      "PCI-DSS",
+      "SOX",
+      "FFIEC",
+      "GDPR"
+    ],
+    "architecture_maturity": "Level 4 - Managed and Optimized",
+    "security_posture": "Strong - Multi-layered Defense",
+    "business_continuity": "Tier 1 - Mission Critical Protected"
+  },
+  "folder_structure": {
+    "visio": "Microsoft Visio diagrams (.vsdx)",
+    "lucid": "Lucidchart diagrams (.lucid)",
+    "document": "Microsoft Word documents (.docx)",
+    "excel": "Microsoft Excel spreadsheets (.xlsx)",
+    "pdf": "PDF reports (.pdf)"
+  },
+  "generated_files": [
+    {
+      "format": "visio",
+      "filename": "app1.vsdx",
+      "folder": "results/visio/",
+      "file_path": "results\\visio\\app1.vsdx",
+      "quality_level": "Professional Grade",
+      "target_audience": "C-Suite Executives",
+      "file_size": "7.6 KB"
+    },
+    {
+      "format": "lucid",
+      "filename": "app1.lucid",
+      "folder": "results/lucid/",
+      "file_path": "results\\lucid\\app1.lucid",
+      "quality_level": "Professional Grade",
+      "target_audience": "Business Stakeholders",
+      "file_size": "4.9 KB"
+    },
+    {
+      "format": "document",
+      "filename": "app1.docx",
+      "folder": "results/document/",
+      "file_path": "results\\document\\app1.docx",
+      "quality_level": "Professional Grade",
+      "target_audience": "Business Documentation",
+      "file_size": "2.5 KB"
+    },
+    {
+      "format": "excel",
+      "filename": "app1.xlsx",
+      "folder": "results/excel/",
+      "file_path": "results\\excel\\app1.xlsx",
+      "quality_level": "Professional Grade",
+      "target_audience": "Operational Analysis",
+      "file_size": "2.1 KB"
+    },
+    {
+      "format": "pdf",
+      "filename": "app1.pdf",
+      "folder": "results/pdf/",
+      "file_path": "results\\pdf\\app1.pdf",
+      "quality_level": "Professional Grade",
+      "target_audience": "Executive Presentations",
+      "file_size": "0.9 KB"
+    }
+  ],
+  "professional_features": {
+    "mathematical_layouts": "Golden ratio and professional spacing",
+    "design_system": "Corporate approved color palette and typography",
+    "executive_metadata": "C-suite appropriate annotations and insights",
+    "compliance_ready": "Banking regulation compliance built-in",
+    "multi_format": "Complete professional document suite"
+  }
+}

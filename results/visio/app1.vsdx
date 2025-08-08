@@ -1,0 +1,207 @@
+<?xml version="1.0" ?>
+<VisioDocument xmlns="http://schemas.microsoft.com/office/visio/2003/core" quality_level="professional" professional_grade="true">
+  <DocumentProperties>
+    <Title>Network Architecture Executive Summary</Title>
+    <Creator>Professional Banking Network Discovery Platform</Creator>
+    <Company>Financial Institution</Company>
+    <Category>Executive Network Documentation</Category>
+    <Subject>Network Security Architecture</Subject>
+    <Keywords>Executive, Architecture, Security, Compliance, Professional</Keywords>
+    <Description>This document contains confidential and proprietary information</Description>
+    <Created>2025-07-23T15:24:46.515177</Created>
+    <LastSaved>2025-07-23T15:24:46.515177</LastSaved>
+  </DocumentProperties>
+  <DocumentSettings>
+    <DefaultTextStyle>Segoe UI</DefaultTextStyle>
+    <DefaultLineStyle>Professional</DefaultLineStyle>
+    <DefaultFillStyle>Corporate</DefaultFillStyle>
+    <QualityLevel>professional</QualityLevel>
+    <DPI>200</DPI>
+  </DocumentSettings>
+  <Pages>
+    <Page Name="Executive Network Architecture" Quality="Professional">
+      <PageProperties>
+        <PageWidth>17.0</PageWidth>
+        <PageHeight>11.0</PageHeight>
+        <Orientation>landscape</Orientation>
+        <DrawingScale>1:1</DrawingScale>
+        <PrintableArea>16.5,10.5</PrintableArea>
+        <Margins>0.5,0.5,0.5,0.5</Margins>
+      </PageProperties>
+      <HeaderFooter>
+        <HeaderMargin>0.5</HeaderMargin>
+        <HeaderCenter>Network Architecture Executive Summary</HeaderCenter>
+        <HeaderRight>July 23, 2025</HeaderRight>
+        <FooterCenter>This document contains confidential and proprietary information</FooterCenter>
+        <FooterRight>Page &amp;P of &amp;N</FooterRight>
+      </HeaderFooter>
+      <Shapes>
+        <Shape ID="zone_internal" Name="Internal Zone" Type="Zone" Master="Rectangle">
+          <XForm>
+            <PinX>600.0</PinX>
+            <PinY>400.0</PinY>
+            <Width>960.0</Width>
+            <Height>593.3250927070457</Height>
+          </XForm>
+          <Fill>
+            <FillForegnd>#4ECDC4</FillForegnd>
+            <FillBkgnd>#FFFFFF</FillBkgnd>
+            <FillPattern>1</FillPattern>
+            <ShdwForegnd>#1F2937</ShdwForegnd>
+            <ShdwPattern>0</ShdwPattern>
+          </Fill>
+          <Line>
+            <LineColor>#1E3A8A</LineColor>
+            <LineWeight>1.5pt</LineWeight>
+            <LinePattern>2</LinePattern>
+          </Line>
+          <Text>Internal Zone</Text>
+          <Char>
+            <Font>Segoe UI Semibold</Font>
+            <Size>14pt</Size>
+            <Color>#1F2937</Color>
+            <Style>1</Style>
+          </Char>
+        </Shape>
+        <Shape ID="app1" Name="Test App" Type="Application" Quality="Professional" Master="Server">
+          <XForm>
+            <PinX>600.0</PinX>
+            <PinY>352.5339925834364</PinY>
+            <Width>614.4000000000001</Width>
+            <Height>284.79604449938194</Height>
+          </XForm>
+          <Fill>
+            <FillForegnd>#4ECDC4</FillForegnd>
+            <FillPattern>1</FillPattern>
+            <ShdwForegnd>#1F2937</ShdwForegnd>
+            <ShdwOffsetX>2pt</ShdwOffsetX>
+            <ShdwOffsetY>2pt</ShdwOffsetY>
+          </Fill>
+          <Line>
+            <LineColor>#9CA3AF</LineColor>
+            <LineWeight>1.5pt</LineWeight>
+            <LinePattern>1</LinePattern>
+            <Rounding>4pt</Rounding>
+          </Line>
+          <Text>Test App</Text>
+          <Char>
+            <Font>Segoe UI</Font>
+            <Size>10pt</Size>
+            <Color>#1F2937</Color>
+          </Char>
+          <Props>
+            <Prop Name="last_updated">
+              <Value>2025-07-23T15:24:46.514177</Value>
+              <Label>Last Updated</Label>
+              <Type>0</Type>
+            </Prop>
+            <Prop Name="documentation_standard">
+              <Value>Enterprise Architecture Framework</Value>
+              <Label>Documentation Standard</Label>
+              <Type>0</Type>
+            </Prop>
+            <Prop Name="review_cycle">
+              <Value>Quarterly</Value>
+              <Label>Review Cycle</Label>
+              <Type>0</Type>
+            </Prop>
+            <Prop Name="data_classification">
+              <Value>internal</Value>
+              <Label>Data Classification</Label>
+              <Type>0</Type>
+            </Prop>
+            <Prop Name="business_owner">
+              <Value>TBD</Value>
+              <Label>Business Owner</Label>
+              <Type>0</Type>
+            </Prop>
+            <Prop Name="technical_owner">
+              <Value>IT Architecture Team</Value>
+              <Label>Technical Owner</Label>
+              <Type>0</Type>
+            </Prop>
+            <Prop Name="cost_center">
+              <Value>Technology Operations</Value>
+              <Label>Cost Center</Label>
+              <Type>0</Type>
+            </Prop>
+            <Prop Name="lifecycle_stage">
+              <Value>Production</Value>
+              <Label>Lifecycle Stage</Label>
+              <Type>0</Type>
+            </Prop>
+            <Prop Name="Business_Criticality">
+              <Value>low</Value>
+              <Label>Business Criticality</Label>
+              <Type>0</Type>
+            </Prop>
+            <Prop Name="Security_Classification">
+              <Value>internal</Value>
+              <Label>Security Classification</Label>
+              <Type>0</Type>
+            </Prop>
+            <Prop Name="Compliance_Requirements">
+              <Value/>
+              <Label>Compliance Requirements</Label>
+              <Type>0</Type>
+            </Prop>
+            <Prop Name="Architectural_Tier">
+              <Value>application</Value>
+              <Label>Architectural Tier</Label>
+              <Type>0</Type>
+            </Prop>
+            <Prop Name="Data_Sensitivity">
+              <Value>internal</Value>
+              <Label>Data Sensitivity</Label>
+              <Type>0</Type>
+            </Prop>
+            <Prop Name="Disaster_Recovery_Tier">
+              <Value>Tier 4 (RTO: 72 hours)</Value>
+              <Label>Disaster Recovery Tier</Label>
+              <Type>0</Type>
+            </Prop>
+          </Props>
+        </Shape>
+      </Shapes>
+      <Connects/>
+      <ExecutiveAnnotations>
+        <Annotation Type="executive_summary" Importance="high">
+          <Content>
+            <Title>Network Security Overview</Title>
+            <Text>Secure architecture protecting 1 applications across 1 security zones</Text>
+          </Content>
+          <Styling>
+            <Style>executive_highlight</Style>
+            <Font>Segoe UI Semibold</Font>
+            <FontSize>14pt</FontSize>
+            <Color>#1E3A8A</Color>
+          </Styling>
+        </Annotation>
+        <Annotation Type="compliance_status" Importance="critical">
+          <Content>
+            <Title>Regulatory Compliance</Title>
+            <Text>Full compliance with banking regulations including PCI-DSS, SOX, and FFIEC requirements</Text>
+          </Content>
+          <Styling>
+            <Style>compliance_badge</Style>
+            <Font>Segoe UI Semibold</Font>
+            <FontSize>14pt</FontSize>
+            <Color>#1E3A8A</Color>
+          </Styling>
+        </Annotation>
+        <Annotation Type="risk_assessment" Importance="high">
+          <Content>
+            <Title>Risk Posture</Title>
+            <Text>0 mission-critical applications properly isolated and protected</Text>
+          </Content>
+          <Styling>
+            <Style>risk_indicator</Style>
+            <Font>Segoe UI Semibold</Font>
+            <FontSize>14pt</FontSize>
+            <Color>#1E3A8A</Color>
+          </Styling>
+        </Annotation>
+      </ExecutiveAnnotations>
+    </Page>
+  </Pages>
+</VisioDocument>

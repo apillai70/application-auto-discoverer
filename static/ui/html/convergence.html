@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Convergence Dashboard</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/convergence.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <div>
+                        <h1 class="header-title">Application Convergence Analysis</h1>
+                        <p class="header-subtitle">Track application modernization and convergence trends</p>
+                    </div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: #3b82f6;" id="convergenceScore">78%</div>
+                        <div class="stat-label">Convergence Score</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: #10b981;" id="modernizedApps">124</div>
+                        <div class="stat-label">Modernized Apps</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: #f59e0b;" id="inProgress">38</div>
+                        <div class="stat-label">In Progress</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: #8b5cf6;" id="planned">100</div>
+                        <div class="stat-label">Planned</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <a href="index.html" class="tab-btn">
+                <span class="tab-icon">🗂️</span>
+                <span>Topology</span>
+            </a>
+            <!--Disable convergence tab with the a tag below
+			<a href="convergence.html" class="tab-btn active">
+                <span class="tab-icon">🔄</span>
+                <span>Convergence</span>
+            </a> -->
+			<a href="#" class="tab-btn disabled">
+				<span class="tab-icon">🔄</span>
+				<span>Convergence</span>
+			</a>
+            <a href="archetype.html" class="tab-btn">
+                <span class="tab-icon">🏗️</span>
+                <span>Archetype Classification</span>
+            </a>
+            <a href="integration.html" class="tab-btn">
+                <span class="tab-icon">🔗</span>
+                <span>Integration</span>
+            </a>
+            <a href="model.html" class="tab-btn">
+                <span class="tab-icon">📊</span>
+                <span>Model</span>
+            </a>
+            <a href="documentation.html" class="tab-btn">
+                <span class="tab-icon">📚</span>
+                <span>Documentation</span>
+            </a>
+            <a href="appRationalization.html" class="tab-btn">
+                <span class="tab-icon">7️⃣</span>
+                <span>App Rationalization</span>
+            </a>
+            <a href="recommendations.html" class="tab-btn">
+                <span class="tab-icon">💡</span>
+                <span>Recommendations</span>
+            </a>
+        </div>
+
+        <!-- Convergence Main Content -->
+        <div class="main-grid">
+            <!-- Convergence Metrics Panel -->
+            <div class="panel">
+                <div class="panel-title">📈 Convergence Metrics</div>
+                
+                <div class="metric-section">
+                    <div class="filter-title">
+                        <span>🎯</span>
+                        <span>Target Architecture Progress</span>
+                    </div>
+                    <div class="progress-items" id="targetProgress"></div>
+                </div>
+                
+                <div class="metric-section">
+                    <div class="filter-title">
+                        <span>⏱️</span>
+                        <span>Timeline Tracking</span>
+                    </div>
+                    <div class="timeline-items" id="timelineTracking"></div>
+                </div>
+                
+                <div class="metric-section">
+                    <div class="filter-title">
+                        <span>💰</span>
+                        <span>Cost Analysis</span>
+                    </div>
+                    <div class="cost-breakdown" id="costBreakdown"></div>
+                </div>
+            </div>
+
+            <!-- Convergence Visualization -->
+            <div class="convergence-container">
+                <div class="convergence-header">
+                    <div class="panel-title">🔄 Convergence Flow</div>
+                    <div class="view-controls">
+                        <button class="btn active" onclick="setConvergenceView('flow')" id="flowBtn">Migration Flow</button>
+                        <button class="btn" onclick="setConvergenceView('timeline')" id="timelineBtn">Timeline</button>
+                        <button class="btn" onclick="setConvergenceView('heatmap')" id="heatmapBtn">Heat Map</button>
+                    </div>
+                </div>
+                
+                <canvas id="convergenceCanvas"></canvas>
+                
+                <div class="convergence-details" id="convergenceDetails">
+                    <div class="detail-title" id="detailTitle"></div>
+                    <div class="detail-info"><strong>Current State:</strong> <span id="detailCurrentState"></span></div>
+                    <div class="detail-info"><strong>Target State:</strong> <span id="detailTargetState"></span></div>
+                    <div class="detail-info"><strong>Progress:</strong> <span id="detailProgress"></span></div>
+                    <div class="detail-info"><strong>Timeline:</strong> <span id="detailTimeline"></span></div>
+                    
+                    <div class="milestones-list">
+                        <div style="font-size: 11px; font-weight: 600; margin-bottom: 6px; color: #cbd5e1;">Key Milestones:</div>
+                        <div id="detailMilestones"></div>
+                    </div>
+                    
+                    <div class="dependencies-list">
+                        <div style="font-size: 11px; font-weight: 600; margin-bottom: 6px; color: #cbd5e1;">Dependencies:</div>
+                        <div id="detailDependencies"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Convergence Status Panel -->
+            <div class="panel status-panel">
+                <div class="panel-title">📊 Convergence Status</div>
+                
+                <div class="status-section">
+                    <div class="filter-title">
+                        <span>🏷️</span>
+                        <span>Migration Stages</span>
+                    </div>
+                    <div id="migrationStages"></div>
+                </div>
+
+                <div class="status-section">
+                    <div class="filter-title">
+                        <span>⚠️</span>
+                        <span>Risk Assessment</span>
+                    </div>
+                    <div class="risk-items">
+                        <div class="risk-item high">
+                            <span class="risk-label">Legacy Dependencies</span>
+                            <span class="risk-level">High</span>
+                        </div>
+                        <div class="risk-item medium">
+                            <span class="risk-label">Data Migration</span>
+                            <span class="risk-level">Medium</span>
+                        </div>
+                        <div class="risk-item low">
+                            <span class="risk-label">User Training</span>
+                            <span class="risk-level">Low</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="status-section">
+                    <div class="filter-title">
+                        <span>📅</span>
+                        <span>Upcoming Milestones</span>
+                    </div>
+                    <div class="milestones-list" id="upcomingMilestones">
+                        <div class="milestone-item">
+                            <span class="milestone-name">Database Migration</span>
+                            <span class="milestone-date">Aug 15</span>
+                        </div>
+                        <div class="milestone-item">
+                            <span class="milestone-name">API Refactoring</span>
+                            <span class="milestone-date">Sep 30</span>
+                        </div>
+                        <div class="milestone-item">
+                            <span class="milestone-name">UI Modernization</span>
+                            <span class="milestone-date">Oct 20</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="status-section">
+                    <div class="filter-title">
+                        <span>📈</span>
+                        <span>KPI Tracking</span>
+                    </div>
+                    <div class="kpi-list" id="kpiTracking">
+                        <div class="kpi-item">
+                            <span class="kpi-name">Performance</span>
+                            <div class="kpi-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 85%; background: #10b981;"></div>
+                                </div>
+                                <span class="kpi-value">85%</span>
+                            </div>
+                        </div>
+                        <div class="kpi-item">
+                            <span class="kpi-name">Scalability</span>
+                            <div class="kpi-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 72%; background: #3b82f6;"></div>
+                                </div>
+                                <span class="kpi-value">72%</span>
+                            </div>
+                        </div>
+                        <div class="kpi-item">
+                            <span class="kpi-name">Security</span>
+                            <div class="kpi-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 91%; background: #8b5cf6;"></div>
+                                </div>
+                                <span class="kpi-value">91%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/app-data.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/convergence.js"></script>
+</body>
+</html>

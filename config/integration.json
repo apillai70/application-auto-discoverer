@@ -1,0 +1,16 @@
+{
+  "extrahop": {
+    "name": "ExtraHop",
+    "type": "rest_api",
+    "endpoint": "https://extrahop.company.com/api/v1",
+    "status": "connected",
+    "dataTypes": ["network_flows", "applications", "devices"]
+  },
+  "splunk": {
+    "name": "Splunk",
+    "type": "rest_api", 
+    "endpoint": "https://splunk.company.com:8089",
+    "status": "configured",
+    "dataTypes": ["logs", "events", "metrics"]
+  }
+}

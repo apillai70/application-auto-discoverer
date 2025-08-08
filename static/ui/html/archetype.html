@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Archetype Classification Dashboard</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/archetype.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <div>
+                        <h1 class="header-title">Application Archetype Classification</h1>
+                        <p class="header-subtitle">Categorize and analyze applications by architectural patterns</p>
+                    </div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: #3b82f6;" id="totalApps">262</div>
+                        <div class="stat-label">Total Apps</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: #10b981;" id="classifiedApps">198</div>
+                        <div class="stat-label">Classified</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: #f59e0b;" id="archetypeCount">12</div>
+                        <div class="stat-label">Archetypes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: #8b5cf6;" id="visibleApps">51</div>
+                        <div class="stat-label">Visible</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <a href="index.html" class="tab-btn">
+                <span class="tab-icon">🗂️</span>
+                <span>Topology</span>
+            </a>
+			<a href="#" class="tab-btn disabled">
+				<span class="tab-icon">🔄</span>
+				<span>Convergence</span>
+			</a>
+            <a href="archetype.html" class="tab-btn active">
+                <span class="tab-icon">🏗️</span>
+                <span>Archetype Classification</span>
+            </a>
+            <a href="integration.html" class="tab-btn">
+                <span class="tab-icon">🔗</span>
+                <span>Integration</span>
+            </a>
+            <a href="model.html" class="tab-btn">
+                <span class="tab-icon">📊</span>
+                <span>Model</span>
+            </a>
+            <a href="documentation.html" class="tab-btn">
+                <span class="tab-icon">📚</span>
+                <span>Documentation</span>
+            </a>
+            <a href="appRationalization.html" class="tab-btn">
+                <span class="tab-icon">7️⃣</span>
+                <span>App Rationalization</span>
+            </a>
+            <a href="recommendations.html" class="tab-btn">
+                <span class="tab-icon">💡</span>
+                <span>Recommendations</span>
+            </a>
+        </div>
+
+        <!-- Archetype Classification Main Content -->
+        <div class="archetype-main-grid">
+            <!-- Archetype Filter Panel -->
+            <div class="panel">
+                <div class="panel-title">🏗️ Architecture Patterns</div>
+                
+                <div class="search-container">
+                    <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                    <input type="text" class="search-box" id="archetypeSearch" placeholder="Search archetypes...">
+                </div>
+                
+                <div class="filter-section">
+                    <div class="filter-title">
+                        <span>📱</span>
+                        <span>Application Archetypes</span>
+                    </div>
+                    <div class="archetype-grid" id="archetypeList"></div>
+                </div>
+                
+                <button class="btn reset-btn" onclick="resetFilters()">Reset All Filters</button>
+            </div>
+
+            <!-- Graph Container -->
+            <div class="graph-container">
+                <div class="graph-header">
+                    <div class="panel-title">📊 Application Landscape</div>
+                    <div class="view-controls">
+                       <button class="btn active" onclick="setView('cards')" id="cardsBtn">Card View</button>
+                       <button class="btn" onclick="setView('cluster')" id="clusterBtn">Cluster View</button>
+                       <button class="btn" onclick="setView('network')" id="networkBtn">Network View</button>
+                       <button class="btn" onclick="setView('hierarchy')" id="hierarchyBtn">Hierarchy</button> 				
+                    </div>
+                </div>
+                
+                <canvas id="appCanvas"></canvas>
+                
+                <div class="app-details" id="appDetails">
+                    <div class="app-name" id="detailAppName">Select an application to view details</div>
+                    <div class="app-info"><strong>Archetype:</strong> <span id="detailArchetype">-</span></div>
+                    <div class="app-info"><strong>Traffic Pattern:</strong> <span id="detailTraffic">-</span></div>
+                    <div class="app-info"><strong>Status:</strong> <span id="detailStatus">-</span></div>
+                    
+                    <div class="indicators-list">
+                        <div style="font-size: 11px; font-weight: 600; margin-bottom: 6px; color: #cbd5e1;">Key Indicators:</div>
+                        <div id="detailIndicators">None selected</div>
+                    </div>
+                    
+                    <div class="ports-list">
+                        <div style="font-size: 11px; font-weight: 600; margin-bottom: 6px; color: #cbd5e1;">Typical Ports:</div>
+                        <div id="detailPorts">None selected</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Legend Panel -->
+            <div class="panel legend-panel">
+                <div class="panel-title">🎨 Legend</div>
+                
+                <div>
+                    <div class="filter-title">
+                        <span>🏷️</span>
+                        <span>Archetype Colors</span>
+                    </div>
+                    <div id="archetypeLegend"></div>
+                </div>
+
+                <div class="pattern-legend">
+                    <div class="filter-title">
+                        <span>🌐</span>
+                        <span>Traffic Patterns</span>
+                    </div>
+                    <div class="traffic-pattern">north-south: Client ↔ Server</div>
+                    <div class="traffic-pattern">east-west: Service ↔ Service</div>
+                    <div class="traffic-pattern">pub-sub: Event-driven</div>
+                    <div class="traffic-pattern">batch: Scheduled processing</div>
+                    <div class="traffic-pattern">on-demand: Serverless</div>
+                </div>
+
+                <div class="pattern-legend">
+                    <div class="filter-title">
+                        <span>📏</span>
+                        <span>Node Sizes</span>
+                    </div>
+                    <div style="font-size: 10px; color: #94a3b8; line-height: 1.6;">
+                        <div>● Small: 1-5 apps</div>
+                        <div>● Medium: 6-15 apps</div>
+                        <div>● Large: 16+ apps</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Container -->
+        <div id="toast-container"></div>
+        
+        <!-- Loading Spinner (hidden by default) -->
+        <div class="loading-spinner" id="loading-spinner" style="display: none;"></div>
+    </div>
+
+    <!-- Scripts - Load in proper order (REMOVED DUPLICATES) -->
+    <script src="../js/app-data.js"></script>
+    <script src="../js/common.js"></script>
+    <script>
+        // Prevent multiple loading indicators
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hide any accidental loading indicators that might show up
+            const spinner = document.getElementById('loading-spinner');
+            if (spinner) {
+                spinner.style.display = 'none';
+            }
+            
+            // Clear any progress bars that shouldn't be visible
+            const progressBars = document.querySelectorAll('.progress-bar');
+            progressBars.forEach(bar => {
+                const progressFill = bar.querySelector('.progress-fill');
+                if (progressFill && !bar.closest('.kpi-item')) {
+                    progressFill.style.width = '0%';
+                    bar.style.display = 'none';
+                }
+            });
+            
+            // Initialize archetype functionality
+            if (typeof initializeArchetypePage === 'function') {
+                initializeArchetypePage();
+            } else {
+                console.warn('archetype.js not loaded or initializeArchetypePage function not found');
+                // Show a placeholder message
+                const canvas = document.getElementById('appCanvas');
+                if (canvas) {
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = canvas.offsetWidth;
+                    canvas.height = canvas.offsetHeight;
+                    
+                    ctx.fillStyle = '#1e293b';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    ctx.fillStyle = '#94a3b8';
+                    ctx.font = '16px "Segoe UI", sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('Loading archetype classification...', canvas.width / 2, canvas.height / 2);
+                }
+            }
+        });
+
+        // Placeholder functions to prevent errors
+        function setView(viewType) {
+            console.log('Setting view to:', viewType);
+            
+            // Update button states
+            document.querySelectorAll('.view-controls .btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            const activeBtn = document.getElementById(viewType + 'Btn');
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            }
+            
+            // Show toast for now
+            if (window.dashboardCommon && window.dashboardCommon.showToast) {
+                window.dashboardCommon.showToast(`Switched to ${viewType} view`, 'info');
+            }
+        }
+        
+        function resetFilters() {
+            console.log('Resetting filters');
+            
+            // Clear search box
+            const searchBox = document.getElementById('archetypeSearch');
+            if (searchBox) {
+                searchBox.value = '';
+            }
+            
+            // Reset any active filters
+            document.querySelectorAll('.archetype-filter.active').forEach(filter => {
+                filter.classList.remove('active');
+            });
+            
+            // Show toast
+            if (window.dashboardCommon && window.dashboardCommon.showToast) {
+                window.dashboardCommon.showToast('Filters reset', 'success');
+            }
+        }
+    </script>
+    <script src="../js/archetype.js"></script>
+</body>
+</html>

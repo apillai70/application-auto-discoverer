@@ -1,0 +1,16 @@
+{
+  "apiBaseUrl": "/api/v1",
+  "refreshInterval": 30000,
+  "maxRetries": 3,
+  "components": {
+    "topology": "/static/ui/html/components/topology-tab.html",
+    "integration": "/static/ui/html/components/integration-tab.html",
+    "documentation": "/static/ui/html/components/documentation-tab.html",
+    "deployment": "/static/ui/html/components/deployment-tab.html"
+  },
+  "features": {
+    "realTimeUpdates": true,
+    "mlModeling": true,
+    "exportFormats": ["json", "csv", "excel", "word", "pdf", "visio"]
+  }
+}
