@@ -1,0 +1,44 @@
+{
+  "azure_ad": {
+    "webhook_endpoint": "/api/v1/audit/integrations/azure-ad",
+    "required_fields": [
+      "userPrincipalName",
+      "ipAddress",
+      "resultType"
+    ],
+    "field_mapping": {
+      "userPrincipalName": "user_id",
+      "ipAddress": "source_ip",
+      "resultType": "error_code",
+      "activityDisplayName": "action"
+    }
+  },
+  "okta": {
+    "webhook_endpoint": "/api/v1/audit/integrations/okta",
+    "required_fields": [
+      "actor.alternateId",
+      "client.ipAddress",
+      "outcome.result"
+    ],
+    "field_mapping": {
+      "actor.alternateId": "user_id",
+      "client.ipAddress": "source_ip",
+      "outcome.result": "result",
+      "eventType": "action"
+    }
+  },
+  "adfs": {
+    "webhook_endpoint": "/api/v1/audit/integrations/adfs",
+    "required_fields": [
+      "username",
+      "client_ip",
+      "result"
+    ],
+    "field_mapping": {
+      "username": "user_id",
+      "client_ip": "source_ip",
+      "result": "result",
+      "action": "action"
+    }
+  }
+}

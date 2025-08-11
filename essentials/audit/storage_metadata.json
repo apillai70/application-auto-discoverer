@@ -1,0 +1,21 @@
+{
+  "system_info": {
+    "version": "2.1.0",
+    "created": "2025-08-11T08:28:34.168295",
+    "storage_type": "file_based",
+    "format": "jsonl"
+  },
+  "statistics": {
+    "total_events": 0,
+    "total_files": 0,
+    "total_size_bytes": 0,
+    "last_updated": "2025-08-11T08:28:34.168295"
+  },
+  "schema_version": {
+    "current": "1.0.0",
+    "compatible": [
+      "1.0.0"
+    ],
+    "migration_required": false
+  }
+}

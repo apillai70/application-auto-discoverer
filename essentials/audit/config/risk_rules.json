@@ -1,0 +1,37 @@
+{
+  "geographic_rules": {
+    "trusted_countries": [
+      "United States",
+      "Canada",
+      "United Kingdom"
+    ],
+    "high_risk_countries": [
+      "Unknown",
+      "TOR Exit Node"
+    ],
+    "location_change_threshold": 1000
+  },
+  "temporal_rules": {
+    "business_hours": {
+      "start": 6,
+      "end": 22
+    },
+    "weekend_factor": 1.5,
+    "holiday_factor": 2.0
+  },
+  "device_rules": {
+    "trusted_device_threshold": 30,
+    "new_device_penalty": 20,
+    "untrusted_device_penalty": 15
+  },
+  "behavioral_rules": {
+    "failed_attempts_threshold": 5,
+    "velocity_threshold": 300,
+    "session_anomaly_detection": true
+  },
+  "ip_reputation": {
+    "blacklist_penalty": 50,
+    "proxy_penalty": 25,
+    "datacenter_penalty": 15
+  }
+}

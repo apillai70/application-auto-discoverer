@@ -1,0 +1,42 @@
+{
+  "storage": {
+    "type": "file_based",
+    "base_path": "essentials/audit",
+    "format": "jsonl",
+    "rotation": "daily",
+    "max_file_size_mb": 100,
+    "compress_old_files": true,
+    "retention_days": 365
+  },
+  "risk_assessment": {
+    "enabled": true,
+    "geographic_weight": 25.0,
+    "temporal_weight": 15.0,
+    "device_weight": 20.0,
+    "behavioral_weight": 30.0,
+    "thresholds": {
+      "low": 30,
+      "medium": 50,
+      "high": 70,
+      "critical": 90
+    }
+  },
+  "integrations": {
+    "azure_ad": true,
+    "okta": true,
+    "adfs": true,
+    "siem_enabled": false
+  },
+  "monitoring": {
+    "real_time_alerts": true,
+    "suspicious_activity_threshold": 10,
+    "high_risk_notification": true,
+    "backup_enabled": true
+  },
+  "processing": {
+    "background_tasks": true,
+    "batch_size": 1000,
+    "index_enabled": true,
+    "auto_archival": true
+  }
+}

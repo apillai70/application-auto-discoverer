@@ -1,14 +1,12 @@
-# routers/__init__.py
+# routers/__init__.py - Updated with Enhanced Audit System Integration
 """
 Router package initialization for Banking Network Security & Discovery Platform
-
-# routers/__init__.py - Updated with comprehensive router system
 
 This package contains all API routers for the integrated system:
 - Core application functionality (topology, integration, documentation)
 - Authentication and authorization
 - Health monitoring and system diagnostics
-- Audit logging and compliance
+- Enhanced audit logging with file-based storage and risk assessment
 - Security features (network segmentation, threat detection)
 - Testing and debugging utilities
 """
@@ -22,7 +20,7 @@ from . import diagram
 # Import authentication and security routers
 from . import auth
 from . import health
-from . import audit
+from . import audit  # Enhanced audit router with file-based storage
 from . import compliance
 from . import threat_detection
 
@@ -41,12 +39,19 @@ try:
     from . import network_discovery
     from . import migration
     from . import app_rationalization
-
 except ImportError:
     # These are optional modules
     network_discovery = None
     migration = None
     app_rationalization = None
+
+# Check for enhanced audit system components
+try:
+    import storage.file_audit_storage
+    import utils.audit_file_processor
+    ENHANCED_AUDIT_AVAILABLE = True
+except ImportError:
+    ENHANCED_AUDIT_AVAILABLE = False
 
 # Export all available routers
 __all__ = [
@@ -59,7 +64,7 @@ __all__ = [
     # Authentication and security
     "auth",
     "health",
-    "audit",
+    "audit",  # Enhanced audit system
     "compliance",
     "threat_detection",
     
@@ -89,6 +94,7 @@ __all__ = [
     "get_enabled_features",
     "is_feature_enabled",
     "check_compatibility",
+    "get_audit_capabilities",
     
     # Constants
     "ROUTER_METADATA",
@@ -105,28 +111,32 @@ ROUTER_METADATA = {
         "tags": ["topology"],
         "description": "Network topology discovery and mapping",
         "category": "core",
-        "requires_auth": False
+        "requires_auth": False,
+        "version": "1.0.0"
     },
     "integration": {
         "prefix": "/api/v1/integration",
         "tags": ["integration"],
         "description": "System integrations and external connections", 
         "category": "core",
-        "requires_auth": False
+        "requires_auth": False,
+        "version": "1.0.0"
     },
     "documentation": {
         "prefix": "/api/v1/documentation",
         "tags": ["documentation"],
         "description": "Automated documentation generation",
         "category": "core",
-        "requires_auth": False
+        "requires_auth": False,
+        "version": "1.0.0"
     },
     "diagram": {
         "prefix": "/api/v1/diagram",
         "tags": ["diagram"],
         "description": "Network diagram creation and visualization",
         "category": "core", 
-        "requires_auth": False
+        "requires_auth": False,
+        "version": "1.0.0"
     },
     
     # Authentication and core security
@@ -135,35 +145,77 @@ ROUTER_METADATA = {
         "tags": ["authentication"],
         "description": "Authentication and authorization services",
         "category": "security",
-        "requires_auth": False  # Auth endpoints don't require authentication
+        "requires_auth": False,  # Auth endpoints don't require authentication
+        "version": "1.0.0"
     },
     "health": {
         "prefix": "/api/v1/health", 
         "tags": ["health", "monitoring"],
         "description": "Health monitoring and system diagnostics",
         "category": "utility",
-        "requires_auth": False
+        "requires_auth": False,
+        "version": "1.0.0"
     },
+    
+    # ENHANCED AUDIT SYSTEM
     "audit": {
         "prefix": "/api/v1/audit",
-        "tags": ["audit", "logging"],
-        "description": "Audit logging and event tracking",
+        "tags": ["audit", "security", "compliance", "risk-assessment"],
+        "description": "Enhanced audit system with file-based storage, risk assessment, and threat detection",
         "category": "security",
-        "requires_auth": True
+        "requires_auth": True,
+        "version": "2.1.0",  # Enhanced version
+        "enhanced_features": {
+            "file_based_storage": ENHANCED_AUDIT_AVAILABLE,
+            "risk_assessment": True,
+            "suspicious_activity_detection": True,
+            "identity_provider_integrations": True,
+            "bulk_event_processing": True,
+            "advanced_analytics": ENHANCED_AUDIT_AVAILABLE,
+            "real_time_monitoring": True,
+            "compliance_frameworks": ["SOX", "PCI-DSS", "GDPR", "SOC2"],
+            "storage_location": "essentials/audit/",
+            "supported_formats": ["JSONL", "JSON", "CSV"],
+            "data_retention": "365 days",
+            "compression": True,
+            "encryption": True
+        },
+        "integrations": {
+            "azure_ad": "/integrations/azure-ad",
+            "okta": "/integrations/okta", 
+            "adfs": "/integrations/adfs"
+        },
+        "endpoints": {
+            "overview": "/",
+            "create_event": "/events",
+            "bulk_events": "/events/bulk",
+            "query_events": "/events/query",
+            "summary": "/summary",
+            "risk_profiles": "/risk-profiles/{user_id}",
+            "suspicious_activity": "/suspicious-activity",
+            "storage_info": "/storage-info",
+            "export": "/export",
+            "health_check": "/health"
+        }
     },
+    
     "compliance": {
         "prefix": "/api/v1/compliance",
         "tags": ["compliance", "governance"],
         "description": "Compliance framework management and assessment",
         "category": "security", 
-        "requires_auth": True
+        "requires_auth": True,
+        "version": "1.0.0",
+        "depends_on": ["audit"]  # Enhanced compliance depends on audit
     },
     "threat_detection": {
         "prefix": "/api/v1/threats",
         "tags": ["threat-detection", "security"],
         "description": "Threat detection and incident response",
         "category": "security",
-        "requires_auth": True
+        "requires_auth": True,
+        "version": "1.0.0",
+        "depends_on": ["audit"]  # Threat detection integrates with audit
     },
     
     # Network security functionality
@@ -172,28 +224,35 @@ ROUTER_METADATA = {
         "tags": ["network-segmentation"],
         "description": "Network segmentation policies and microsegmentation",
         "category": "security",
-        "requires_auth": True
+        "requires_auth": True,
+        "version": "1.0.0"
     },
     "log_management": {
         "prefix": "/api/v1/logs",
         "tags": ["log-management"],
         "description": "Log file processing and analysis",
         "category": "security",
-        "requires_auth": True
+        "requires_auth": True,
+        "version": "1.0.0",
+        "integrates_with": ["audit"]  # Log management feeds into audit
     },
     "analytics": {
         "prefix": "/api/v1/analytics",
         "tags": ["analytics"],
         "description": "Security analytics and traffic insights",
         "category": "security",
-        "requires_auth": True
+        "requires_auth": True,
+        "version": "1.0.0",
+        "data_sources": ["audit", "log_management"]
     },
     "reports": {
         "prefix": "/api/v1/reports", 
         "tags": ["reports"],
         "description": "Security and compliance reporting",
         "category": "security",
-        "requires_auth": True
+        "requires_auth": True,
+        "version": "1.0.0",
+        "data_sources": ["audit", "analytics", "compliance"]
     },
     
     # Utility routers
@@ -202,14 +261,16 @@ ROUTER_METADATA = {
         "tags": ["testing", "quality-assurance"],
         "description": "Automated testing and validation endpoints",
         "category": "utility",
-        "requires_auth": False
+        "requires_auth": False,
+        "version": "1.0.0"
     },
     "debug": {
         "prefix": "/api/v1/debug",
         "tags": ["debugging", "diagnostics"],
         "description": "Debugging and system information endpoints",
         "category": "utility", 
-        "requires_auth": True
+        "requires_auth": True,
+        "version": "1.0.0"
     },
     
     # Optional routers
@@ -219,7 +280,8 @@ ROUTER_METADATA = {
         "description": "Advanced network asset discovery",
         "category": "security",
         "requires_auth": True,
-        "optional": True
+        "optional": True,
+        "version": "1.0.0"
     },
     "migration": {
         "prefix": "/api/v1/migration", 
@@ -227,7 +289,8 @@ ROUTER_METADATA = {
         "description": "Application migration planning and execution",
         "category": "application",
         "requires_auth": True,
-        "optional": True
+        "optional": True,
+        "version": "1.0.0"
     },
     "app_rationalization": {
         "prefix": "/api/v1/apps",
@@ -235,7 +298,8 @@ ROUTER_METADATA = {
         "description": "Application portfolio management and rationalization",
         "category": "application",
         "requires_auth": True,
-        "optional": True
+        "optional": True,
+        "version": "1.0.0"
     }
 }
 
@@ -250,11 +314,24 @@ def get_available_routers():
         router_module = globals().get(router_name)
         if router_module is not None:
             metadata = ROUTER_METADATA.get(router_name, {})
-            available.append({
+            
+            # Add runtime status information
+            status = {
                 "name": router_name,
                 "module": router_module,
-                "metadata": metadata
-            })
+                "metadata": metadata,
+                "status": "available"
+            }
+            
+            # Special handling for enhanced audit system
+            if router_name == "audit":
+                status["enhanced_features_available"] = ENHANCED_AUDIT_AVAILABLE
+                status["storage_components"] = {
+                    "file_storage": ENHANCED_AUDIT_AVAILABLE,
+                    "analytics_processor": ENHANCED_AUDIT_AVAILABLE
+                }
+            
+            available.append(status)
     
     return available
 
@@ -281,6 +358,39 @@ def get_application_routers():
     """Get all application management routers"""
     return get_routers_by_category("application")
 
+def get_audit_capabilities():
+    """Get detailed audit system capabilities"""
+    audit_metadata = ROUTER_METADATA.get("audit", {})
+    
+    capabilities = {
+        "basic_audit": True,
+        "enhanced_features_available": ENHANCED_AUDIT_AVAILABLE,
+        "version": audit_metadata.get("version", "1.0.0"),
+        "storage_type": "file_based" if ENHANCED_AUDIT_AVAILABLE else "memory",
+        "features": audit_metadata.get("enhanced_features", {}),
+        "integrations": audit_metadata.get("integrations", {}),
+        "endpoints": audit_metadata.get("endpoints", {}),
+        "compliance_frameworks": audit_metadata.get("enhanced_features", {}).get("compliance_frameworks", [])
+    }
+    
+    if ENHANCED_AUDIT_AVAILABLE:
+        capabilities["storage_info"] = {
+            "location": "essentials/audit/",
+            "formats": ["JSONL", "JSON", "CSV"],
+            "compression": True,
+            "retention_days": 365,
+            "backup_enabled": True
+        }
+        
+        capabilities["risk_assessment"] = {
+            "real_time": True,
+            "factors": ["geographic", "temporal", "device", "behavioral"],
+            "risk_levels": ["low", "medium", "high", "critical"],
+            "thresholds_configurable": True
+        }
+    
+    return capabilities
+
 def get_router_dependencies():
     """Get router dependency information for proper initialization order"""
     return {
@@ -295,15 +405,17 @@ def get_router_dependencies():
         # Authentication must be first for security routers
         "auth": [],
         
-        # Security routers (require auth)
-        "audit": ["auth"],
+        # Enhanced audit system (minimal dependencies)
+        "audit": ["auth"] if ROUTER_METADATA["audit"]["requires_auth"] else [],
+        
+        # Security routers (require auth and often depend on audit)
         "debug": ["auth"],
-        "compliance": ["auth", "audit"],
-        "threat_detection": ["auth", "audit"],
+        "compliance": ["auth", "audit"],  # Compliance benefits from audit data
+        "threat_detection": ["auth", "audit"],  # Threat detection uses audit events
         "log_management": ["auth"],
         "netseg": ["auth", "log_management"],
-        "analytics": ["auth", "log_management"],
-        "reports": ["auth", "analytics", "compliance"],
+        "analytics": ["auth", "log_management", "audit"],  # Analytics uses audit data
+        "reports": ["auth", "analytics", "compliance", "audit"],  # Reports aggregate data
         
         # Optional routers
         "network_discovery": ["auth"],
@@ -312,9 +424,9 @@ def get_router_dependencies():
     }
 
 # Version information
-__version__ = "2.0.0"
+__version__ = "2.1.0"  # Updated to reflect enhanced audit system
 __author__ = "Banking Security Platform Team"
-__description__ = "Integrated network discovery and security management platform"
+__description__ = "Integrated network discovery and security management platform with enhanced audit capabilities"
 
 # Enhanced feature flags
 FEATURES = {
@@ -327,6 +439,11 @@ FEATURES = {
     # Security features
     "authentication": True,
     "audit_logging": True,
+    "enhanced_audit_system": ENHANCED_AUDIT_AVAILABLE,  # New feature flag
+    "file_based_audit_storage": ENHANCED_AUDIT_AVAILABLE,  # New feature flag
+    "audit_risk_assessment": True,  # New feature flag
+    "suspicious_activity_detection": True,  # New feature flag
+    "identity_provider_integrations": True,  # New feature flag
     "compliance_management": True,
     "threat_detection": True,
     "network_segmentation": True,
@@ -353,7 +470,7 @@ def is_feature_enabled(feature_name: str) -> bool:
     """Check if a specific feature is enabled"""
     return FEATURES.get(feature_name, False)
 
-# Enhanced initialization order
+# Enhanced initialization order (updated for audit dependencies)
 INITIALIZATION_ORDER = [
     # Core system routers (no dependencies)
     "health",         # Health monitoring should be available first
@@ -366,17 +483,17 @@ INITIALIZATION_ORDER = [
     # Authentication (required for security features)
     "auth",           # Must be before security routers
     
-    # Basic security features
-    "audit",          # Audit logging
-    "debug",          # Debug (requires auth)
+    # Enhanced audit system (early in security chain)
+    "audit",          # Enhanced audit logging with file storage
     
-    # Advanced security features
+    # Other security features
+    "debug",          # Debug (requires auth)
     "log_management", # Log processing
-    "compliance",     # Compliance management
-    "threat_detection", # Threat detection
+    "compliance",     # Compliance management (benefits from audit)
+    "threat_detection", # Threat detection (integrates with audit)
     "netseg",         # Network segmentation
-    "analytics",      # Security analytics
-    "reports",        # Reporting (requires analytics and compliance)
+    "analytics",      # Security analytics (uses audit data)
+    "reports",        # Reporting (aggregates all security data)
     
     # Optional application management
     "app_rationalization", # Application portfolio
@@ -400,8 +517,11 @@ API_GROUPS = {
         "routers": ["health", "test", "debug"]
     },
     "Security & Authentication": {
-        "description": "Authentication, authorization, and security management",
-        "routers": ["auth", "audit", "compliance", "threat_detection"]
+        "description": "Authentication, authorization, and enhanced audit management",
+        "routers": ["auth", "audit", "compliance", "threat_detection"],
+        "enhanced_features": {
+            "audit": ["file_based_storage", "risk_assessment", "identity_integrations"]
+        }
     },
     "Network Security": {
         "description": "Network segmentation, monitoring, and analytics",
@@ -433,6 +553,10 @@ def get_api_groups():
                 "description": group_config["description"],
                 "routers": available_routers_in_group
             }
+            
+            # Add enhanced feature information
+            if "enhanced_features" in group_config:
+                groups[group_name]["enhanced_features"] = group_config["enhanced_features"]
     
     return groups
 
@@ -457,6 +581,16 @@ def check_compatibility():
                 if dep not in available_names:
                     warnings.append(f"Router '{router_name}' requires '{dep}' but it's not available")
     
+    # Check audit system specific compatibility
+    if "audit" in available_names:
+        if not ENHANCED_AUDIT_AVAILABLE:
+            warnings.append("Basic audit router available but enhanced features (file storage, analytics) not installed")
+        
+        # Check if storage directory exists
+        from pathlib import Path
+        if not Path("essentials/audit").exists():
+            warnings.append("Audit router available but storage directory not initialized")
+    
     return warnings
 
 def get_router_summary():
@@ -470,14 +604,22 @@ def get_router_summary():
             by_category[category] = []
         by_category[category].append(router["name"])
     
-    return {
+    # Enhanced summary with audit system details
+    summary = {
         "total_routers": len(available),
         "by_category": by_category,
         "enabled_features": len(get_enabled_features()),
         "initialization_order": get_initialization_order(),
         "compatibility_warnings": check_compatibility(),
-        "version": __version__
+        "version": __version__,
+        "enhanced_audit": {
+            "available": ENHANCED_AUDIT_AVAILABLE,
+            "version": ROUTER_METADATA["audit"]["version"],
+            "capabilities": get_audit_capabilities() if "audit" in [r["name"] for r in available] else None
+        }
     }
+    
+    return summary
 
 # Initialize compatibility check on import
 _compatibility_warnings = check_compatibility()
@@ -486,8 +628,13 @@ if _compatibility_warnings:
     for warning in _compatibility_warnings:
         python_warnings.warn(f"Router compatibility issue: {warning}", UserWarning)
 
+# Enhanced startup message
 print(f"🔧 Router package initialized (v{__version__})")
 print(f"📊 Available routers: {len(get_available_routers())}")
 print(f"🔐 Security features: {'✅' if is_feature_enabled('authentication') else '❌'}")
+print(f"🛡️ Enhanced audit system: {'✅' if ENHANCED_AUDIT_AVAILABLE else '⚠️ Basic only'}")
+if is_feature_enabled('enhanced_audit_system'):
+    print(f"📁 Audit storage: File-based (essentials/audit/)")
+    print(f"🔍 Risk assessment: {'✅' if is_feature_enabled('audit_risk_assessment') else '❌'}")
 if _compatibility_warnings:
     print(f"⚠️ Compatibility warnings: {len(_compatibility_warnings)}")

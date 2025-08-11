@@ -1,0 +1,33 @@
+# ENTERPRISE AUDIT SYSTEM - PRODUCTION REQUIREMENTS
+# =================================================
+# Date: $(date +%Y-%m-%d)
+# Purpose: Core audit system with minimal dependencies
+# Security: All packages vetted for enterprise use
+
+# FastAPI Stack - Production Ready
+fastapi==0.104.1
+uvicorn[standard]==0.24.0.post1
+pydantic==2.5.0
+python-multipart==0.0.6
+
+# Async Operations
+aiofiles==23.2.0
+
+# HTTP Client for Integrations
+aiohttp==3.9.1
+
+# Core Python Libraries (built-in, no conflicts)
+# json, datetime, pathlib, typing, collections, asyncio
+
+# Date/Time Utilities
+python-dateutil==2.8.2
+
+# Optional: Add ONLY if needed for specific integrations
+# requests==2.31.0          # For REST API integrations
+# cryptography==41.0.8      # For encryption/JWT handling
+# python-jose[cryptography]==3.3.0  # For JWT tokens
+
+# NOT INCLUDED (separate microservice recommended):
+# - pandas, numpy, matplotlib (data analysis)
+# - scikit-learn, tensorflow (ML)
+# - opencv-python (computer vision)

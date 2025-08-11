@@ -13,13 +13,13 @@ alembic==1.12.1
 psycopg2-binary==2.9.9
 
 # Data processing and analysis (Python 3.11 optimized)
-pandas==2.1.4
-numpy==1.24.3
+pandas>=2.1.0,<2.2.0
+numpy>=2.0.0,<2.3.0
 openpyxl==3.1.2
 xlrd==2.0.1
 
 # Log analysis and parsing
-python-dateutil==2.8.2
+python-dateutil>=2.8.0
 pytz==2023.3
 
 # API clients for data sources
@@ -35,14 +35,15 @@ python-docx==0.8.11
 
 # Diagram generation
 graphviz==0.20.1
-matplotlib==3.8.2
+matplotlib>=3.7.0
+seaborn>=0.12.0
 networkx==3.2.1
 pillow==10.1.0
 
 # Utilities
 aiofiles==23.2.1
 httpx==0.25.2
-aiohttp==3.9.1
+aiohttp>=3.9.0
 pyyaml==6.0.1
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
@@ -89,7 +90,6 @@ PyJWT==2.8.0
 # App Rationalization specific dependencies
 # Enhanced data analysis for migration planning
 scipy==1.11.4
-seaborn==0.12.2
 
 # Enhanced Excel export capabilities
 xlsxwriter==3.1.9
@@ -120,3 +120,6 @@ botocore
 
 beautifulsoup4
 watchdog
+
+# Optional: Specific opencv-python version if needed
+#opencv-python>=4.8.0,<4.12.0
