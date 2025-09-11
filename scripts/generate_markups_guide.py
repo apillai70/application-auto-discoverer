@@ -22,9 +22,13 @@ from docx.enum.style import WD_STYLE_TYPE
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from datetime import datetime
+import argparse
+import os
+from pathlib import Path
+from typing import Iterable
 
 
-OUTPUT_PATH = "/workspace/Markups_Comprehensive_Guide.docx"
+DEFAULT_OUTPUT_PATH = "/workspace/Markups_Comprehensive_Guide.docx"
 
 
 def ensure_code_paragraph_style(document: Document, style_name: str = "Code Block") -> None:
@@ -365,7 +369,7 @@ pandoc input.tex -o output.docx --from=latex
     ])
 
 
-def build_document() -> None:
+def build_document(output_path: Path) -> None:
     document = Document()
 
     # Prepare styles
@@ -408,10 +412,108 @@ def build_document() -> None:
         "Asciidoctor Docs",
     ])
 
-    document.save(OUTPUT_PATH)
-    print(f"Generated: {OUTPUT_PATH}")
+    document.save(str(output_path))
+    print(f"Generated: {output_path}")
+
+
+def infer_format_from_extension(file_path: Path) -> str:
+    ext = file_path.suffix.lower()
+    mapping = {
+        ".md": "Markdown",
+        ".markdown": "Markdown",
+        ".rst": "reStructuredText",
+        ".adoc": "AsciiDoc",
+        ".asciidoc": "AsciiDoc",
+        ".html": "HTML",
+        ".htm": "HTML",
+        ".xml": "XML",
+        ".tex": "LaTeX",
+        ".mmd": "Mermaid",
+        ".mermaid": "Mermaid",
+        ".puml": "PlantUML",
+        ".uml": "PlantUML",
+        ".yaml": "YAML",
+        ".yml": "YAML",
+        ".json": "JSON",
+        ".toml": "TOML",
+    }
+    return mapping.get(ext, ext.lstrip(".").upper() or "Unknown")
+
+
+def iter_markup_files(root_dir: Path) -> Iterable[Path]:
+    allowed_exts = {
+        ".md", ".markdown", ".rst", ".adoc", ".asciidoc", ".html", ".htm",
+        ".xml", ".tex", ".mmd", ".mermaid", ".puml", ".uml", ".yaml",
+        ".yml", ".json", ".toml",
+    }
+    for base, _dirs, files in os.walk(root_dir):
+        for name in sorted(files):
+            p = Path(base) / name
+            if p.suffix.lower() in allowed_exts:
+                yield p
+
+
+def add_file_section(document: Document, root_dir: Path, file_path: Path) -> None:
+    rel = file_path.relative_to(root_dir)
+    title = f"{rel.as_posix()} ({infer_format_from_extension(file_path)})"
+    add_section_heading(document, title, 1)
+
+    try:
+        text = file_path.read_text(encoding="utf-8")
+    except UnicodeDecodeError:
+        text = file_path.read_text(encoding="latin-1")
+
+    # Keep content as a code block to preserve original markup
+    add_code_block(document, text)
+
+
+def build_from_folder(input_dir: Path, output_path: Path) -> None:
+    document = Document()
+    ensure_code_paragraph_style(document, "Code Block")
+
+    add_cover(document)
+    add_toc(document)
+
+    add_section_heading(document, f"Bundle Overview", 1)
+    add_bullets(document, [
+        f"Source folder: {input_dir}",
+        "Each file is included as a separate section with its raw markup.",
+        "Use Pandoc commands (see guide section) to convert markups if needed.",
+    ])
+
+    count = 0
+    for f in iter_markup_files(input_dir):
+        add_file_section(document, input_dir, f)
+        count += 1
+
+    if count == 0:
+        add_section_heading(document, "No supported markup files found.", 2)
+
+    document.save(str(output_path))
+    print(f"Generated bundle: {output_path} (files: {count})")
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Generate Word docs for markups.")
+    parser.add_argument("--mode", choices=["guide", "compile"], default="guide",
+                        help="guide: comprehensive guide; compile: include all markup files from a folder")
+    parser.add_argument("--input-dir", type=str, default="",
+                        help="Folder containing markup files (required for compile mode)")
+    parser.add_argument("--output", type=str, default=DEFAULT_OUTPUT_PATH,
+                        help="Output .docx path")
+    args = parser.parse_args()
+
+    if args.mode == "compile":
+        if not args.input_dir:
+            raise SystemExit("--input-dir is required for compile mode")
+        input_dir = Path(args.input_dir).resolve()
+        if not input_dir.exists() or not input_dir.is_dir():
+            raise SystemExit(f"Input directory not found: {input_dir}")
+        build_from_folder(input_dir, Path(args.output).resolve())
+    else:
+        build_document(Path(args.output).resolve())
 
 
 if __name__ == "__main__":
-    build_document()
+    main()
 
