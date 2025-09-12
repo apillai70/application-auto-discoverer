@@ -7,8 +7,18 @@ class APIClient {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         };
+		this.checkHealth();
     }
     
+	async checkHealth() {
+        try {
+            await this.get('/health');
+            console.log('✅ API connected at', this.baseURL);
+        } catch (error) {
+            console.warn('⚠️ API not responding at', this.baseURL);
+        }
+    }
+	
     async request(endpoint, options = {}) {
         const url = `${this.baseURL}${endpoint}`;
         const config = {

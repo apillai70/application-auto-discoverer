@@ -1,0 +1,67 @@
+{
+  "generation_info": {
+    "app_id": "web-portal",
+    "generated_at": "2025-08-29T17:29:11.501953",
+    "output_format_requested": "both",
+    "formats_generated": [
+      "visio",
+      "lucid"
+    ],
+    "quality_level": "professional",
+    "professional_grade": true,
+    "banking_optimized": true
+  },
+  "executive_metadata": {
+    "document_classification": "CONFIDENTIAL - EXECUTIVE REVIEW",
+    "prepared_for": "C-Suite Leadership Team",
+    "document_type": "Network Architecture Executive Summary",
+    "preparation_date": "August 29, 2025",
+    "next_review_date": "September 29, 2025",
+    "document_owner": "Chief Technology Officer",
+    "distribution_list": [
+      "CTO",
+      "CISO",
+      "CRO",
+      "Chief Architect"
+    ],
+    "confidentiality_notice": "This document contains confidential and proprietary information"
+  },
+  "executive_insights": {
+    "total_applications": 2,
+    "critical_applications": 1,
+    "security_zones": 2,
+    "compliance_frameworks": [
+      "PCI-DSS",
+      "SOX",
+      "FFIEC",
+      "GDPR"
+    ],
+    "architecture_maturity": "Level 4 - Managed and Optimized",
+    "security_posture": "Strong - Multi-layered Defense",
+    "business_continuity": "Tier 1 - Mission Critical Protected"
+  },
+  "generated_files": [
+    {
+      "format": "visio",
+      "filename": "web-portal.vsdx",
+      "folder": "results/visio/",
+      "file_path": "results\\visio\\web-portal.vsdx",
+      "quality_level": "Professional Grade",
+      "target_audience": "Microsoft Visio Users",
+      "file_size": "4.5 KB"
+    },
+    {
+      "format": "lucid",
+      "filename": "web-portal.lucid",
+      "folder": "results/lucid/",
+      "file_path": "results\\lucid\\web-portal.lucid",
+      "quality_level": "Professional Grade",
+      "target_audience": "Lucidchart Users",
+      "file_size": "7.1 KB"
+    }
+  ],
+  "format_descriptions": {
+    "visio": "Microsoft Visio professional diagrams (.vsdx)",
+    "lucid": "Lucidchart professional diagrams (.lucid)"
+  }
+}

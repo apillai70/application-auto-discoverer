@@ -1,0 +1,6 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+                <rect x="50" y="50" width="300" height="100" fill="#e3f2fd" stroke="#1976d2" rx="8"/>
+                <text x="200" y="105" text-anchor="middle" font-size="16" fill="#1976d2">Loan Servicing – ACLS</text>
+                <text x="200" y="130" text-anchor="middle" font-size="12" fill="#666">Archetype: 3-Tier</text>
+                <text x="200" y="150" text-anchor="middle" font-size="12" fill="#666">Zone: internal</text>
+            </svg>

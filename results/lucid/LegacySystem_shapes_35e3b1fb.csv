@@ -1,0 +1,4 @@
+Name,Shape Library,Shape,Text Area 1,Position X,Position Y,Width,Height
+Load Balancer,Standard,Rectangle,Load Balancer,100,100,120,60
+Legacy Applicat,Standard,Rectangle,Legacy Applicat,100,200,120,100
+Database,Standard,Cylinder,Database,100,350,100,120

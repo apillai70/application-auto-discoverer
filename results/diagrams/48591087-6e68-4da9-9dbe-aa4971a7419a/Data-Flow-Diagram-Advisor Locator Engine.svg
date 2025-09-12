@@ -1,0 +1,18 @@
+<svg width="800" height="400" xmlns="http://www.w3.org/2000/svg">
+    <rect width="800" height="400" fill="#f8fafc" stroke="none"/>
+    
+    <!-- Central Application -->
+    <rect x="300" y="150" width="200" height="100" fill="#dbeafe" stroke="#3b82f6" stroke-width="2" rx="8"/>
+    <text x="400" y="205" text-anchor="middle" font-family="Arial" font-size="14" font-weight="bold">Advisor Locator Engine</text>
+    
+    <!-- Connection Summary -->
+    <text x="400" y="300" text-anchor="middle" font-family="Arial" font-size="12" fill="#64748b">
+        45 connections
+    </text>
+    
+    <!-- Banking Service Type -->
+    <text x="400" y="320" text-anchor="middle" font-family="Arial" font-size="10" fill="#64748b">
+        Type: business_service
+    </text>
+    
+    </svg>

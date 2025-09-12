@@ -1,0 +1,295 @@
+<?xml version="1.0" ?>
+<lucidchart version="2.0" professional_grade="true" quality_level="professional">
+  <metadata>
+    <title>Network Architecture Executive Summary</title>
+    <created>2025-08-29T17:43:22.217567</created>
+    <quality_level>professional</quality_level>
+    <professional_features>true</professional_features>
+    <collaboration_ready>true</collaboration_ready>
+    <executive_approved>true</executive_approved>
+  </metadata>
+  <canvas>
+    <width>1200</width>
+    <height>800</height>
+    <background_color>#FFFFFF</background_color>
+    <grid_enabled>true</grid_enabled>
+    <snap_to_grid>true</snap_to_grid>
+    <professional_grid>true</professional_grid>
+  </canvas>
+  <design_system>
+    <color_palette>
+      <color name="primary">#1E3A8A</color>
+      <color name="secondary">#F59E0B</color>
+      <color name="success">#10B981</color>
+      <color name="warning">#F59E0B</color>
+      <color name="danger">#EF4444</color>
+      <color name="background">#FFFFFF</color>
+      <color name="text">#1F2937</color>
+      <color name="dmz">#FF6B35</color>
+      <color name="internal">#4ECDC4</color>
+      <color name="core_banking">#45B7D1</color>
+    </color_palette>
+    <typography>
+      <text_style name="h1">
+        <size>24pt</size>
+        <weight>bold</weight>
+        <font>Segoe UI Semibold</font>
+      </text_style>
+      <text_style name="h2">
+        <size>18pt</size>
+        <weight>semibold</weight>
+        <font>Segoe UI Semibold</font>
+      </text_style>
+      <text_style name="h3">
+        <size>14pt</size>
+        <weight>semibold</weight>
+        <font>Segoe UI Semibold</font>
+      </text_style>
+      <text_style name="body">
+        <size>10pt</size>
+        <weight>normal</weight>
+        <font>Segoe UI</font>
+      </text_style>
+      <text_style name="caption">
+        <size>8pt</size>
+        <weight>normal</weight>
+        <font>Segoe UI</font>
+      </text_style>
+    </typography>
+  </design_system>
+  <security_zones>
+    <zone id="dmz" name="Dmz" professional_styled="true">
+      <geometry>
+        <x>120.0</x>
+        <y>40.0</y>
+        <width>960.0</width>
+        <height>320.0</height>
+      </geometry>
+      <professional_styling>
+        <fill_color>#FF6B35</fill_color>
+        <border_color>#1E3A8A</border_color>
+        <border_width>2pt</border_width>
+        <border_style>dashed</border_style>
+        <opacity>0.1</opacity>
+        <professional_shadow>true</professional_shadow>
+      </professional_styling>
+    </zone>
+    <zone id="internal" name="Internal" professional_styled="true">
+      <geometry>
+        <x>120.0</x>
+        <y>440.00000000000006</y>
+        <width>432.0</width>
+        <height>320.0</height>
+      </geometry>
+      <professional_styling>
+        <fill_color>#4ECDC4</fill_color>
+        <border_color>#1E3A8A</border_color>
+        <border_width>2pt</border_width>
+        <border_style>dashed</border_style>
+        <opacity>0.1</opacity>
+        <professional_shadow>true</professional_shadow>
+      </professional_styling>
+    </zone>
+    <zone id="core_banking" name="Core Banking" professional_styled="true">
+      <geometry>
+        <x>600.0</x>
+        <y>440.00000000000006</y>
+        <width>432.0</width>
+        <height>320.0</height>
+      </geometry>
+      <professional_styling>
+        <fill_color>#45B7D1</fill_color>
+        <border_color>#1E3A8A</border_color>
+        <border_width>2pt</border_width>
+        <border_style>dashed</border_style>
+        <opacity>0.1</opacity>
+        <professional_shadow>true</professional_shadow>
+      </professional_styling>
+    </zone>
+  </security_zones>
+  <applications>
+    <application id="demo-web-portal" professional_grade="true">
+      <application_metadata>
+        <name>Customer Web Portal</name>
+        <business_criticality>high</business_criticality>
+        <security_classification>internal</security_classification>
+        <architectural_tier>presentation</architectural_tier>
+        <zone>dmz</zone>
+      </application_metadata>
+      <geometry>
+        <x>292.8</x>
+        <y>97.6</y>
+        <width>614.4000000000001</width>
+        <height>153.6</height>
+      </geometry>
+      <professional_styling>
+        <border_width>2.5pt</border_width>
+        <border_style>solid</border_style>
+        <font_family>Segoe UI</font_family>
+        <font_size>10pt</font_size>
+        <text_align>center</text_align>
+        <shadow>True</shadow>
+        <rounded_corners>True</rounded_corners>
+        <fill_color>#FF6B35</fill_color>
+        <border_color>#F59E0B</border_color>
+        <shadow_intensity>medium</shadow_intensity>
+      </professional_styling>
+      <professional_metadata>
+        <last_updated>2025-08-29T17:43:22.213584</last_updated>
+        <documentation_standard>Enterprise Architecture Framework</documentation_standard>
+        <review_cycle>Quarterly</review_cycle>
+        <data_classification>internal</data_classification>
+        <business_owner>Digital Banking Team</business_owner>
+        <technical_owner>IT Architecture Team</technical_owner>
+        <cost_center>Technology Operations</cost_center>
+        <lifecycle_stage>Production</lifecycle_stage>
+      </professional_metadata>
+    </application>
+    <application id="demo-customer-db" professional_grade="true">
+      <application_metadata>
+        <name>Customer Database</name>
+        <business_criticality>high</business_criticality>
+        <security_classification>internal</security_classification>
+        <architectural_tier>data</architectural_tier>
+        <zone>internal</zone>
+      </application_metadata>
+      <geometry>
+        <x>197.76</x>
+        <y>497.6000000000001</y>
+        <width>276.48</width>
+        <height>153.6</height>
+      </geometry>
+      <professional_styling>
+        <border_width>2.5pt</border_width>
+        <border_style>solid</border_style>
+        <font_family>Segoe UI</font_family>
+        <font_size>10pt</font_size>
+        <text_align>center</text_align>
+        <shadow>True</shadow>
+        <rounded_corners>True</rounded_corners>
+        <fill_color>#4ECDC4</fill_color>
+        <border_color>#F59E0B</border_color>
+        <shadow_intensity>medium</shadow_intensity>
+      </professional_styling>
+      <professional_metadata>
+        <last_updated>2025-08-29T17:43:22.213584</last_updated>
+        <documentation_standard>Enterprise Architecture Framework</documentation_standard>
+        <review_cycle>Quarterly</review_cycle>
+        <data_classification>internal</data_classification>
+        <business_owner>Data Management Team</business_owner>
+        <technical_owner>IT Architecture Team</technical_owner>
+        <cost_center>Technology Operations</cost_center>
+        <lifecycle_stage>Production</lifecycle_stage>
+      </professional_metadata>
+    </application>
+    <application id="demo-core-banking" professional_grade="true">
+      <application_metadata>
+        <name>Core Banking System</name>
+        <business_criticality>critical</business_criticality>
+        <security_classification>confidential</security_classification>
+        <architectural_tier>application</architectural_tier>
+        <zone>core_banking</zone>
+      </application_metadata>
+      <geometry>
+        <x>660.48</x>
+        <y>497.6000000000001</y>
+        <width>138.24</width>
+        <height>153.6</height>
+      </geometry>
+      <professional_styling>
+        <border_width>3pt</border_width>
+        <border_style>solid</border_style>
+        <font_family>Segoe UI</font_family>
+        <font_size>10pt</font_size>
+        <text_align>center</text_align>
+        <shadow>True</shadow>
+        <rounded_corners>True</rounded_corners>
+        <fill_color>#45B7D1</fill_color>
+        <border_color>#EF4444</border_color>
+        <shadow_intensity>high</shadow_intensity>
+      </professional_styling>
+      <professional_metadata>
+        <last_updated>2025-08-29T17:43:22.213584</last_updated>
+        <documentation_standard>Enterprise Architecture Framework</documentation_standard>
+        <review_cycle>Quarterly</review_cycle>
+        <data_classification>confidential</data_classification>
+        <business_owner>Core Systems Team</business_owner>
+        <technical_owner>IT Architecture Team</technical_owner>
+        <cost_center>Technology Operations</cost_center>
+        <lifecycle_stage>Production</lifecycle_stage>
+      </professional_metadata>
+    </application>
+    <application id="demo-payment-engine" professional_grade="true">
+      <application_metadata>
+        <name>Payment Processing Engine</name>
+        <business_criticality>critical</business_criticality>
+        <security_classification>confidential</security_classification>
+        <architectural_tier>business</architectural_tier>
+        <zone>core_banking</zone>
+      </application_metadata>
+      <geometry>
+        <x>833.28</x>
+        <y>497.6000000000001</y>
+        <width>138.24</width>
+        <height>153.6</height>
+      </geometry>
+      <professional_styling>
+        <border_width>3pt</border_width>
+        <border_style>solid</border_style>
+        <font_family>Segoe UI</font_family>
+        <font_size>10pt</font_size>
+        <text_align>center</text_align>
+        <shadow>True</shadow>
+        <rounded_corners>True</rounded_corners>
+        <fill_color>#45B7D1</fill_color>
+        <border_color>#EF4444</border_color>
+        <shadow_intensity>high</shadow_intensity>
+      </professional_styling>
+      <professional_metadata>
+        <last_updated>2025-08-29T17:43:22.213584</last_updated>
+        <documentation_standard>Enterprise Architecture Framework</documentation_standard>
+        <review_cycle>Quarterly</review_cycle>
+        <data_classification>confidential</data_classification>
+        <business_owner>Payments Team</business_owner>
+        <technical_owner>IT Architecture Team</technical_owner>
+        <cost_center>Technology Operations</cost_center>
+        <lifecycle_stage>Production</lifecycle_stage>
+      </professional_metadata>
+    </application>
+  </applications>
+  <connections>
+    <connection from="demo-web-portal" to="demo-customer-db" type="secure_connection" professional_styled="true">
+      <professional_styling>
+        <line_color>#1E3A8A</line_color>
+        <line_width>2pt</line_width>
+        <line_style>solid</line_style>
+        <arrow_style>professional</arrow_style>
+      </professional_styling>
+    </connection>
+    <connection from="demo-customer-db" to="demo-core-banking" type="secure_internal" professional_styled="true">
+      <professional_styling>
+        <line_color>#10B981</line_color>
+        <line_width>2.5pt</line_width>
+        <line_style>solid</line_style>
+        <arrow_style>professional</arrow_style>
+      </professional_styling>
+    </connection>
+  </connections>
+  <executive_annotations>
+    <annotation type="executive_summary" importance="high">
+      <title>Network Security Overview</title>
+      <content>Secure architecture protecting 4 applications across 3 security zones</content>
+      <styling>executive_highlight</styling>
+    </annotation>
+    <annotation type="compliance_status" importance="critical">
+      <title>Regulatory Compliance</title>
+      <content>Full compliance with banking regulations including PCI-DSS, SOX, and FFIEC requirements</content>
+      <styling>compliance_badge</styling>
+    </annotation>
+    <annotation type="risk_assessment" importance="high">
+      <title>Risk Posture</title>
+      <content>2 mission-critical applications properly isolated and protected</content>
+      <styling>risk_indicator</styling>
+    </annotation>
+  </executive_annotations>
+</lucidchart>

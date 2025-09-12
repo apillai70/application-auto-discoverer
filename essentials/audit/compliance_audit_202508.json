@@ -1,0 +1,596 @@
+[
+  {
+    "timestamp": "2025-08-12T11:01:19.014989",
+    "event_type": "frameworks_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "count": 4
+    },
+    "risk_level": "low"
+  },
+  {
+    "timestamp": "2025-08-12T11:01:21.058482",
+    "event_type": "dashboard_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "frameworks_count": 3,
+      "overall_risk": "high"
+    },
+    "risk_level": "high"
+  },
+  {
+    "timestamp": "2025-08-12T11:01:23.150027",
+    "event_type": "frameworks_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "count": 4
+    },
+    "risk_level": "low"
+  },
+  {
+    "timestamp": "2025-08-12T11:01:25.197229",
+    "event_type": "dashboard_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "frameworks_count": 3,
+      "overall_risk": "high"
+    },
+    "risk_level": "high"
+  },
+  {
+    "timestamp": "2025-08-12T11:01:54.232389",
+    "event_type": "frameworks_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "count": 4
+    },
+    "risk_level": "low"
+  },
+  {
+    "timestamp": "2025-08-12T11:01:56.260495",
+    "event_type": "dashboard_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "frameworks_count": 3,
+      "overall_risk": "high"
+    },
+    "risk_level": "high"
+  },
+  {
+    "timestamp": "2025-08-12T11:02:23.781324",
+    "event_type": "frameworks_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "count": 4
+    },
+    "risk_level": "low"
+  },
+  {
+    "timestamp": "2025-08-12T11:02:25.833513",
+    "event_type": "dashboard_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "frameworks_count": 3,
+      "overall_risk": "high"
+    },
+    "risk_level": "high"
+  },
+  {
+    "timestamp": "2025-08-12T11:02:55.533680",
+    "event_type": "frameworks_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "count": 4
+    },
+    "risk_level": "low"
+  },
+  {
+    "timestamp": "2025-08-12T11:02:57.582427",
+    "event_type": "dashboard_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "frameworks_count": 3,
+      "overall_risk": "high"
+    },
+    "risk_level": "high"
+  },
+  {
+    "timestamp": "2025-08-12T11:03:23.851929",
+    "event_type": "frameworks_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "count": 4
+    },
+    "risk_level": "low"
+  },
+  {
+    "timestamp": "2025-08-12T11:03:25.896548",
+    "event_type": "dashboard_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "frameworks_count": 3,
+      "overall_risk": "high"
+    },
+    "risk_level": "high"
+  },
+  {
+    "timestamp": "2025-08-12T11:03:53.823313",
+    "event_type": "frameworks_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "count": 4
+    },
+    "risk_level": "low"
+  },
+  {
+    "timestamp": "2025-08-12T11:03:55.890592",
+    "event_type": "dashboard_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "frameworks_count": 3,
+      "overall_risk": "high"
+    },
+    "risk_level": "high"
+  },
+  {
+    "timestamp": "2025-08-12T11:04:23.835167",
+    "event_type": "frameworks_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "count": 4
+    },
+    "risk_level": "low"
+  },
+  {
+    "timestamp": "2025-08-12T11:04:25.880909",
+    "event_type": "dashboard_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "frameworks_count": 3,
+      "overall_risk": "high"
+    },
+    "risk_level": "high"
+  },
+  {
+    "timestamp": "2025-08-12T11:05:16.653753",
+    "event_type": "frameworks_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "count": 4
+    },
+    "risk_level": "low"
+  },
+  {
+    "timestamp": "2025-08-12T11:05:18.701241",
+    "event_type": "dashboard_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "frameworks_count": 3,
+      "overall_risk": "high"
+    },
+    "risk_level": "high"
+  },
+  {
+    "timestamp": "2025-08-12T11:05:51.316063",
+    "event_type": "frameworks_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "count": 4
+    },
+    "risk_level": "low"
+  },
+  {
+    "timestamp": "2025-08-12T11:05:53.347098",
+    "event_type": "dashboard_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "frameworks_count": 3,
+      "overall_risk": "high"
+    },
+    "risk_level": "high"
+  },
+  {
+    "timestamp": "2025-08-12T11:05:54.407569",
+    "event_type": "frameworks_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "count": 4
+    },
+    "risk_level": "low"
+  },
+  {
+    "timestamp": "2025-08-12T11:05:56.449551",
+    "event_type": "dashboard_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "frameworks_count": 3,
+      "overall_risk": "high"
+    },
+    "risk_level": "high"
+  },
+  {
+    "timestamp": "2025-08-12T11:05:58.497129",
+    "event_type": "frameworks_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "count": 4
+    },
+    "risk_level": "low"
+  },
+  {
+    "timestamp": "2025-08-12T11:06:00.540596",
+    "event_type": "dashboard_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "frameworks_count": 3,
+      "overall_risk": "high"
+    },
+    "risk_level": "high"
+  },
+  {
+    "timestamp": "2025-08-12T11:06:25.042042",
+    "event_type": "frameworks_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "count": 4
+    },
+    "risk_level": "low"
+  },
+  {
+    "timestamp": "2025-08-12T11:06:27.087401",
+    "event_type": "dashboard_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "frameworks_count": 3,
+      "overall_risk": "high"
+    },
+    "risk_level": "high"
+  },
+  {
+    "timestamp": "2025-08-12T11:06:54.736016",
+    "event_type": "frameworks_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "count": 4
+    },
+    "risk_level": "low"
+  },
+  {
+    "timestamp": "2025-08-12T11:06:56.770095",
+    "event_type": "dashboard_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "frameworks_count": 3,
+      "overall_risk": "high"
+    },
+    "risk_level": "high"
+  },
+  {
+    "timestamp": "2025-08-12T11:09:17.036435",
+    "event_type": "frameworks_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "count": 4
+    },
+    "risk_level": "low"
+  },
+  {
+    "timestamp": "2025-08-12T11:09:19.097436",
+    "event_type": "dashboard_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "frameworks_count": 3,
+      "overall_risk": "high"
+    },
+    "risk_level": "high"
+  },
+  {
+    "timestamp": "2025-08-12T11:10:16.493753",
+    "event_type": "frameworks_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "count": 4
+    },
+    "risk_level": "low"
+  },
+  {
+    "timestamp": "2025-08-12T11:10:18.538965",
+    "event_type": "dashboard_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "frameworks_count": 3,
+      "overall_risk": "high"
+    },
+    "risk_level": "high"
+  },
+  {
+    "timestamp": "2025-08-12T11:11:17.065612",
+    "event_type": "frameworks_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "count": 4
+    },
+    "risk_level": "low"
+  },
+  {
+    "timestamp": "2025-08-12T11:11:19.112300",
+    "event_type": "dashboard_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "frameworks_count": 3,
+      "overall_risk": "high"
+    },
+    "risk_level": "high"
+  },
+  {
+    "timestamp": "2025-08-12T11:12:17.989898",
+    "event_type": "frameworks_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "count": 4
+    },
+    "risk_level": "low"
+  },
+  {
+    "timestamp": "2025-08-12T11:12:20.039967",
+    "event_type": "dashboard_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "frameworks_count": 3,
+      "overall_risk": "high"
+    },
+    "risk_level": "high"
+  },
+  {
+    "timestamp": "2025-08-12T11:13:16.904742",
+    "event_type": "frameworks_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "count": 4
+    },
+    "risk_level": "low"
+  },
+  {
+    "timestamp": "2025-08-12T11:13:18.936837",
+    "event_type": "dashboard_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "frameworks_count": 3,
+      "overall_risk": "high"
+    },
+    "risk_level": "high"
+  },
+  {
+    "timestamp": "2025-08-12T11:14:16.733872",
+    "event_type": "frameworks_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "count": 4
+    },
+    "risk_level": "low"
+  },
+  {
+    "timestamp": "2025-08-12T11:14:18.803504",
+    "event_type": "dashboard_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "frameworks_count": 3,
+      "overall_risk": "high"
+    },
+    "risk_level": "high"
+  },
+  {
+    "timestamp": "2025-08-12T11:15:16.680715",
+    "event_type": "frameworks_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "count": 4
+    },
+    "risk_level": "low"
+  },
+  {
+    "timestamp": "2025-08-12T11:15:18.718610",
+    "event_type": "dashboard_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "frameworks_count": 3,
+      "overall_risk": "high"
+    },
+    "risk_level": "high"
+  },
+  {
+    "timestamp": "2025-08-12T11:16:18.119721",
+    "event_type": "frameworks_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "count": 4
+    },
+    "risk_level": "low"
+  },
+  {
+    "timestamp": "2025-08-12T11:16:20.171564",
+    "event_type": "dashboard_accessed",
+    "framework": "all",
+    "user": "system",
+    "roles": [
+      "admin"
+    ],
+    "details": {
+      "frameworks_count": 3,
+      "overall_risk": "high"
+    },
+    "risk_level": "high"
+  }
+]

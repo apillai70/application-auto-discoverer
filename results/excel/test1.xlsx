@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet">
+    <DocumentProperties>
+        <Title>Application Portfolio Analysis</Title>
+        <Author>Professional Network Discovery Platform</Author>
+        <Created>2025-08-29T18:08:48.462009</Created>
+    </DocumentProperties>
+    
+    <Worksheet ss:Name="Application Inventory">
+        <Table>
+            <Row>
+                <Cell><Data ss:Type="String">Application Name</Data></Cell>
+                <Cell><Data ss:Type="String">Business Criticality</Data></Cell>
+                <Cell><Data ss:Type="String">Security Zone</Data></Cell>
+                <Cell><Data ss:Type="String">Compliance Requirements</Data></Cell>
+                <Cell><Data ss:Type="String">Architectural Tier</Data></Cell>
+                <Cell><Data ss:Type="String">Data Sensitivity</Data></Cell>
+            </Row>
+            <Row>
+                <Cell><Data ss:Type="String">Test App</Data></Cell>
+                <Cell><Data ss:Type="String">low</Data></Cell>
+                <Cell><Data ss:Type="String">internal</Data></Cell>
+                <Cell><Data ss:Type="String"></Data></Cell>
+                <Cell><Data ss:Type="String">application</Data></Cell>
+                <Cell><Data ss:Type="String">internal</Data></Cell>
+            </Row>
+        </Table>
+    </Worksheet>
+    
+    <Worksheet ss:Name="Compliance Matrix">
+        <Table>
+            <Row>
+                <Cell><Data ss:Type="String">Application</Data></Cell>
+                <Cell><Data ss:Type="String">PCI-DSS</Data></Cell>
+                <Cell><Data ss:Type="String">SOX</Data></Cell>
+                <Cell><Data ss:Type="String">FFIEC</Data></Cell>
+                <Cell><Data ss:Type="String">GDPR</Data></Cell>
+            </Row>
+            <Row>
+                <Cell><Data ss:Type="String">Test App</Data></Cell>
+                <Cell><Data ss:Type="String">No</Data></Cell>
+                <Cell><Data ss:Type="String">No</Data></Cell>
+                <Cell><Data ss:Type="String">No</Data></Cell>
+                <Cell><Data ss:Type="String">No</Data></Cell>
+            </Row>
+        </Table>
+    </Worksheet>
+</Workbook>

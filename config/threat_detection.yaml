@@ -1,0 +1,360 @@
+# config/threat_detection.yaml
+# Comprehensive Threat Detection System Configuration
+
+# =================== STORAGE CONFIGURATION ===================
+storage:
+  backend: "file"  # Options: file, database, elasticsearch
+  data_retention_days: 365
+  backup_enabled: true
+  backup_schedule: "0 2 * * *"  # Daily at 2 AM
+  compression_enabled: true
+  encryption_enabled: true
+  
+  file_storage:
+    base_path: "data/threat_detection"
+    max_file_size_mb: 100
+    rotation_enabled: true
+    
+  database:
+    type: "postgresql"
+    host: "localhost"
+    port: 5432
+    database: "threat_detection"
+    username: "${DB_USERNAME}"
+    password: "${DB_PASSWORD}"
+    pool_size: 20
+    
+  elasticsearch:
+    hosts: ["localhost:9200"]
+    index_prefix: "threat-detection"
+    template_name: "threat-alerts"
+
+# =================== ANALYSIS CONFIGURATION ===================
+analysis:
+  auto_analysis_enabled: true
+  analysis_timeout_seconds: 120
+  max_concurrent_analyses: 50
+  cache_ttl_seconds: 3600
+  
+  threat_intelligence:
+    enabled: true
+    sources:
+      - name: "internal_feeds"
+        enabled: true
+        refresh_interval_minutes: 60
+      - name: "misp"
+        enabled: false
+        url: "${MISP_URL}"
+        api_key: "${MISP_API_KEY}"
+      - name: "virustotal"
+        enabled: false
+        api_key: "${VT_API_KEY}"
+        rate_limit: 4  # requests per minute
+    
+  behavioral_analysis:
+    enabled: true
+    baseline_learning_days: 30
+    anomaly_threshold: 0.8
+    user_behavior_tracking: true
+    
+  network_analysis:
+    enabled: true
+    geo_ip_enabled: true
+    reputation_checks: true
+    dns_analysis: true
+    
+  mitre_mapping:
+    enabled: true
+    framework_version: "v12"
+    auto_mapping: true
+
+# =================== RESPONSE CONFIGURATION ===================
+response:
+  auto_response_enabled: false
+  max_response_actions: 10
+  response_timeout_seconds: 300
+  approval_required: true
+  
+  actions:
+    block_ip:
+      enabled: true
+      firewall_integration: true
+      default_duration_hours: 24
+      whitelist_enabled: true
+      
+    isolate_host:
+      enabled: true
+      network_isolation: true
+      quarantine_enabled: true
+      
+    alert_admin:
+      enabled: true
+      notification_methods: ["email", "slack", "sms"]
+      escalation_enabled: true
+      
+    quarantine_file:
+      enabled: true
+      backup_before_quarantine: true
+      quarantine_path: "/var/quarantine"
+      
+  integrations:
+    firewall:
+      type: "palo_alto"  # Options: palo_alto, fortinet, checkpoint
+      api_endpoint: "${FIREWALL_API_ENDPOINT}"
+      api_key: "${FIREWALL_API_KEY}"
+      
+    edr:
+      type: "crowdstrike"  # Options: crowdstrike, sentinelone, cylance
+      api_endpoint: "${EDR_API_ENDPOINT}"
+      api_key: "${EDR_API_KEY}"
+      
+    siem:
+      type: "splunk"  # Options: splunk, qradar, sentinel
+      endpoint: "${SIEM_ENDPOINT}"
+      api_key: "${SIEM_API_KEY}"
+
+# =================== DETECTION RULES ===================
+detection_rules:
+  # Brute Force Detection
+  brute_force:
+    enabled: true
+    failed_attempts_threshold: 5
+    time_window_minutes: 5
+    lockout_duration_minutes: 30
+    
+  # Anomalous Login Detection
+  anomalous_login:
+    enabled: true
+    unusual_time_threshold: true
+    unusual_location_threshold: true
+    impossible_travel_detection: true
+    
+  # Data Exfiltration Detection
+  data_exfiltration:
+    enabled: true
+    volume_threshold_mb: 100
+    time_window_minutes: 10
+    sensitive_file_patterns: ["*.csv", "*.xlsx", "*.db"]
+    
+  # Malware Detection
+  malware:
+    enabled: true
+    hash_reputation_check: true
+    behavioral_analysis: true
+    sandbox_integration: false
+    
+  # Network Intrusion Detection
+  network_intrusion:
+    enabled: true
+    port_scan_detection: true
+    suspicious_traffic_analysis: true
+    dns_tunneling_detection: true
+
+# =================== ALERTING CONFIGURATION ===================
+alerting:
+  enabled: true
+  
+  severity_thresholds:
+    critical: 90
+    high: 70
+    medium: 50
+    low: 30
+    
+  notification_channels:
+    email:
+      enabled: true
+      smtp_server: "${SMTP_SERVER}"
+      smtp_port: 587
+      username: "${SMTP_USERNAME}"
+      password: "${SMTP_PASSWORD}"
+      recipients: ["security-team@company.com"]
+      
+    slack:
+      enabled: false
+      webhook_url: "${SLACK_WEBHOOK}"
+      channel: "#security-alerts"
+      
+    sms:
+      enabled: false
+      provider: "twilio"
+      account_sid: "${TWILIO_SID}"
+      auth_token: "${TWILIO_TOKEN}"
+      recipients: ["+1234567890"]
+      
+  escalation:
+    enabled: true
+    escalation_rules:
+      - severity: "critical"
+        escalate_after_minutes: 5
+        escalate_to: ["security-manager@company.com"]
+      - severity: "high"
+        escalate_after_minutes: 15
+        escalate_to: ["security-lead@company.com"]
+
+# =================== PERFORMANCE CONFIGURATION ===================
+performance:
+  # Rate Limiting
+  rate_limiting:
+    enabled: true
+    alerts_per_hour: 1000
+    responses_per_10min: 100
+    queries_per_hour: 500
+    
+  # Resource Limits
+  resources:
+    max_memory_mb: 2048
+    max_cpu_percent: 80
+    max_disk_usage_percent: 85
+    
+  # Caching
+  caching:
+    enabled: true
+    alert_cache_size: 10000
+    analysis_cache_size: 5000
+    indicator_cache_size: 50000
+    cache_ttl_seconds: 3600
+    
+  # Monitoring
+  monitoring:
+    enabled: true
+    metrics_collection: true
+    health_check_interval_seconds: 30
+    performance_logging: true
+
+# =================== SECURITY CONFIGURATION ===================
+security:
+  # Authentication
+  authentication:
+    required: true
+    methods: ["jwt", "api_key"]
+    session_timeout_minutes: 480
+    
+  # Authorization
+  authorization:
+    rbac_enabled: true
+    permission_model: "fine_grained"
+    audit_all_access: true
+    
+  # Encryption
+  encryption:
+    data_at_rest: true
+    data_in_transit: true
+    key_rotation_days: 90
+    algorithm: "AES-256-GCM"
+    
+  # Audit Logging
+  audit:
+    enabled: true
+    log_all_actions: true
+    log_retention_days: 2555  # 7 years
+    integrity_checking: true
+    
+  # Input Validation
+  validation:
+    strict_mode: true
+    sanitize_inputs: true
+    max_payload_size_mb: 10
+
+# =================== COMPLIANCE CONFIGURATION ===================
+compliance:
+  frameworks:
+    - name: "SOC2"
+      enabled: true
+      requirements: ["logging", "monitoring", "access_control"]
+    - name: "ISO27001"
+      enabled: true
+      requirements: ["incident_response", "risk_management"]
+    - name: "NIST_CSF"
+      enabled: true
+      requirements: ["identify", "protect", "detect", "respond", "recover"]
+      
+  reporting:
+    enabled: true
+    automated_reports: true
+    report_schedule: "0 0 1 * *"  # Monthly
+    recipients: ["compliance@company.com"]
+
+# =================== INTEGRATION CONFIGURATION ===================
+integrations:
+  # External Threat Feeds
+  threat_feeds:
+    - name: "abuse_ch"
+      url: "https://urlhaus.abuse.ch/downloads/json/"
+      format: "json"
+      refresh_interval_hours: 6
+      
+    - name: "malware_domains"
+      url: "http://mirror1.malwaredomains.com/files/justdomains"
+      format: "text"
+      refresh_interval_hours: 12
+      
+  # SOAR Integration
+  soar:
+    enabled: false
+    platform: "phantom"  # Options: phantom, demisto, swimlane
+    api_endpoint: "${SOAR_API_ENDPOINT}"
+    api_key: "${SOAR_API_KEY}"
+    
+  # Ticketing System
+  ticketing:
+    enabled: false
+    system: "jira"  # Options: jira, servicenow, remedy
+    api_endpoint: "${TICKETING_API_ENDPOINT}"
+    api_key: "${TICKETING_API_KEY}"
+    auto_create_tickets: false
+
+# =================== LOGGING CONFIGURATION ===================
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  format: "json"  # json, text
+  
+  handlers:
+    file:
+      enabled: true
+      path: "logs/threat_detection/service.log"
+      max_size_mb: 100
+      backup_count: 10
+      
+    syslog:
+      enabled: false
+      server: "localhost"
+      port: 514
+      facility: "local0"
+      
+    elasticsearch:
+      enabled: false
+      hosts: ["localhost:9200"]
+      index: "threat-detection-logs"
+      
+  loggers:
+    threat_detection_service: "INFO"
+    threat_analysis_engine: "INFO"
+    response_engine: "INFO"
+    storage_backend: "WARNING"
+
+# =================== DEVELOPMENT/TESTING ===================
+development:
+  mock_mode: false
+  test_data_enabled: false
+  debug_mode: false
+  
+  testing:
+    generate_test_alerts: false
+    test_alert_interval_seconds: 60
+    simulate_responses: false
+    
+  debugging:
+    verbose_logging: false
+    trace_enabled: false
+    profiling_enabled: false
+
+# =================== FEATURE FLAGS ===================
+features:
+  ml_based_detection: false
+  advanced_correlation: true
+  threat_hunting: false
+  deception_technology: false
+  user_behavior_analytics: true
+  network_traffic_analysis: true
+  endpoint_detection: true
+  cloud_security_monitoring: false

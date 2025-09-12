@@ -1,7 +1,7 @@
 {
   "generation_info": {
     "app_id": "app1",
-    "generated_at": "2025-07-23T15:24:46.511670",
+    "generated_at": "2025-08-29T17:53:28.195378",
     "quality_level": "professional",
     "professional_grade": true,
     "banking_optimized": true
@@ -10,8 +10,8 @@
     "document_classification": "CONFIDENTIAL - EXECUTIVE REVIEW",
     "prepared_for": "C-Suite Leadership Team",
     "document_type": "Network Architecture Executive Summary",
-    "preparation_date": "July 23, 2025",
-    "next_review_date": "October 23, 2025",
+    "preparation_date": "August 29, 2025",
+    "next_review_date": "September 29, 2025",
     "document_owner": "Chief Technology Officer",
     "distribution_list": [
       "CTO",
@@ -49,8 +49,8 @@
       "folder": "results/visio/",
       "file_path": "results\\visio\\app1.vsdx",
       "quality_level": "Professional Grade",
-      "target_audience": "C-Suite Executives",
-      "file_size": "7.6 KB"
+      "target_audience": "Microsoft Visio Users",
+      "file_size": "3.9 KB"
     },
     {
       "format": "lucid",
@@ -68,7 +68,7 @@
       "file_path": "results\\document\\app1.docx",
       "quality_level": "Professional Grade",
       "target_audience": "Business Documentation",
-      "file_size": "2.5 KB"
+      "file_size": "2.2 KB"
     },
     {
       "format": "excel",

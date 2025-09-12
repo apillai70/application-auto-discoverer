@@ -4,10 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Application Archetype Classification Dashboard</title>
-    <link rel="stylesheet" href="../css/common.css">
-    <link rel="stylesheet" href="../css/archetype.css">
+    <link rel="stylesheet" href="/static/ui/css/common.css">
+    <link rel="stylesheet" href="/static/ui/css/archetype.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+</div>
 </head>
 <body>
     <div class="container">
@@ -22,19 +25,19 @@
                 </div>
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-value" style="color: #3b82f6;" id="totalApps">262</div>
+                        <div class="stat-value" style="color: #3b82f6;" id="totalApps">0</div>
                         <div class="stat-label">Total Apps</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value" style="color: #10b981;" id="classifiedApps">198</div>
+                        <div class="stat-value" style="color: #10b981;" id="classifiedApps">0</div>
                         <div class="stat-label">Classified</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value" style="color: #f59e0b;" id="archetypeCount">12</div>
+                        <div class="stat-value" style="color: #f59e0b;" id="archetypeCount">0</div>
                         <div class="stat-label">Archetypes</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value" style="color: #8b5cf6;" id="visibleApps">51</div>
+                        <div class="stat-value" style="color: #8b5cf6;" id="visibleApps">0</div>
                         <div class="stat-label">Visible</div>
                     </div>
                 </div>
@@ -43,7 +46,7 @@
 
         <!-- Navigation Tabs -->
         <div class="nav-tabs">
-            <a href="index.html" class="tab-btn">
+            <a href="../../index.html" class="tab-btn">
                 <span class="tab-icon">🗂️</span>
                 <span>Topology</span>
             </a>
@@ -51,27 +54,27 @@
 				<span class="tab-icon">🔄</span>
 				<span>Convergence</span>
 			</a>
-            <a href="archetype.html" class="tab-btn active">
+            <a href="/ui/html/archetype.html" class="tab-btn active">
                 <span class="tab-icon">🏗️</span>
                 <span>Archetype Classification</span>
             </a>
-            <a href="integration.html" class="tab-btn">
+            <a href="/ui/html/integration.html" class="tab-btn">
                 <span class="tab-icon">🔗</span>
                 <span>Integration</span>
             </a>
-            <a href="model.html" class="tab-btn">
+            <a href="/ui/html/model.html" class="tab-btn">
                 <span class="tab-icon">📊</span>
                 <span>Model</span>
             </a>
-            <a href="documentation.html" class="tab-btn">
+            <a href="/ui/html/documentation.html" class="tab-btn">
                 <span class="tab-icon">📚</span>
                 <span>Documentation</span>
             </a>
-            <a href="appRationalization.html" class="tab-btn">
+            <a href="/ui/html/appRationalization.html" class="tab-btn">
                 <span class="tab-icon">7️⃣</span>
                 <span>App Rationalization</span>
             </a>
-            <a href="recommendations.html" class="tab-btn">
+            <a href="/ui/html/recommendations.html" class="tab-btn">
                 <span class="tab-icon">💡</span>
                 <span>Recommendations</span>
             </a>
@@ -88,7 +91,7 @@
                         <circle cx="11" cy="11" r="8"></circle>
                         <path d="m21 21-4.35-4.35"></path>
                     </svg>
-                    <input type="text" class="search-box" id="archetypeSearch" placeholder="Search archetypes...">
+                    <input type="text" class="search-box" id="archetypeSearch" placeholder="Search applications...">
                 </div>
                 
                 <div class="filter-section">
@@ -96,7 +99,9 @@
                         <span>📱</span>
                         <span>Application Archetypes</span>
                     </div>
-                    <div class="archetype-grid" id="archetypeList"></div>
+                    <div class="archetype-grid" id="archetypeList">
+                        <div class="loading-placeholder">Loading archetypes...</div>
+                    </div>
                 </div>
                 
                 <button class="btn reset-btn" onclick="resetFilters()">Reset All Filters</button>
@@ -143,7 +148,9 @@
                         <span>🏷️</span>
                         <span>Archetype Colors</span>
                     </div>
-                    <div id="archetypeLegend"></div>
+                    <div id="archetypeLegend">
+                        <div class="loading-placeholder">Loading legend...</div>
+                    </div>
                 </div>
 
                 <div class="pattern-legend">
@@ -179,54 +186,165 @@
         <div class="loading-spinner" id="loading-spinner" style="display: none;"></div>
     </div>
 
-    <!-- Scripts - Load in proper order (REMOVED DUPLICATES) -->
-    <script src="../js/app-data.js"></script>
-    <script src="../js/common.js"></script>
+    <!-- Scripts - Load in proper order -->
+    <!--<script src="/ui/js/app-data.js"></script> -->
+    <script src="/ui/js/common.js"></script>
+    <script src="/ui/js/archetype.js"></script>
+	<script src="/ui/js/portscope-excel-integration.js"></script>
+	<script src="/ui/js/shared-state.js"></script>
+    
     <script>
-        // Prevent multiple loading indicators
+        // Enhanced initialization with better error handling
         document.addEventListener('DOMContentLoaded', function() {
-            // Hide any accidental loading indicators that might show up
+            console.log('🚀 Initializing Archetype Classification Dashboard...');
+            
+            // Hide any loading indicators
             const spinner = document.getElementById('loading-spinner');
             if (spinner) {
                 spinner.style.display = 'none';
             }
             
-            // Clear any progress bars that shouldn't be visible
-            const progressBars = document.querySelectorAll('.progress-bar');
-            progressBars.forEach(bar => {
-                const progressFill = bar.querySelector('.progress-fill');
-                if (progressFill && !bar.closest('.kpi-item')) {
-                    progressFill.style.width = '0%';
-                    bar.style.display = 'none';
-                }
-            });
+			const urlParams = new URLSearchParams(window.location.search);
+			const jobId = urlParams.get('job_id');
+			const source = urlParams.get('source');
+    
+			if (jobId) {
+				updateNavigationTabs();
+				addJobContextIndicator(jobId);
+        
+				// Update page subtitle to show context
+				const subtitle = document.querySelector('.header-subtitle');
+				if (subtitle && source === 'excel') {
+					subtitle.textContent += ` • Excel Job ${jobId.substring(0, 8)}`;
+				}
+			}
+			
+            // Wait for dashboard to be ready
+            let initAttempts = 0;
+            const maxAttempts = 50; // 5 seconds max wait
             
-            // Initialize archetype functionality
-            if (typeof initializeArchetypePage === 'function') {
-                initializeArchetypePage();
-            } else {
-                console.warn('archetype.js not loaded or initializeArchetypePage function not found');
-                // Show a placeholder message
+            const waitForDashboard = () => {
+                initAttempts++;
+                
+                if (window.dashboard) {
+                    console.log('✅ Dashboard instance found, initialization complete');
+                    return;
+                }
+                
+                if (initAttempts >= maxAttempts) {
+                    console.error('❌ Dashboard failed to initialize after 5 seconds');
+                    showFallbackMessage();
+                    return;
+                }
+                
+                console.log(`⏳ Waiting for dashboard... (attempt ${initAttempts}/${maxAttempts})`);
+                setTimeout(waitForDashboard, 100);
+            };
+            
+            // Start waiting for dashboard
+            setTimeout(waitForDashboard, 100);
+            
+            function showFallbackMessage() {
                 const canvas = document.getElementById('appCanvas');
                 if (canvas) {
                     const ctx = canvas.getContext('2d');
-                    canvas.width = canvas.offsetWidth;
-                    canvas.height = canvas.offsetHeight;
+                    canvas.width = canvas.offsetWidth || 800;
+                    canvas.height = canvas.offsetHeight || 600;
                     
                     ctx.fillStyle = '#1e293b';
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
                     
-                    ctx.fillStyle = '#94a3b8';
+                    ctx.fillStyle = '#ef4444';
                     ctx.font = '16px "Segoe UI", sans-serif';
                     ctx.textAlign = 'center';
-                    ctx.fillText('Loading archetype classification...', canvas.width / 2, canvas.height / 2);
+                    ctx.fillText('Failed to load archetype data', canvas.width / 2, canvas.height / 2 - 10);
+                    
+                    ctx.fillStyle = '#94a3b8';
+                    ctx.font = '14px "Segoe UI", sans-serif';
+                    ctx.fillText('Check console for error details', canvas.width / 2, canvas.height / 2 + 15);
                 }
+                
+                // Update stats to show error state
+                document.getElementById('totalApps').textContent = 'Error';
+                document.getElementById('classifiedApps').textContent = 'Error';
+                document.getElementById('archetypeCount').textContent = 'Error';
+                document.getElementById('visibleApps').textContent = 'Error';
             }
-        });
+			
+			// Add these function definitions
+			function updateNavigationTabs() {
+				const urlParams = new URLSearchParams(window.location.search);
+				const jobId = urlParams.get('job_id');
+				const source = urlParams.get('source');
+				
+				if (jobId) {
+					// Update archetype tab (current page, but for consistency)
+					const archetypeTab = document.querySelector('a[href="/ui/html/archetype.html"]');
+					if (archetypeTab) {
+						archetypeTab.href = `/ui/html/archetype.html?source=${source || 'excel'}&job_id=${jobId}`;
+					}
+					
+					// Update documentation tab  
+					const docTab = document.querySelector('a[href="/ui/html/documentation.html"]');
+					if (docTab) {
+						docTab.href = `/ui/html/documentation.html?job_id=${jobId}`;
+					}
+				}
+			}
 
-        // Placeholder functions to prevent errors
+			function addJobContextIndicator(jobId) {
+				const navTabs = document.querySelector('.nav-tabs');
+				
+				// Remove existing indicator
+				const existingIndicator = document.querySelector('.job-context-indicator');
+				if (existingIndicator) {
+					existingIndicator.remove();
+				}
+				
+				// Add new indicator
+				const indicator = document.createElement('div');
+				indicator.className = 'job-context-indicator';
+				indicator.innerHTML = `
+					<span style="background: #10b981; color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; margin-left: 10px;">
+						Job ${jobId.substring(0, 8)}...
+					</span>
+				`;
+				
+				navTabs.appendChild(indicator);
+			}
+
+        });
+		
+		// Add to your existing archetype.html script section
+		document.addEventListener('DOMContentLoaded', function() {
+			// Listen for job updates from other pages
+			window.addEventListener('message', function(event) {
+				if (event.data.type === 'PORTSCOPE_JOB_UPDATE') {
+					console.log('Job update received:', event.data.job);
+					// Optionally refresh data if it's a relevant job
+				}
+			});
+			
+			// Add navigation helper to existing code
+			window.goToDocumentation = function() {
+				const urlParams = new URLSearchParams(window.location.search);
+				const jobId = urlParams.get('job_id');
+				if (jobId) {
+					window.PortScopeShared.goToDocumentation(jobId);
+				} else {
+					window.open('/ui/html/documentation.html', '_blank');
+				}
+			};
+		});
+
+        // Enhanced view switching with validation
         function setView(viewType) {
-            console.log('Setting view to:', viewType);
+            console.log('🔄 Setting view to:', viewType);
+            
+            if (!window.dashboard) {
+                console.warn('⚠️ Dashboard not ready, cannot switch view');
+                return;
+            }
             
             // Update button states
             document.querySelectorAll('.view-controls .btn').forEach(btn => {
@@ -238,14 +356,35 @@
                 activeBtn.classList.add('active');
             }
             
-            // Show toast for now
-            if (window.dashboardCommon && window.dashboardCommon.showToast) {
-                window.dashboardCommon.showToast(`Switched to ${viewType} view`, 'info');
-            }
+            // Call dashboard method if available
+            window.setView = function(viewType) {
+				if (window.dashboard) {
+					console.log(`Switching to ${viewType} view`);
+					window.dashboard.currentView = viewType;
+					
+					// Remove active class from all buttons
+					document.querySelectorAll('.view-controls .btn').forEach(btn => {
+						btn.classList.remove('active');
+						// DON'T set onclick here - that should be done once during initialization
+					});
+					
+					// Add active class to target button
+					const targetBtn = document.getElementById(viewType + 'Btn');
+					if (targetBtn) {
+						targetBtn.classList.add('active');
+					}
+					
+					// Render the view
+					setTimeout(() => {
+						window.dashboard.render();
+					}, 50);
+				}
+			};
         }
         
+        // Enhanced filter reset with validation
         function resetFilters() {
-            console.log('Resetting filters');
+            console.log('🔄 Resetting filters');
             
             // Clear search box
             const searchBox = document.getElementById('archetypeSearch');
@@ -253,17 +392,28 @@
                 searchBox.value = '';
             }
             
-            // Reset any active filters
-            document.querySelectorAll('.archetype-filter.active').forEach(filter => {
-                filter.classList.remove('active');
-            });
-            
-            // Show toast
-            if (window.dashboardCommon && window.dashboardCommon.showToast) {
-                window.dashboardCommon.showToast('Filters reset', 'success');
+            // Call dashboard method if available
+            if (window.resetFilters) {
+                window.resetFilters();
+            } else {
+                console.warn('⚠️ resetFilters function not available');
             }
         }
+		
+		// Global configuration for Excel integration
+		window.PORTSCOPE_API_URL = window.location.origin;
+		window.PORTSCOPE_WS_URL = `ws://${window.location.host}/ws`;
+
+        // Debug helper
+        window.debugArchetype = function() {
+            console.log('🔍 Archetype Debug Info:');
+            console.log('Dashboard instance:', window.dashboard);
+            console.log('Applications loaded:', window.dashboard?.applications?.length || 0);
+            console.log('Archetypes:', window.dashboard?.archetypes?.length || 0);
+            console.log('Current view:', window.dashboard?.currentView);
+        };
+		
+		
     </script>
-    <script src="../js/archetype.js"></script>
 </body>
 </html>

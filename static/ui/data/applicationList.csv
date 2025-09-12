@@ -1,0 +1,263 @@
+Application Code,Application Name
+ACDA,ATM Check Card Disputes API
+ALE,Advisor Locator Engine
+AODSVY,AOD Survey
+APSE,Appointment Setting (Timetrade)
+ARA,Acount Analysis Request Application
+AV,Automated Vault
+BCA,Branch Customer Authentication
+BKO,Banko POC
+BLND,BLEND SSO
+BLZD,FICO/Blaze Decisioning –Rules Development
+BLZE,FICO Blaze Decision Engine
+BM,BLAZE BKFS MSP AGGREGATED VARIABLES INPUT
+BO,ACBS Loan Syndications - Datamart/Business Objects
+BOD,Branch Operations Dashboard
+BP,BankPro
+BTIF,Branch Technology Information
+BW,Digital Banking - Batch Processing and Online components
+BX,BillerXchange
+CACS,Computer Assisted Collections System
+CAP,RCLIQ - Commercial Analytics
+CCA,Commercial Card Spend Analytics
+CCLTR,Contact Center Customer Letters
+CCPA,Contact Center Print Admin
+CCS,Commercial Card API
+CDSA,Credit & Debit to Same Account
+CIRA,CIP iView Reporting Application
+CLSP,Lending Status Portal
+CMAR,Capital Markets Analytics & Reporting
+CNET,Cimsnet
+CP,CardPac - Total Systems Processing for Credit Cards
+CRECL,CRE Closer
+CSAA,Corporate Security Alerts Application
+CSAS,Collections SAS system
+CT,Core Interfaces
+CV,Remote Cash Capture
+CXI,Currency Exchange International
+CXSI,Sales and Implementation Management System
+DAD,DAD - Drag and Drop Document Utility
+DCDPP,DataCard Data Preparation and Process
+DCIDM,DataCard Issuance Device Management
+DCIFI,DataCard Instant Financial Issuance
+DG,Digital Banking
+DM,Deposits
+DM_BAP,Black Arch Partners
+DM_BLZE,BLZE
+DM_CCRMBZ,dm_ccrm_blze_dev
+DM_CMDAT,CMDAT
+DM_CMDF,CMDF
+DM_CMRDB,CMRDB
+DM_CMREG,CMREG
+DM_CORD,Collections Operations Reporting Database
+DM_DNCCW,CallCenterWrap
+DM_LEDAT,LEDAT
+DM_RDOM,DM_RDOM
+DM_SBADJ,SBADJ
+DM_WMAHR,AddVantage History Database
+DNACA,Account Closing Automation
+DNADP,Associate Data Portal
+DNAEP,Automated Exception Pricing
+DNAGR,Agribusiness
+DNASA,Associate Admin
+DNBCI,Branch Check In
+DNBIT,BITS.NET
+DNBLC,Business Loan Center Application Processing
+DNBRI,BranchInformation
+DNBUH,Business Holidays(Web Service)
+DNCAC,Official Checks
+DNCCL,Custody Control Log
+DNCCO,Centralized Customer Complaints
+DNCCS,Commercial Client Services
+DNCCW,Call Center Wrap
+DNCER,Common Exception Reporting
+DNCIT,Call Center Incentive Tracking System
+DNCOR,Common Object Reference
+DNCWS,Consumer Web Services
+DNDNS,DoNotSolicit
+DNENG,Energy Right - Windows Application
+DNESR,Environmental Service Request
+DNGCM,Garnishments Case Management
+DNGFC,GiftCards
+DNHRT,HR Training
+DNIBS,IBS Ticket System
+DNIDE,IDEA Orchestration Layer
+DNINR,Integrated Receivables
+DNINT,Indemnity Tracking
+DNINV,Invoice Maintenance
+DNLDS,Lending Data Services
+DNLOC,Locator
+DNMCM,Mailcode Manager
+DNMET,Marketing Email Tool
+DNMLO,MLOLocator
+DNMMZ,My Mortgage .NET
+DNPGR,Page Redirect-Redirects to multiple internal apps
+DNRAS,On-Line Rates
+DNRCB,Regions Cash Banking
+DNRCT,ReCEIPTS
+DNREP,Repurchase
+DNRGE,Regulation E Opt In/Opt Out
+DNROM,ROM Database and CSM Coaching Database
+DNRVS,Referral Validation Service
+DNSBT,Safe Deposit Box
+DNSCC,Scorecard Corrections
+DNSCH,ScorecardHierarchy
+DNTCB,Teller Cash Balancing
+DNTCM,Telebanking Customer Maintenance Forms
+DNWHO,WHOAMI - Displays user's network information
+DNWHS,Regions Wirehouse
+DNZEL,Zelle Message Broker
+DPAPI,Digital Process API
+DSAA,Account Analysis Reporting Database
+ECL,eSign Callback Listener
+EFW,Enterprise Framework
+EM,Exceptions Administrator
+EMDS,Exceptions Manager Distributed System
+EMGR,Online Banking eManager
+END,Enterprise Notification Delivery
+ENDNC,Notification Center
+ERCPT,eReceipts Web Service
+FAAR,Fico Alerts - Analytics and Reporting
+FG,FraudGuard
+FICPM,FICO CPM
+FIMSP,FICO MSP Process
+FM,Float Management System
+I3SQL,I3 SQL Mortgage
+IA,Image Archive
+IB,Internet Banking (Server) - Corillian
+IMGVF,Transact Image Verification
+ITR,iTreasury
+IV,Intervoice - Mainframe back up to support RAMS and IVR - Prod
+IVGBU,GBU
+IVR,IVR VoicePortal
+IVRMC,IVRMsgCtrl
+IW,Internal Warehouse
+IWDE,Internal Warehouse Data Entry
+IX,Global Trade Services
+IXCI,ExpressTrade
+IXOF,FircoSoft
+LB,Lockbox
+LBCC,Lockbox Credit Card Processing
+LBOT,Lockbox Operations Tracker
+LBRPS,Lockbox Processing environment
+LO,Loan Originations – ACAPS
+LOCK,LockIt Event Processing
+LP,LoanPoint
+LR,LoanSTAR
+LS,Loan Servicing – ACLS
+MA,MaxTec
+MB,MBNA Partnership
+MBANK,Mobile Banking
+MBI,Mortgage Business Intelligence
+MBMAC,Mobile Banking MAC Build Servers
+MCMS,Mortgage Contact Management System
+MEDA,Marketing Email Delivery API
+MG,BKFS MSP
+MI,MICM
+MIAC,MIAC - Mortgage Industry Analysis Corp.
+MK,Marketing
+MLE,Mortgage Lending Empower .NET
+MT,MTS
+MTPV,Money Transfer Paper Vision
+MY,iCOM
+NTRAC,Interact
+OP,OnePass
+PE,PEP+
+PECC,PEP - Commercial Client Requests
+PREF,Customer Preferences
+PT,Telephone Banking
+Pulse,Pulse
+PY,Payments Warehouse
+QDM,Quick Deposit Mobile
+QUEST,Quest
+RA,Resolve Check (Research and Adjustments)
+RAMS,Regions Account Management System
+RCAPI,Regions Connects API
+RCCP,Regions Connect Central Payments
+RCDB,Regions Connects Database Updates
+RCNBA,Regions Connects Next Best Action
+RCSS,Regions Connects Sales and Service
+RCTC,Regions Connects Teller Capture
+RDC,Regions.Com
+RDCPH,Regions.Com - PhotoCheckcard
+RDCSL,ROSI to Regions Dot Com Service layer
+RDICE,Remote Deposit Image Capture - Enterprise
+RDO,Regions Digital Origination
+RDOM,Regions Digital Offer Management
+RECM,Regions Enterprise Chat and Messaging
+RG,Reg D
+RGA,RGA
+RISAN,RISAN – AnnuityNet (ASP)
+RLM,Regions Liquidity Manager
+RM,IDM Risk Management and Control
+RMAP,Risk Management and Auto Provisioning
+RMS,Regions Medallion Stamp
+ROOBA,Regions Out of Band Authentication
+RSL,ROSIE Service Layer
+RTRXX,Regions Transaction Register Admin Console
+S1,System API - Card Domain
+SBADJ,Small Business Adjudication
+SD,Safe Deposit
+SJ,Strata for Java
+SK,Starter Kits
+SMART,SMART (Systematic Management & Asset Reporting Technology)
+SPY,Smarter Pay
+SRGW,SRGW (Streaming Relational Gateway)
+SSCP,Self Service Collections Portal
+TCN,Teller Capture Notifications
+TCNTB,Transaction Notification Toolbar
+TL,Teller
+TM,TIME
+TMAPI,Treasury Management Client APIs
+TMC,Treasury Management Central
+TMHUB,Treasury Management Data Hub
+TMPB,Treasury Management Payee Builder
+TMS,Treasury Management eSignature
+TRDB,Trust Database Applications
+TRIMG,Trust Imaging System - Joshua
+TRPDS,Trust Petrodata
+TRQFX,Quantifacts
+TRWEB,Trust Web Based Reporting
+TTA,Tsys Token Alerts
+UNICA,UNICA
+VJ,Daisy
+VPA,Visa OTP API
+VT,Vector 4 - Research and Adjustments
+VTA,Visa Token API
+WKEXP,Wolters Kluwer Expere
+WM55,5500 Reporting
+WMAPC,APECS
+WMBEX,Automation Bot for SEI External Client Access Requests
+WMBO,Wealth Management Beneficial Ownership Onboarding Maintenance
+WMBSB,BANCRS SBL Exceptions
+WMCHS,Closely Held Securities
+WMCOR,Wealth Management Client Onboarding Risk Assessment
+WMDA,Wealth Data Analytics
+WMEAD,Estates Admin
+WMEW,Early Warning
+WMOLB,ECX SSO Data Feed for OLB
+WMRTX,RTRAX
+WMSBL,Securities Based Lending
+WMSEI,SEI Wealth Platform
+WMST,Securities Transactions
+WMTEI,Trust Employee Information
+WMTGL,Wealth Management Trust Gain Loss
+WMTR,Trust Reports
+WMTS,TranStar
+WMWF,Wealth Fraud Detection Alerts
+WPL,Wire Pin Limit
+WTCNT,WhatCounts Pro API
+XC,Payment Operations: Central Payments Reporting
+XD,Regions Shared Data Services - RSDS
+XE,FTM4C Mainframe
+XECHK,Financial Transaction Manager for Check (FTM4C)
+XEDTA,DTA SVPCO
+XEFTM,Financial Transaction Manager - Base
+XEIP,Real Time Payments (FIS Hosted)
+XETG,Transaction Gateway
+XETIF,TiffMender
+XF,Transfer Warehouse
+XI,Immediate Payments - Mainframe
+YL,Mortgage Distributed Application
+YN,QRM
+ZL,Zelle -  Batch System

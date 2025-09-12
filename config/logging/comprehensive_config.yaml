@@ -1,0 +1,92 @@
+access_control:
+  audit_log_access: true
+  log_sanitization: true
+  role_based_access: true
+  role_permissions:
+    admin:
+    - PUBLIC
+    - AUTHENTICATED
+    - PRIVILEGED
+    - RESTRICTED
+    - CONFIDENTIAL
+    developer:
+    - PUBLIC
+    - AUTHENTICATED
+    guest:
+    - PUBLIC
+    manager:
+    - PUBLIC
+    - AUTHENTICATED
+    - PRIVILEGED
+    readonly:
+    - PUBLIC
+    security:
+    - PUBLIC
+    - AUTHENTICATED
+    - PRIVILEGED
+    - RESTRICTED
+    user:
+    - PUBLIC
+    - AUTHENTICATED
+comprehensive_logging:
+  batch_size: 100
+  batch_timeout: 5.0
+  enable_frontend_logging: true
+  enable_incident_management: true
+  enable_uvicorn_interception: true
+  enabled: true
+  log_retention_days: 90
+  queue_max_size: 10000
+frontend_logging:
+  api_call_tracking: true
+  auto_instrumentation: true
+  batch_size: 10
+  batch_timeout: 5000
+  enabled: true
+  error_tracking: true
+  performance_monitoring: true
+  security_violation_tracking: true
+  user_interaction_tracking: true
+log_classification:
+  auto_classify: true
+  incident_detection: true
+  pii_detection: true
+  risk_scoring: true
+  sensitivity_detection: true
+  tag_generation: true
+middleware:
+  request_response_logging:
+    enabled: true
+    excluded_paths:
+    - /health
+    - /metrics
+    - /static
+    log_request_body: true
+    log_response_body: false
+    max_body_size: 10000
+    sensitive_headers:
+    - authorization
+    - cookie
+    - x-api-key
+    - x-auth-token
+  websocket_logging:
+    enabled: true
+    log_connections: true
+    log_messages: false
+storage:
+  audit_storage:
+    backup_enabled: true
+    base_path: essentials/audit
+    compress_old_files: true
+    format: jsonl
+    index_enabled: true
+    max_file_size_mb: 100
+    retention_days: 365
+  log_storage:
+    base_path: essentials/logs
+    compress_after_days: 7
+    enable_compression: true
+    enable_rotation: true
+    format: jsonl
+    max_file_size_mb: 50
+    retention_days: 90

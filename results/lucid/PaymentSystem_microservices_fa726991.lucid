@@ -1,0 +1,136 @@
+<?xml version="1.0" ?>
+<lucidchart version="2.0" archetype="microservices" template_based="true">
+  <metadata>
+    <title>Microservices Architecture</title>
+    <archetype>microservices</archetype>
+    <generated_from_template>true</generated_from_template>
+    <application_count>3</application_count>
+  </metadata>
+  <canvas>
+    <width>1000</width>
+    <height>700</height>
+  </canvas>
+  <components>
+    <component id="api_gateway" type="api_gateway" template_based="true">
+      <name>Customer Portal</name>
+      <position>
+        <x>100</x>
+        <y>350</y>
+      </position>
+      <styling>
+        <width>110</width>
+        <height>80</height>
+        <fill_color>#FD79A8</fill_color>
+        <border_color>#E84393</border_color>
+        <border_width>2</border_width>
+        <corner_radius>8</corner_radius>
+        <shape_type>hexagon</shape_type>
+        <icon>🚪</icon>
+        <font>Arial</font>
+        <text_size>10</text_size>
+      </styling>
+    </component>
+    <component id="api1" type="microservice" template_based="true">
+      <name>Payment API</name>
+      <position>
+        <x>300</x>
+        <y>150</y>
+      </position>
+      <styling>
+        <width>90</width>
+        <height>60</height>
+        <fill_color>#74B9FF</fill_color>
+        <border_color>#0984e3</border_color>
+        <border_width>2</border_width>
+        <corner_radius>12</corner_radius>
+        <shape_type>rounded_rectangle</shape_type>
+        <icon>🔧</icon>
+        <font>Arial</font>
+        <text_size>9</text_size>
+      </styling>
+    </component>
+    <component id="db1" type="microservice" template_based="true">
+      <name>Transaction DB</name>
+      <position>
+        <x>450</x>
+        <y>150</y>
+      </position>
+      <styling>
+        <width>90</width>
+        <height>60</height>
+        <fill_color>#74B9FF</fill_color>
+        <border_color>#0984e3</border_color>
+        <border_width>2</border_width>
+        <corner_radius>12</corner_radius>
+        <shape_type>rounded_rectangle</shape_type>
+        <icon>🔧</icon>
+        <font>Arial</font>
+        <text_size>9</text_size>
+      </styling>
+    </component>
+    <component id="shared_data" type="database" template_based="true">
+      <name>Shared Data</name>
+      <position>
+        <x>850</x>
+        <y>300</y>
+      </position>
+      <styling>
+        <width>100</width>
+        <height>120</height>
+        <fill_color>#6C5CE7</fill_color>
+        <border_color>#5F3DC4</border_color>
+        <border_width>2</border_width>
+        <corner_radius>8</corner_radius>
+        <shape_type>cylinder</shape_type>
+        <icon>🗄️</icon>
+        <font>Arial</font>
+        <text_size>10</text_size>
+      </styling>
+    </component>
+    <component id="cache" type="cache" template_based="true">
+      <name>Cache</name>
+      <position>
+        <x>850</x>
+        <y>450</y>
+      </position>
+      <styling>
+        <width>80</width>
+        <height>80</height>
+        <fill_color>#FDCB6E</fill_color>
+        <border_color>#E17055</border_color>
+        <border_width>2</border_width>
+        <corner_radius>8</corner_radius>
+        <shape_type>diamond</shape_type>
+        <icon>⚡</icon>
+        <font>Arial</font>
+        <text_size>9</text_size>
+      </styling>
+    </component>
+  </components>
+  <connections>
+    <connection from="api_gateway" to="api1" type="http">
+      <styling>
+        <color>#4ECDC4</color>
+        <width>2</width>
+        <style>solid</style>
+        <arrow>true</arrow>
+      </styling>
+    </connection>
+    <connection from="api_gateway" to="db1" type="http">
+      <styling>
+        <color>#4ECDC4</color>
+        <width>2</width>
+        <style>solid</style>
+        <arrow>true</arrow>
+      </styling>
+    </connection>
+    <connection from="service_grid" to="shared_data" type="http">
+      <styling>
+        <color>#4ECDC4</color>
+        <width>2</width>
+        <style>solid</style>
+        <arrow>true</arrow>
+      </styling>
+    </connection>
+  </connections>
+</lucidchart>

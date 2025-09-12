@@ -1,0 +1,17 @@
+COMPATIBILITY REPORT
+==================================================
+Generated: 2025-08-11 12:02:15
+Project Root: C:\Users\AjayPillai\application_auto_discoverer
+
+ISSUES FOUND: 1
+  async_issues: 1
+
+ASYNC ISSUES
+------------------------------
+  - C:\Users\AjayPillai\application_auto_discoverer\storage\file_audit_storage.py: Uses asyncio.create_task() in __init__ - can cause event loop issues
+
+RECOMMENDATIONS
+------------------------------
+  - Review remaining missing imports manually
+  - Test the application after fixes
+  - Consider adding proper import organization

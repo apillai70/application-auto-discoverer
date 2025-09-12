@@ -1,0 +1,4 @@
+Source,Target,Label
+Load Balancer,Web Server,HTTP
+Web Server,Customer Portal,API
+Customer Portal,Database,SQL

@@ -1,0 +1,590 @@
+[
+  {
+    "timestamp": "2025-08-12T11:00:52.379304",
+    "alert_id": "4afe57f8",
+    "severity": "critical",
+    "service": "activnet_frontend",
+    "message": "Service activnet_frontend is HealthStatus.CRITICAL",
+    "details": {
+      "error": "Port 8000 not accessible",
+      "url": "http://localhost:8000",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:00:56.449231",
+    "alert_id": "d346b648",
+    "severity": "critical",
+    "service": "activnet_api",
+    "message": "Service activnet_api is HealthStatus.CRITICAL",
+    "details": {
+      "error": "Port 8001 not accessible",
+      "url": "http://localhost:8001",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:00:52.379304",
+    "alert_id": "4afe57f8",
+    "severity": "critical",
+    "service": "activnet_frontend",
+    "message": "Service activnet_frontend is HealthStatus.CRITICAL",
+    "details": {
+      "error": "Port 8000 not accessible",
+      "url": "http://localhost:8000",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:00:58.573063",
+    "alert_id": "5ebd5057",
+    "severity": "error",
+    "service": "authentication",
+    "message": "Service authentication is HealthStatus.UNHEALTHY",
+    "details": {
+      "error": "Cannot connect to host dev.activnet.local:8001 ssl:default [getaddrinfo failed]",
+      "url": "http://localhost:8001/api/v1/auth",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:01:00.619847",
+    "alert_id": "a5aaab34",
+    "severity": "error",
+    "service": "network_discovery",
+    "message": "Service network_discovery is HealthStatus.UNHEALTHY",
+    "details": {
+      "error": "Cannot connect to host dev.activnet.local:8001 ssl:default [getaddrinfo failed]",
+      "url": "http://localhost:8001/api/v1/topology",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:00:56.449231",
+    "alert_id": "d346b648",
+    "severity": "critical",
+    "service": "activnet_api",
+    "message": "Service activnet_api is HealthStatus.CRITICAL",
+    "details": {
+      "error": "Port 8001 not accessible",
+      "url": "http://localhost:8001",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:01:02.664773",
+    "alert_id": "49f175d4",
+    "severity": "error",
+    "service": "compliance",
+    "message": "Service compliance is HealthStatus.UNHEALTHY",
+    "details": {
+      "error": "Cannot connect to host dev.activnet.local:8001 ssl:default [getaddrinfo failed]",
+      "url": "http://localhost:8001/api/v1/compliance",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:00:58.573063",
+    "alert_id": "5ebd5057",
+    "severity": "error",
+    "service": "authentication",
+    "message": "Service authentication is HealthStatus.UNHEALTHY",
+    "details": {
+      "error": "Cannot connect to host dev.activnet.local:8001 ssl:default [getaddrinfo failed]",
+      "url": "http://localhost:8001/api/v1/auth",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:01:04.748369",
+    "alert_id": "db8731b9",
+    "severity": "error",
+    "service": "audit",
+    "message": "Service audit is HealthStatus.UNHEALTHY",
+    "details": {
+      "error": "Cannot connect to host dev.activnet.local:8001 ssl:default [getaddrinfo failed]",
+      "url": "http://localhost:8001/api/v1/audit",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:01:00.619847",
+    "alert_id": "a5aaab34",
+    "severity": "error",
+    "service": "network_discovery",
+    "message": "Service network_discovery is HealthStatus.UNHEALTHY",
+    "details": {
+      "error": "Cannot connect to host dev.activnet.local:8001 ssl:default [getaddrinfo failed]",
+      "url": "http://localhost:8001/api/v1/topology",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:01:02.664773",
+    "alert_id": "49f175d4",
+    "severity": "error",
+    "service": "compliance",
+    "message": "Service compliance is HealthStatus.UNHEALTHY",
+    "details": {
+      "error": "Cannot connect to host dev.activnet.local:8001 ssl:default [getaddrinfo failed]",
+      "url": "http://localhost:8001/api/v1/compliance",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:01:04.748369",
+    "alert_id": "db8731b9",
+    "severity": "error",
+    "service": "audit",
+    "message": "Service audit is HealthStatus.UNHEALTHY",
+    "details": {
+      "error": "Cannot connect to host dev.activnet.local:8001 ssl:default [getaddrinfo failed]",
+      "url": "http://localhost:8001/api/v1/audit",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:00:52.379304",
+    "alert_id": "4afe57f8",
+    "severity": "critical",
+    "service": "activnet_frontend",
+    "message": "Service activnet_frontend is HealthStatus.CRITICAL",
+    "details": {
+      "error": "Port 8000 not accessible",
+      "url": "http://localhost:8000",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:00:56.449231",
+    "alert_id": "d346b648",
+    "severity": "critical",
+    "service": "activnet_api",
+    "message": "Service activnet_api is HealthStatus.CRITICAL",
+    "details": {
+      "error": "Port 8001 not accessible",
+      "url": "http://localhost:8001",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:00:58.573063",
+    "alert_id": "5ebd5057",
+    "severity": "error",
+    "service": "authentication",
+    "message": "Service authentication is HealthStatus.UNHEALTHY",
+    "details": {
+      "error": "Cannot connect to host dev.activnet.local:8001 ssl:default [getaddrinfo failed]",
+      "url": "http://localhost:8001/api/v1/auth",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:01:00.619847",
+    "alert_id": "a5aaab34",
+    "severity": "error",
+    "service": "network_discovery",
+    "message": "Service network_discovery is HealthStatus.UNHEALTHY",
+    "details": {
+      "error": "Cannot connect to host dev.activnet.local:8001 ssl:default [getaddrinfo failed]",
+      "url": "http://localhost:8001/api/v1/topology",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:01:02.664773",
+    "alert_id": "49f175d4",
+    "severity": "error",
+    "service": "compliance",
+    "message": "Service compliance is HealthStatus.UNHEALTHY",
+    "details": {
+      "error": "Cannot connect to host dev.activnet.local:8001 ssl:default [getaddrinfo failed]",
+      "url": "http://localhost:8001/api/v1/compliance",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:01:04.748369",
+    "alert_id": "db8731b9",
+    "severity": "error",
+    "service": "audit",
+    "message": "Service audit is HealthStatus.UNHEALTHY",
+    "details": {
+      "error": "Cannot connect to host dev.activnet.local:8001 ssl:default [getaddrinfo failed]",
+      "url": "http://localhost:8001/api/v1/audit",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:00:52.379304",
+    "alert_id": "4afe57f8",
+    "severity": "critical",
+    "service": "activnet_frontend",
+    "message": "Service activnet_frontend is HealthStatus.CRITICAL",
+    "details": {
+      "error": "Port 8000 not accessible",
+      "url": "http://localhost:8000",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:00:56.449231",
+    "alert_id": "d346b648",
+    "severity": "critical",
+    "service": "activnet_api",
+    "message": "Service activnet_api is HealthStatus.CRITICAL",
+    "details": {
+      "error": "Port 8001 not accessible",
+      "url": "http://localhost:8001",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:08:50.212600",
+    "alert_id": "4afe57f8",
+    "severity": "critical",
+    "service": "activnet_frontend",
+    "message": "Service activnet_frontend is HealthStatus.CRITICAL",
+    "details": {
+      "error": "Port 8000 not accessible",
+      "url": "http://localhost:8000",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:08:54.322042",
+    "alert_id": "d346b648",
+    "severity": "critical",
+    "service": "activnet_api",
+    "message": "Service activnet_api is HealthStatus.CRITICAL",
+    "details": {
+      "error": "Port 8001 not accessible",
+      "url": "http://localhost:8001",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:08:56.383344",
+    "alert_id": "5ebd5057",
+    "severity": "error",
+    "service": "authentication",
+    "message": "Service authentication is HealthStatus.UNHEALTHY",
+    "details": {
+      "error": "Cannot connect to host dev.activnet.local:8001 ssl:default [getaddrinfo failed]",
+      "url": "http://localhost:8001/api/v1/auth",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:08:58.473567",
+    "alert_id": "a5aaab34",
+    "severity": "error",
+    "service": "network_discovery",
+    "message": "Service network_discovery is HealthStatus.UNHEALTHY",
+    "details": {
+      "error": "Cannot connect to host dev.activnet.local:8001 ssl:default [getaddrinfo failed]",
+      "url": "http://localhost:8001/api/v1/topology",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:09:00.623200",
+    "alert_id": "49f175d4",
+    "severity": "error",
+    "service": "compliance",
+    "message": "Service compliance is HealthStatus.UNHEALTHY",
+    "details": {
+      "error": "Cannot connect to host dev.activnet.local:8001 ssl:default [getaddrinfo failed]",
+      "url": "http://localhost:8001/api/v1/compliance",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:09:02.699552",
+    "alert_id": "db8731b9",
+    "severity": "error",
+    "service": "audit",
+    "message": "Service audit is HealthStatus.UNHEALTHY",
+    "details": {
+      "error": "Cannot connect to host dev.activnet.local:8001 ssl:default [getaddrinfo failed]",
+      "url": "http://localhost:8001/api/v1/audit",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:08:50.212600",
+    "alert_id": "4afe57f8",
+    "severity": "critical",
+    "service": "activnet_frontend",
+    "message": "Service activnet_frontend is HealthStatus.CRITICAL",
+    "details": {
+      "error": "Port 8000 not accessible",
+      "url": "http://localhost:8000",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:08:54.322042",
+    "alert_id": "d346b648",
+    "severity": "critical",
+    "service": "activnet_api",
+    "message": "Service activnet_api is HealthStatus.CRITICAL",
+    "details": {
+      "error": "Port 8001 not accessible",
+      "url": "http://localhost:8001",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:08:56.383344",
+    "alert_id": "5ebd5057",
+    "severity": "error",
+    "service": "authentication",
+    "message": "Service authentication is HealthStatus.UNHEALTHY",
+    "details": {
+      "error": "Cannot connect to host dev.activnet.local:8001 ssl:default [getaddrinfo failed]",
+      "url": "http://localhost:8001/api/v1/auth",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:08:58.473567",
+    "alert_id": "a5aaab34",
+    "severity": "error",
+    "service": "network_discovery",
+    "message": "Service network_discovery is HealthStatus.UNHEALTHY",
+    "details": {
+      "error": "Cannot connect to host dev.activnet.local:8001 ssl:default [getaddrinfo failed]",
+      "url": "http://localhost:8001/api/v1/topology",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:09:00.623200",
+    "alert_id": "49f175d4",
+    "severity": "error",
+    "service": "compliance",
+    "message": "Service compliance is HealthStatus.UNHEALTHY",
+    "details": {
+      "error": "Cannot connect to host dev.activnet.local:8001 ssl:default [getaddrinfo failed]",
+      "url": "http://localhost:8001/api/v1/compliance",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:09:02.699552",
+    "alert_id": "db8731b9",
+    "severity": "error",
+    "service": "audit",
+    "message": "Service audit is HealthStatus.UNHEALTHY",
+    "details": {
+      "error": "Cannot connect to host dev.activnet.local:8001 ssl:default [getaddrinfo failed]",
+      "url": "http://localhost:8001/api/v1/audit",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:08:50.212600",
+    "alert_id": "4afe57f8",
+    "severity": "critical",
+    "service": "activnet_frontend",
+    "message": "Service activnet_frontend is HealthStatus.CRITICAL",
+    "details": {
+      "error": "Port 8000 not accessible",
+      "url": "http://localhost:8000",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:08:54.322042",
+    "alert_id": "d346b648",
+    "severity": "critical",
+    "service": "activnet_api",
+    "message": "Service activnet_api is HealthStatus.CRITICAL",
+    "details": {
+      "error": "Port 8001 not accessible",
+      "url": "http://localhost:8001",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:08:56.383344",
+    "alert_id": "5ebd5057",
+    "severity": "error",
+    "service": "authentication",
+    "message": "Service authentication is HealthStatus.UNHEALTHY",
+    "details": {
+      "error": "Cannot connect to host dev.activnet.local:8001 ssl:default [getaddrinfo failed]",
+      "url": "http://localhost:8001/api/v1/auth",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:08:58.473567",
+    "alert_id": "a5aaab34",
+    "severity": "error",
+    "service": "network_discovery",
+    "message": "Service network_discovery is HealthStatus.UNHEALTHY",
+    "details": {
+      "error": "Cannot connect to host dev.activnet.local:8001 ssl:default [getaddrinfo failed]",
+      "url": "http://localhost:8001/api/v1/topology",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:09:00.623200",
+    "alert_id": "49f175d4",
+    "severity": "error",
+    "service": "compliance",
+    "message": "Service compliance is HealthStatus.UNHEALTHY",
+    "details": {
+      "error": "Cannot connect to host dev.activnet.local:8001 ssl:default [getaddrinfo failed]",
+      "url": "http://localhost:8001/api/v1/compliance",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:09:02.699552",
+    "alert_id": "db8731b9",
+    "severity": "error",
+    "service": "audit",
+    "message": "Service audit is HealthStatus.UNHEALTHY",
+    "details": {
+      "error": "Cannot connect to host dev.activnet.local:8001 ssl:default [getaddrinfo failed]",
+      "url": "http://localhost:8001/api/v1/audit",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:08:50.212600",
+    "alert_id": "4afe57f8",
+    "severity": "critical",
+    "service": "activnet_frontend",
+    "message": "Service activnet_frontend is HealthStatus.CRITICAL",
+    "details": {
+      "error": "Port 8000 not accessible",
+      "url": "http://localhost:8000",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:08:54.322042",
+    "alert_id": "d346b648",
+    "severity": "critical",
+    "service": "activnet_api",
+    "message": "Service activnet_api is HealthStatus.CRITICAL",
+    "details": {
+      "error": "Port 8001 not accessible",
+      "url": "http://localhost:8001",
+      "response_time": null
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:19:52.262441",
+    "alert_id": "28f75eed",
+    "severity": "critical",
+    "service": "compliance",
+    "message": "Service compliance is HealthStatus.CRITICAL",
+    "details": {
+      "error": null,
+      "url": "http://localhost:8001",
+      "response_time": 2041.5232181549072
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:19:52.262441",
+    "alert_id": "28f75eed",
+    "severity": "critical",
+    "service": "compliance",
+    "message": "Service compliance is HealthStatus.CRITICAL",
+    "details": {
+      "error": null,
+      "url": "http://localhost:8001",
+      "response_time": 2039.7863388061523
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:19:52.262441",
+    "alert_id": "28f75eed",
+    "severity": "critical",
+    "service": "compliance",
+    "message": "Service compliance is HealthStatus.CRITICAL",
+    "details": {
+      "error": null,
+      "url": "http://localhost:8001",
+      "response_time": 2036.9441509246826
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:28:39.482440",
+    "alert_id": "28f75eed",
+    "severity": "critical",
+    "service": "compliance",
+    "message": "Service compliance is HealthStatus.CRITICAL",
+    "details": {
+      "error": null,
+      "url": "http://localhost:8001",
+      "response_time": 2058.7286949157715
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:28:39.482440",
+    "alert_id": "28f75eed",
+    "severity": "critical",
+    "service": "compliance",
+    "message": "Service compliance is HealthStatus.CRITICAL",
+    "details": {
+      "error": null,
+      "url": "http://localhost:8001",
+      "response_time": 2054.0971755981445
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:28:39.482440",
+    "alert_id": "28f75eed",
+    "severity": "critical",
+    "service": "compliance",
+    "message": "Service compliance is HealthStatus.CRITICAL",
+    "details": {
+      "error": null,
+      "url": "http://localhost:8001",
+      "response_time": 2038.0008220672607
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:32:52.349864",
+    "alert_id": "28f75eed",
+    "severity": "critical",
+    "service": "compliance",
+    "message": "Service compliance is HealthStatus.CRITICAL",
+    "details": {
+      "error": null,
+      "url": "http://localhost:8001",
+      "response_time": 2051.0668754577637
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:32:52.349864",
+    "alert_id": "28f75eed",
+    "severity": "critical",
+    "service": "compliance",
+    "message": "Service compliance is HealthStatus.CRITICAL",
+    "details": {
+      "error": null,
+      "url": "http://localhost:8001",
+      "response_time": 2023.8852500915527
+    }
+  },
+  {
+    "timestamp": "2025-08-12T11:34:55.247697",
+    "alert_id": "d346b648",
+    "severity": "critical",
+    "service": "activnet_api",
+    "message": "Service activnet_api is HealthStatus.CRITICAL",
+    "details": {
+      "error": null,
+      "url": "http://localhost:8001",
+      "response_time": 2039.5424365997314
+    }
+  }
+]

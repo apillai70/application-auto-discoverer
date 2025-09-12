@@ -555,6 +555,9 @@ class FileProcessor:
         try:
             self.logger.info(f"[JSON] Creating JSON data file for web application...")
             
+            # Clean the DataFrame first - remove NaN ports
+            data = self.clean_dataframe_for_json(data)
+            
             # Ensure web templates directory exists
             self.json_data_file.parent.mkdir(parents=True, exist_ok=True)
             self.logger.info(f"[JSON] Web templates directory: {self.json_data_file.parent}")
@@ -574,7 +577,6 @@ class FileProcessor:
                     'source_file': original_filename,
                     'total_records': len(data),
                     'version': '1.0.0',
-                    'master_file_location': str(self.master_excel_file),
                     'last_updated': datetime.now().isoformat()
                 },
                 'applications': app_summary,
@@ -589,18 +591,40 @@ class FileProcessor:
                 'raw_data_sample': self.create_clean_sample_data(data, 50) if len(data) > 0 else []
             }
             
-            # Clean the JSON data to remove NaN values
-            json_data = self.clean_json_data(json_data)
-            
-            # Write JSON file with UTF-8 encoding
+            # Write JSON file with custom encoder to handle NaN
             self.logger.info(f"[JSON] Writing to: {self.json_data_file}")
+            
+            import numpy as np
+            
+            class NanSafeEncoder(json.JSONEncoder):
+                def encode(self, obj):
+                    if isinstance(obj, float):
+                        if np.isnan(obj) or np.isinf(obj):
+                            return json.JSONEncoder.encode(self, None)
+                    return super().encode(obj)
+                
+                def iterencode(self, obj, _one_shot=False):
+                    for chunk in super().iterencode(obj, _one_shot):
+                        # Replace NaN strings that might have slipped through
+                        chunk = chunk.replace('NaN', 'null')
+                        yield chunk
+            
+            # Write with custom encoder
             with open(self.json_data_file, 'w', encoding='utf-8') as f:
-                json.dump(json_data, f, indent=2, default=self.json_serializer, ensure_ascii=False)
+                json.dump(json_data, f, indent=2, cls=NanSafeEncoder, ensure_ascii=False)
             
             # Verify file was created
             if self.json_data_file.exists():
                 file_size = self.json_data_file.stat().st_size
                 self.logger.info(f"[SUCCESS] JSON file created: {self.json_data_file} ({file_size:,} bytes)")
+                
+                # Verify JSON is valid
+                try:
+                    with open(self.json_data_file, 'r', encoding='utf-8') as f:
+                        test = json.load(f)
+                    self.logger.info(f"[SUCCESS] JSON validation passed")
+                except json.JSONDecodeError as e:
+                    self.logger.error(f"[ERROR] JSON validation failed: {e}")
             else:
                 self.logger.error(f"[ERROR] JSON file was not created: {self.json_data_file}")
             
@@ -608,7 +632,148 @@ class FileProcessor:
             self.logger.error(f"[ERROR] Error updating JSON data file: {e}")
             import traceback
             self.logger.error(f"[ERROR] Full traceback: {traceback.format_exc()}")
-            # Don't re-raise the exception, just log it
+
+    def clean_dataframe_for_json(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Clean DataFrame before JSON conversion
+        """
+        df = df.copy()
+        
+        # Clean port column - convert to int where possible, set NaN to null
+        if 'port' in df.columns:
+            def clean_port(p):
+                try:
+                    if pd.isna(p):
+                        return None
+                    # Try to convert to int
+                    port_int = int(float(p))
+                    if 0 <= port_int <= 65535:
+                        return port_int
+                    return None
+                except:
+                    return None
+            
+            df['port'] = df['port'].apply(clean_port)
+        
+        return df
+
+    def safe_extract_ports(self, data: pd.DataFrame) -> List[str]:
+        """
+        Safely extract port numbers as clean integers
+        """
+        if 'port' not in data.columns:
+            return []
+        
+        try:
+            ports = []
+            for port in data['port'].dropna().unique():
+                try:
+                    # Convert to int to remove .0, then to string
+                    port_int = int(float(port))
+                    if 0 <= port_int <= 65535:
+                        ports.append(str(port_int))
+                except (ValueError, TypeError):
+                    continue
+            
+            return sorted(list(set(ports)))
+        except Exception:
+            return []
+
+    def create_port_service_mapping(self, data: pd.DataFrame) -> dict:
+        """
+        Create port-to-service mapping with clean integer ports
+        """
+        port_service_map = {}
+        
+        for _, row in data.iterrows():
+            try:
+                port = row.get('port')
+                protocol = row.get('protocol', 'TCP')
+                service = row.get('service_definition', 'Unknown Service')
+                
+                # Skip invalid ports
+                if pd.isna(port) or port is None:
+                    continue
+                
+                # Clean port - convert to integer
+                try:
+                    port_int = int(float(port))
+                    if not (0 <= port_int <= 65535):
+                        continue
+                    port_clean = str(port_int)
+                except (ValueError, TypeError):
+                    continue
+                
+                # Clean protocol
+                protocol_clean = str(protocol).strip() if pd.notna(protocol) else 'TCP'
+                if protocol_clean.lower() in ['nan', 'none', 'null', '']:
+                    protocol_clean = 'TCP'
+                
+                # Clean service
+                service_clean = str(service).strip() if pd.notna(service) else 'Unknown Service'
+                if service_clean.lower() in ['nan', 'none', 'null', '']:
+                    service_clean = 'Unknown Service'
+                
+                key = f"{protocol_clean}:{port_clean}"
+                if key not in port_service_map:
+                    port_service_map[key] = {
+                        'port': port_clean,  # Clean integer as string
+                        'protocol': protocol_clean,
+                        'service': service_clean,
+                        'count': 0
+                    }
+                port_service_map[key]['count'] += 1
+                
+            except Exception as e:
+                continue
+        
+        return port_service_map
+
+    def create_clean_sample_data(self, data: pd.DataFrame, sample_size: int = 50) -> List[dict]:
+        """
+        Create a clean sample of data for JSON export
+        """
+        try:
+            # Get sample
+            sample_data = data.head(sample_size).copy()
+            
+            # Convert to records
+            records = sample_data.to_dict('records')
+            clean_records = []
+            
+            for record in records:
+                clean_record = {}
+                for key, value in record.items():
+                    if pd.isna(value) or value is None:
+                        # Don't include null ports in output
+                        if key == 'port':
+                            continue  # Skip null ports entirely
+                        clean_record[key] = None
+                    elif key == 'port':
+                        # Clean port values
+                        try:
+                            port_int = int(float(value))
+                            if 0 <= port_int <= 65535:
+                                clean_record[key] = port_int
+                            # else skip invalid ports
+                        except:
+                            pass  # Skip unparseable ports
+                    elif isinstance(value, float):
+                        import math
+                        if math.isnan(value) or math.isinf(value):
+                            clean_record[key] = None
+                        else:
+                            clean_record[key] = value
+                    else:
+                        clean_record[key] = value
+                
+                clean_records.append(clean_record)
+            
+            return clean_records
+            
+        except Exception as e:
+            self.logger.warning(f"Error creating sample data: {e}")
+            return []
 
     def clean_json_data(self, data):
         """Recursively clean JSON data to remove NaN values and make it JSON-serializable"""

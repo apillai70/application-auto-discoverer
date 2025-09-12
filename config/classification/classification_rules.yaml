@@ -1,0 +1,108 @@
+classification_rules:
+  incident_conditions:
+    SEV1_CRITICAL:
+      error_rate_threshold: 0.5
+      keywords:
+      - system_down
+      - complete_failure
+      - security_breach
+      - data_loss
+      levels:
+      - EMERGENCY
+      - ALERT
+    SEV2_HIGH:
+      error_rate_threshold: 0.3
+      keywords:
+      - service_unavailable
+      - database_down
+      - authentication_failure
+      levels:
+      - CRITICAL
+    SEV3_MODERATE:
+      error_rate_threshold: 0.2
+      keywords:
+      - feature_unavailable
+      - performance_degraded
+      levels:
+      - ERROR
+    SEV4_LOW:
+      error_rate_threshold: 0.1
+      keywords:
+      - minor_issue
+      - cosmetic_problem
+      levels:
+      - WARNING
+  level_keywords:
+    ALERT:
+    - service_unavailable
+    - data_corruption
+    - authentication_failure
+    CRITICAL:
+    - exception
+    - fatal
+    - crash
+    - timeout
+    - database_error
+    DEBUG:
+    - debug
+    - trace
+    - verbose
+    EMERGENCY:
+    - system_down
+    - complete_failure
+    - data_loss
+    - security_breach
+    ERROR:
+    - error
+    - failed
+    - exception
+    - invalid
+    - denied
+    INFO:
+    - request
+    - response
+    - success
+    - completed
+    NOTICE:
+    - started
+    - stopped
+    - configured
+    - initialized
+    TRACE:
+    - entering
+    - exiting
+    - step
+    WARNING:
+    - warning
+    - deprecated
+    - retry
+    - fallback
+    - slow
+  pii_keywords:
+  - email
+  - phone
+  - address
+  - ssn
+  - social_security
+  - credit_card
+  - passport
+  - license
+  - birthday
+  - dob
+  retention_policies:
+    ALERT: 2555
+    CRITICAL: 2555
+    DEBUG: 30
+    EMERGENCY: 2555
+    ERROR: 1095
+    INFO: 90
+    NOTICE: 365
+    TRACE: 7
+    WARNING: 730
+  sensitive_patterns:
+  - password["\s]*[:=]["\s]*[^"\s]+
+  - token["\s]*[:=]["\s]*[^"\s]+
+  - api[_-]?key["\s]*[:=]["\s]*[^"\s]+
+  - secret["\s]*[:=]["\s]*[^"\s]+
+  - \b\d{4}[- ]?\d{4}[- ]?\d{4}[- ]?\d{4}\b
+  - \b\d{3}-\d{2}-\d{4}\b

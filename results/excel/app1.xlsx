@@ -3,7 +3,7 @@
     <DocumentProperties>
         <Title>Application Portfolio Analysis</Title>
         <Author>Professional Network Discovery Platform</Author>
-        <Created>2025-07-23T15:24:46.521666</Created>
+        <Created>2025-08-29T17:53:28.194070</Created>
     </DocumentProperties>
     
     <Worksheet ss:Name="Application Inventory">
@@ -17,11 +17,11 @@
                 <Cell><Data ss:Type="String">Data Sensitivity</Data></Cell>
             </Row>
             <Row>
-                <Cell><Data ss:Type="String">Test App</Data></Cell>
+                <Cell><Data ss:Type="String">Web Server</Data></Cell>
                 <Cell><Data ss:Type="String">low</Data></Cell>
-                <Cell><Data ss:Type="String">internal</Data></Cell>
+                <Cell><Data ss:Type="String">dmz</Data></Cell>
                 <Cell><Data ss:Type="String"></Data></Cell>
-                <Cell><Data ss:Type="String">application</Data></Cell>
+                <Cell><Data ss:Type="String">presentation</Data></Cell>
                 <Cell><Data ss:Type="String">internal</Data></Cell>
             </Row>
         </Table>
@@ -37,7 +37,7 @@
                 <Cell><Data ss:Type="String">GDPR</Data></Cell>
             </Row>
             <Row>
-                <Cell><Data ss:Type="String">Test App</Data></Cell>
+                <Cell><Data ss:Type="String">Web Server</Data></Cell>
                 <Cell><Data ss:Type="String">No</Data></Cell>
                 <Cell><Data ss:Type="String">No</Data></Cell>
                 <Cell><Data ss:Type="String">No</Data></Cell>

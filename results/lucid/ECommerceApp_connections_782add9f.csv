@@ -1,0 +1,5 @@
+Source,Target,Label
+API Gateway,User Service,HTTP
+API Gateway,Order Servic,HTTP
+API Gateway,Payment Serv,HTTP
+API Gateway,Shared DB,HTTP

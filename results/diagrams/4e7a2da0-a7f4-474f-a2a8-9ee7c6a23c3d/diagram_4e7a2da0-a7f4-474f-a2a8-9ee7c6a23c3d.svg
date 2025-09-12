@@ -1,0 +1,33 @@
+<svg width="1200" height="800" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="dbGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+  <stop offset="0%" style="stop-color:#e3f2fd;stop-opacity:1" />
+  <stop offset="100%" style="stop-color:#bbdefb;stop-opacity:1" />
+</linearGradient>
+<linearGradient id="serviceGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+  <stop offset="0%" style="stop-color:#f3e5f5;stop-opacity:1" />
+  <stop offset="100%" style="stop-color:#e1bee7;stop-opacity:1" />
+</linearGradient>
+<marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" fill="#2563eb">
+  <polygon points="0 0, 10 3.5, 0 7" />
+</marker>
+</defs>
+<rect width="1200" height="800" fill="#fafafa" stroke="none"/>
+<polygon points="175,100 250,140 175,180 100,140" fill="url(#serviceGradient)" stroke="#7b1fa2" stroke-width="2"/>
+<text x="175" y="145" text-anchor="middle" font-family="Segoe UI, Arial" font-size="12" font-weight="600" fill="#1a1a1a">API Gateway</text>
+<rect x="300" y="100" width="150" height="80" fill="url(#serviceGradient)" stroke="#7b1fa2" stroke-width="2" rx="8"/>
+<text x="375" y="145" text-anchor="middle" font-family="Segoe UI, Arial" font-size="12" font-weight="600" fill="#1a1a1a">Service Mesh</text>
+<rect x="500" y="100" width="150" height="80" fill="url(#serviceGradient)" stroke="#7b1fa2" stroke-width="2" rx="8"/>
+<text x="575" y="145" text-anchor="middle" font-family="Segoe UI, Arial" font-size="12" font-weight="600" fill="#1a1a1a">Container Registry</text>
+<rect x="100" y="250" width="150" height="80" fill="url(#serviceGradient)" stroke="#7b1fa2" stroke-width="2" rx="8"/>
+<text x="175" y="295" text-anchor="middle" font-family="Segoe UI, Arial" font-size="12" font-weight="600" fill="#1a1a1a">Load Balancer</text>
+<path d="M 250 140 Q 305.0 140 300 140" stroke="#2563eb" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+<rect x="245.0" y="118" width="60" height="16" fill="white" stroke="#e5e7eb" rx="2"/>
+<text x="275.0" y="128" text-anchor="middle" font-family="Segoe UI, Arial" font-size="10" fill="#4b5563">HTTP/HTTPS</text>
+<path d="M 450 140 Q 505.0 140 500 140" stroke="#2563eb" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+<rect x="463.0" y="118" width="24" height="16" fill="white" stroke="#e5e7eb" rx="2"/>
+<text x="475.0" y="128" text-anchor="middle" font-family="Segoe UI, Arial" font-size="10" fill="#4b5563">gRPC</text>
+<path d="M 650 140 Q 345.0 140 100 290" stroke="#2563eb" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+<rect x="336.0" y="118" width="78" height="16" fill="white" stroke="#e5e7eb" rx="2"/>
+<text x="375.0" y="128" text-anchor="middle" font-family="Segoe UI, Arial" font-size="10" fill="#4b5563">Message Queue</text>
+</svg>

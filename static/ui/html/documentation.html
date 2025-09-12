@@ -4,8 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Documentation Dashboard</title>
-    <link rel="stylesheet" href="../css/common.css">
-    <link rel="stylesheet" href="../css/documentation.css">
+    
+    <!-- External CSS Files -->
+    <link rel="stylesheet" href="/ui/css/common.css">
+    <link rel="stylesheet" href="/ui/css/documentation.css">
+    
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -20,56 +26,57 @@
                 </div>
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-value" style="color: var(--accent-blue);" id="totalDocuments">51</div>
+                        <div class="stat-value" style="color: var(--accent-blue);" id="totalDocuments">0</div>
                         <div class="stat-label">Total Documents</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value" style="color: var(--accent-green);" id="generatedDocs">24</div>
+                        <div class="stat-value" style="color: var(--accent-green);" id="generatedDocs">0</div>
                         <div class="stat-label">Generated</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value" style="color: var(--accent-orange);" id="inProgressDocs">8</div>
+                        <div class="stat-value" style="color: var(--accent-orange);" id="inProgressDocs">0</div>
                         <div class="stat-label">In Progress</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value" style="color: var(--accent-purple);" id="qualityScore">95%</div>
+                        <div class="stat-value" style="color: var(--accent-purple);" id="qualityScore">0%</div>
                         <div class="stat-label">Quality Score</div>
                     </div>
                 </div>
             </div>
+            <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
         </div>
 
         <!-- Navigation Tabs -->
         <div class="nav-tabs">
-            <a href="index.html" class="tab-btn">
-                <span class="tab-icon">🗂️</span>
+            <a href="../../index.html" class="tab-btn">
+                <span class="tab-icon">📂️</span>
                 <span>Topology</span>
             </a>
             <a href="#" class="tab-btn disabled">
-                <span class="tab-icon">🔄</span>
+                <span class="tab-icon">📄</span>
                 <span>Convergence</span>
             </a>
-            <a href="archetype.html" class="tab-btn">
-                <span class="tab-icon">🏗️</span>
+            <a href="/ui/html/archetype.html" class="tab-btn">
+                <span class="tab-icon">🗃️</span>
                 <span>Archetype Classification</span>
             </a>
-            <a href="integration.html" class="tab-btn">
+            <a href="/ui/html/integration.html" class="tab-btn">
                 <span class="tab-icon">🔗</span>
                 <span>Integration</span>
             </a>
-            <a href="model.html" class="tab-btn">
+            <a href="/ui/html/model.html" class="tab-btn">
                 <span class="tab-icon">📊</span>
                 <span>Model</span>
             </a>
-            <a href="documentation.html" class="tab-btn active">
+            <a href="/ui/html/documentation.html" class="tab-btn active">
                 <span class="tab-icon">📚</span>
                 <span>Documentation</span>
             </a>
-            <a href="appRationalization.html" class="tab-btn">
+            <a href="/ui/html/appRationalization.html" class="tab-btn">
                 <span class="tab-icon">7️⃣</span>
                 <span>App Rationalization</span>
             </a>
-            <a href="recommendations.html" class="tab-btn">
+            <a href="/ui/html/recommendations.html" class="tab-btn">
                 <span class="tab-icon">💡</span>
                 <span>Recommendations</span>
             </a>
@@ -79,7 +86,7 @@
         <div class="main-grid">
             <!-- Left Panel - Document Generator Controls -->
             <div class="panel">
-                <div class="panel-title">🔍 Enhanced Document Generator</div>
+                <div class="panel-title">📝 Enhanced Document Generator</div>
                 
                 <!-- File Upload Section -->
                 <div class="metric-section">
@@ -127,8 +134,8 @@
                     </div>
                     <select class="form-select" id="outputFormat" style="margin-bottom: 15px;">
                         <option value="all">🚀 All Formats (Complete Package)</option>
-                        <option value="both">📐 Visio + Lucid Charts</option>
-                        <option value="visio">📐 Visio XML Only</option>
+                        <option value="both">📊 Visio + Lucid Charts</option>
+                        <option value="visio">📊 Visio XML Only</option>
                         <option value="lucid">📊 Lucid Chart Only</option>
                     </select>
                     <div class="format-options">
@@ -150,15 +157,25 @@
                 <!-- Application Filter -->
                 <div class="metric-section">
                     <div class="filter-title">
-                        <span>🔍</span>
+                        <span>📋</span>
                         <span>Application Filter</span>
                     </div>
+                    <select class="form-select" id="applicationSelect" multiple size="6">
+                        <option value="CORE_BANKING">Core Banking System (CORE_BANKING)</option>
+                        <option value="CUSTOMER_PORTAL">Customer Portal (CUSTOMER_PORTAL)</option>
+                        <option value="PAYMENT_GATEWAY">Payment Gateway (PAYMENT_GATEWAY)</option>
+                        <option value="RISK_ENGINE">Risk Engine (RISK_ENGINE)</option>
+                        <option value="ANALYTICS_PLATFORM">Analytics Platform (ANALYTICS_PLATFORM)</option>
+                    </select>
                     <input type="text" class="form-input" id="filterInput" 
-                           placeholder="Search applications...">
+                           placeholder="Search applications..." style="margin-top: 10px;">
                     <div class="filter-controls">
                         <button class="btn btn-sm" onclick="selectAll()">All</button>
                         <button class="btn btn-sm" onclick="clearSelection()">Clear</button>
                         <button class="btn btn-sm" onclick="resetFilter()">Reset</button>
+                    </div>
+                    <div class="selection-info">
+                        <small id="selectionCount">0 applications selected</small>
                     </div>
                 </div>
                 
@@ -209,7 +226,7 @@
                 <div class="document-viewer-area" id="documentationCanvas">
                     <div class="viewer-workspace">
                         <!-- Document Paper -->
-                        <div class="document-paper" id="documentPaper">
+                        <div class="document-paper tabloid" id="documentPaper">
                             <div class="paper-content">
                                 <!-- Generator View -->
                                 <div class="view-content" id="generatorView">
@@ -239,7 +256,7 @@
                                         <p>Preview generated documents and diagrams</p>
                                         <div class="preview-area">
                                             <div class="preview-placeholder">
-                                                <div style="border: 2px dashed var(--border-color); padding: 40px; border-radius: 8px;">
+                                                <div style="border: 2px dashed var(--border-color); padding: 40px; border-radius: 8px; background: rgba(59, 130, 246, 0.05);">
                                                     <div style="color: var(--accent-blue); font-size: 2rem; margin-bottom: 10px;">📋</div>
                                                     <div>Document preview will appear here</div>
                                                     <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 8px;">
@@ -264,17 +281,17 @@
                                                 <div class="template-desc">Infrastructure diagrams</div>
                                             </div>
                                             <div class="template-card" onclick="selectTemplate('data-flow')">
-                                                <div class="template-icon">🔄</div>
+                                                <div class="template-icon">📊</div>
                                                 <div class="template-name">Data Flow</div>
                                                 <div class="template-desc">Process diagrams</div>
                                             </div>
                                             <div class="template-card" onclick="selectTemplate('architecture')">
-                                                <div class="template-icon">🏗️</div>
+                                                <div class="template-icon">🗃️</div>
                                                 <div class="template-name">Architecture</div>
                                                 <div class="template-desc">System architecture</div>
                                             </div>
                                             <div class="template-card" onclick="selectTemplate('executive-summary')">
-                                                <div class="template-icon">📊</div>
+                                                <div class="template-icon">📈</div>
                                                 <div class="template-name">Executive Summary</div>
                                                 <div class="template-desc">Business reports</div>
                                             </div>
@@ -283,9 +300,6 @@
                                 </div>
                             </div>
                         </div>
-                        
-                        <!-- Paper Shadow -->
-                        <div class="paper-shadow"></div>
                     </div>
                 </div>
                 
@@ -320,7 +334,7 @@
                         </div>
                         <div class="stat-row">
                             <span>Selected:</span>
-                            <span id="selectedApps">51</span>
+                            <span id="selectedApps">5</span>
                         </div>
                         <div class="stat-row">
                             <span>Current Batch:</span>
@@ -340,8 +354,8 @@
                         </div>
                     </div>
                     <div class="batch-controls">
-                        <button class="btn btn-sm" onclick="previousBatch()" id="prevBtn" disabled>← Previous</button>
-                        <button class="btn btn-sm" onclick="nextBatch()" id="nextBtn" disabled>Next →</button>
+                        <button class="btn btn-sm" onclick="previousBatch()" id="prevBtn">← Previous</button>
+                        <button class="btn btn-sm" onclick="nextBatch()" id="nextBtn">Next →</button>
                     </div>
                 </div>
 
@@ -366,7 +380,7 @@
                         <span>Quick Generate</span>
                     </div>
                     <div class="quick-buttons">
-                        <button class="btn btn-sm" onclick="generateVisio()">📐 Visio</button>
+                        <button class="btn btn-sm" onclick="generateVisio()">📊 Visio</button>
                         <button class="btn btn-sm" onclick="generateLucid()">📊 Lucid</button>
                         <button class="btn btn-sm" onclick="generatePDF()">📑 PDF</button>
                         <button class="btn btn-sm" onclick="generateWord()">📄 Word</button>
@@ -395,9 +409,30 @@
                         <span>📋</span>
                         <span>Applications</span>
                     </div>
-                    <div id="appList" style="max-height: 200px; overflow-y: auto;">
-                        <div style="color: var(--text-muted); text-align: center; padding: 20px;">
-                            Applications will be loaded here
+                    <div id="appList">
+                        <div class="app-item" onclick="toggleAppSelection('CORE_BANKING')">
+                            <div>
+                                <div class="app-name">Core Banking System</div>
+                                <div class="app-id">CORE_BANKING</div>
+                            </div>
+                        </div>
+                        <div class="app-item" onclick="toggleAppSelection('CUSTOMER_PORTAL')">
+                            <div>
+                                <div class="app-name">Customer Portal</div>
+                                <div class="app-id">CUSTOMER_PORTAL</div>
+                            </div>
+                        </div>
+                        <div class="app-item" onclick="toggleAppSelection('PAYMENT_GATEWAY')">
+                            <div>
+                                <div class="app-name">Payment Gateway</div>
+                                <div class="app-id">PAYMENT_GATEWAY</div>
+                            </div>
+                        </div>
+                        <div class="app-item" onclick="toggleAppSelection('RISK_ENGINE')">
+                            <div>
+                                <div class="app-name">Risk Engine</div>
+                                <div class="app-id">RISK_ENGINE</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -413,11 +448,9 @@
                 <div class="status-indicator" id="connectionIndicator"></div>
                 <span id="connectionStatus">🔄 Connecting...</span>
             </div>
-            
             <div class="status-item">
                 <span id="lastUpdate">Last updated: Loading...</span>
             </div>
-            
             <div class="status-item">
                 <span id="documentCount">Documents: 0</span>
             </div>
@@ -428,11 +461,9 @@
             <div class="status-item">
                 <span id="systemStatus">System: Ready</span>
             </div>
-            
             <div class="status-item">
                 <span id="userInfo">User: Admin</span>
             </div>
-            
             <div class="status-item">
                 <span id="version">v2.0.0</span>
             </div>
@@ -440,35 +471,62 @@
     </div>
 
     <!-- Load JavaScript Files -->
-    <script src="../js/app-data.js"></script>
-    <script src="../js/common.js"></script>
-    <script src="../js/documentation.js"></script>
+    <script src="/ui/js/app-data.js"></script>
+    <script src="/ui/js/common.js"></script>
+    <script src="/ui/js/documentation.js"></script>
+    <script src="/ui/js/shared-state.js"></script>
     
     <!-- Page-specific JavaScript -->
     <script>
-        // Global variables for document viewer
-        let currentZoom = 100;
-        let currentPaperSize = 'tabloid';
-        
+        console.log('📊 Documentation Dashboard Loading...');
+
+        // Global variables
+
+        window.currentZoom = window.currentZoom || 100;
+		window.currentPaperSize = window.currentPaperSize || 'tabloid';
+        window.selectedApps = window.selectedApps || new Set();
+        window.applications = window.applications || [
+			{ id: 'CORE_BANKING', name: 'Core Banking System' },
+			{ id: 'CUSTOMER_PORTAL', name: 'Customer Portal' },
+			{ id: 'PAYMENT_GATEWAY', name: 'Payment Gateway' },
+			{ id: 'RISK_ENGINE', name: 'Risk Engine' },
+			{ id: 'ANALYTICS_PLATFORM', name: 'Analytics Platform' }
+		];
+
+        // Theme Management
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            setTheme(newTheme);
+        }
+
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('dashboard-theme', theme);
+            
+            const themeToggle = document.querySelector('.theme-toggle');
+            if (themeToggle) {
+                themeToggle.innerHTML = theme === 'dark' ? '☀️' : '🌙';
+            }
+            
+            console.log(`🎨 Theme changed to: ${theme}`);
+        }
+
         // Documentation view switching
         function setDocumentationView(view) {
-            // Remove active class from all buttons
             document.querySelectorAll('.view-controls .btn').forEach(btn => {
                 btn.classList.remove('active');
             });
             
-            // Add active class to clicked button
             const button = document.getElementById(view + 'Btn');
             if (button) {
                 button.classList.add('active');
             }
             
-            // Hide all views
             document.querySelectorAll('.view-content').forEach(content => {
                 content.style.display = 'none';
             });
             
-            // Show selected view
             const viewElement = document.getElementById(view + 'View');
             if (viewElement) {
                 viewElement.style.display = 'flex';
@@ -476,7 +534,7 @@
             
             console.log(`📋 View changed to: ${view}`);
         }
-        
+
         // Paper size management
         function changePaperSize() {
             const paperSelect = document.getElementById('paperSize');
@@ -496,7 +554,7 @@
                 setTimeout(fitToWindow, 100);
             }
         }
-        
+
         // Zoom controls
         function zoomIn() {
             if (currentZoom < 200) {
@@ -504,25 +562,24 @@
                 updateZoom();
             }
         }
-        
+
         function zoomOut() {
             if (currentZoom > 50) {
                 currentZoom -= 25;
                 updateZoom();
             }
         }
-        
+
         function updateZoom() {
             const workspace = document.querySelector('.viewer-workspace');
             const zoomDisplay = document.getElementById('zoomLevel');
             
             if (workspace && zoomDisplay) {
-                workspace.className = 'viewer-workspace';
                 workspace.style.transform = `scale(${currentZoom / 100})`;
                 zoomDisplay.textContent = `${currentZoom}%`;
             }
         }
-        
+
         function fitToWindow() {
             const container = document.querySelector('.document-viewer-area');
             const paper = document.getElementById('documentPaper');
@@ -531,12 +588,10 @@
             if (!container || !paper || !workspace) return;
             
             const containerRect = container.getBoundingClientRect();
-            const paperRect = paper.getBoundingClientRect();
             
-            // Calculate scale to fit both width and height with padding
             const scaleX = (containerRect.width - 80) / paper.offsetWidth;
             const scaleY = (containerRect.height - 80) / paper.offsetHeight;
-            const scale = Math.min(scaleX, scaleY, 1); // Don't scale up beyond 100%
+            const scale = Math.min(scaleX, scaleY, 1);
             
             currentZoom = Math.round(scale * 100);
             workspace.style.transform = `scale(${scale})`;
@@ -546,36 +601,307 @@
                 zoomDisplay.textContent = `${currentZoom}%`;
             }
         }
-        
+
         // Template selection
         function selectTemplate(templateId) {
             console.log(`🗂️ Template selected: ${templateId}`);
             
-            // Switch to generator view
             setDocumentationView('generator');
             
-            // Update the generator view with template info
-            const generatorView = document.getElementById('generatorView');
-            if (generatorView) {
-                // Add visual feedback
-                document.querySelectorAll('.template-card').forEach(card => {
-                    card.style.borderColor = '#e9ecef';
-                    card.style.background = '#f8f9fa';
+            showToast(`Template "${templateId}" selected! Ready for document generation.`, 'success');
+        }
+
+        // Application filtering and selection
+        function filterApplications() {
+            const filterInput = document.getElementById('filterInput');
+            const dropdown = document.getElementById('applicationSelect');
+            const appList = document.getElementById('appList');
+            
+            if (!filterInput) return;
+            
+            const query = filterInput.value.toLowerCase();
+            
+            // Filter dropdown options
+            if (dropdown) {
+                Array.from(dropdown.options).forEach(option => {
+                    const text = option.textContent.toLowerCase();
+                    const matches = text.includes(query);
+                    option.style.display = matches ? '' : 'none';
                 });
-                
-                // Highlight selected template
-                event.target.closest('.template-card').style.borderColor = 'var(--accent-blue)';
-                event.target.closest('.template-card').style.background = '#f0f8ff';
             }
             
-            // Show success message
-            setTimeout(() => {
-                alert(`Template "${templateId}" selected! Ready for document generation.`);
-            }, 300);
+            // Filter visual app list
+            if (appList) {
+                const appItems = appList.querySelectorAll('.app-item');
+                appItems.forEach(item => {
+                    const appName = item.querySelector('.app-name')?.textContent.toLowerCase() || '';
+                    const appId = item.querySelector('.app-id')?.textContent.toLowerCase() || '';
+                    const matches = appName.includes(query) || appId.includes(query);
+                    item.style.display = matches ? 'flex' : 'none';
+                });
+            }
+            
+            console.log(`Filtered applications with query: "${query}"`);
         }
+
+        function toggleAppSelection(appId) {
+            const appItem = document.querySelector(`[onclick="toggleAppSelection('${appId}')"]`);
+            
+            if (selectedApps.has(appId)) {
+                selectedApps.delete(appId);
+                appItem.classList.remove('selected');
+            } else {
+                selectedApps.add(appId);
+                appItem.classList.add('selected');
+            }
+            
+            updateSelectionCount();
+            updateStats();
+        }
+
+        function selectAll() {
+            const dropdown = document.getElementById('applicationSelect');
+            if (dropdown) {
+                Array.from(dropdown.options).forEach(option => {
+                    option.selected = true;
+                    selectedApps.add(option.value);
+                });
+            }
+            
+            // Also select in visual list
+            document.querySelectorAll('.app-item').forEach(item => {
+                item.classList.add('selected');
+            });
+            
+            updateSelectionCount();
+        }
+
+        function clearSelection() {
+            const dropdown = document.getElementById('applicationSelect');
+            if (dropdown) {
+                Array.from(dropdown.options).forEach(option => {
+                    option.selected = false;
+                });
+            }
+            
+            selectedApps.clear();
+            
+            document.querySelectorAll('.app-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            updateSelectionCount();
+        }
+
+        function resetFilter() {
+            const filterInput = document.getElementById('filterInput');
+            const dropdown = document.getElementById('applicationSelect');
+            const appList = document.getElementById('appList');
+            
+            // Clear filter input
+            if (filterInput) {
+                filterInput.value = '';
+            }
+            
+            // Show all dropdown options
+            if (dropdown) {
+                Array.from(dropdown.options).forEach(option => {
+                    option.style.display = '';
+                });
+            }
+            
+            // Show all app items
+            if (appList) {
+                const appItems = appList.querySelectorAll('.app-item');
+                appItems.forEach(item => {
+                    item.style.display = 'flex';
+                });
+            }
+            
+            console.log('Application filter reset');
+        }
+
+        function updateSelectionCount() {
+            const counter = document.getElementById('selectionCount');
+            if (counter) {
+                counter.textContent = `${selectedApps.size} applications selected`;
+            }
+        }
+
+        function updateStats() {
+            const selectedAppsElement = document.getElementById('selectedApps');
+            if (selectedAppsElement) {
+                selectedAppsElement.textContent = selectedApps.size;
+            }
+        }
+
+        // Processing
+        function processApplications() {
+            if (selectedApps.size === 0) {
+                showToast('Please select at least one application to process.', 'warning');
+                return;
+            }
+            
+            const panel = document.getElementById('processingPanel');
+            if (panel) {
+                panel.classList.add('active');
+                panel.innerHTML = `
+                    <div>🚀 Processing ${selectedApps.size} Applications</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">
+                        Generating enhanced documents...
+                    </div>
+                    <div class="progress-bar" style="margin-top: 10px;">
+                        <div class="progress-fill documentation" id="progressFill"></div>
+                    </div>
+                `;
+            }
+            
+            // Simulate processing
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 20;
+                const progressBar = document.getElementById('progressFill');
+                if (progressBar) {
+                    progressBar.style.width = `${progress}%`;
+                }
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    completeProcessing();
+                }
+            }, 600);
+        }
+
+        function completeProcessing() {
+            const panel = document.getElementById('processingPanel');
+            if (panel) {
+                panel.classList.add('success');
+                panel.innerHTML = `
+                    <div>✅ Processing Complete!</div>
+                    <div style="font-size: 0.8rem; color: var(--accent-green); margin-top: 5px;">
+                        ${selectedApps.size} documents generated successfully
+                    </div>
+                `;
+            }
+            
+            // Show results
+            const resultPanel = document.getElementById('resultPanel');
+            const noResults = document.getElementById('noResults');
+            
+            if (resultPanel && noResults) {
+                noResults.style.display = 'none';
+                resultPanel.style.display = 'block';
+                
+                const preview = document.getElementById('jsonPreview');
+                if (preview) {
+                    preview.textContent = JSON.stringify({
+                        success: true,
+                        documents: selectedApps.size,
+                        formats: ['visio', 'pdf', 'word', 'excel'],
+                        timestamp: new Date().toISOString()
+                    }, null, 2);
+                }
+            }
+            
+            showToast(`Successfully generated ${selectedApps.size} enhanced documents!`, 'success');
+        }
+
+        // Quick generation functions
+        function generateVisio() { quickGenerate('Visio XML', '📊'); }
+        function generateLucid() { quickGenerate('Lucid Charts', '📊'); }
+        function generatePDF() { quickGenerate('PDF Report', '📑'); }
+        function generateWord() { quickGenerate('Word Document', '📄'); }
+        function generateExcel() { quickGenerate('Excel Mapper', '📊'); }
         
-        // Initialize on page load
+        function downloadJSON() { 
+            const data = {
+                applications: Array.from(selectedApps),
+                timestamp: new Date().toISOString(),
+                settings: {
+                    quality: document.getElementById('qualityLevel').value,
+                    format: document.getElementById('outputFormat').value
+                }
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `documentation_config_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            URL.revokeObjectURL(url);
+            showToast('JSON configuration downloaded!', 'success');
+        }
+
+        function quickGenerate(type, icon) {
+            if (selectedApps.size === 0) {
+                showToast('Please select applications first.', 'warning');
+                return;
+            }
+            
+            showToast(`${icon} Generating ${type}...`, 'info');
+            
+            setTimeout(() => {
+                showToast(`${icon} ${type} generated successfully!`, 'success');
+            }, 2000);
+        }
+
+        // Batch navigation
+        function previousBatch() {
+            console.log('📦 Previous batch');
+        }
+
+        function nextBatch() {
+            console.log('📦 Next batch');
+        }
+
+        // Toast notification system
+        function showToast(message, type = 'info') {
+            let toastContainer = document.getElementById('toast-container');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.id = 'toast-container';
+                toastContainer.style.cssText = `
+                    position: fixed;
+                    top: 80px;
+                    right: 20px;
+                    z-index: 9999;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: flex-end;
+                    gap: 10px;
+                `;
+                document.body.appendChild(toastContainer);
+            }
+            
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            
+            toastContainer.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 4000);
+        }
+
+        // Initialize on DOM ready
         document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const jobId = urlParams.get('job_id');
+            
+            if (jobId) {
+                console.log('📊 Loading job context:', jobId);
+                // Load job-specific data here
+            }
+            
+            // Set theme on load
+            const savedTheme = localStorage.getItem('dashboard-theme') || 'dark';
+            setTheme(savedTheme);
+            
             // Set default paper size
             changePaperSize();
             
@@ -585,39 +911,60 @@
             // Handle window resize
             window.addEventListener('resize', fitToWindow);
             
-            console.log('📚 Document viewer initialized');
-        });
-    </script>
-
-    <!-- Debug Script - Remove after fixing -->
-    <script>
-        console.log('🔍 Current page location:', window.location.href);
-        console.log('🔍 Testing script paths...');
-
-        // Test each script path
-        const scriptPaths = [
-            '../js/app-data.js',
-            '../js/common.js', 
-            '../js/documentation.js'
-        ];
-
-        scriptPaths.forEach(path => {
-            fetch(path)
-                .then(response => {
-                    console.log(`📄 ${path}: ${response.status} ${response.statusText}`);
-                    return response.text();
-                })
-                .then(content => {
-                    if (content.includes('<!DOCTYPE html>')) {
-                        console.error(`❌ ${path} is returning HTML (probably 404)`);
-                    } else if (content.includes('// Sample application data')) {
-                        console.log(`✅ ${path} loaded correctly (found JS content)`);
-                    } else {
-                        console.log(`📄 ${path} content preview:`, content.substring(0, 100));
+            // Filter input handler
+            const filterInput = document.getElementById('filterInput');
+            if (filterInput) {
+                filterInput.addEventListener('input', filterApplications);
+            }
+            
+            // File input handler
+            const fileInput = document.getElementById('fileInput');
+            if (fileInput) {
+                fileInput.addEventListener('change', function(e) {
+                    if (e.target.files.length > 0) {
+                        const fileNames = Array.from(e.target.files).map(f => f.name).join(', ');
+                        showToast(`📁 Files uploaded: ${fileNames}`, 'success');
                     }
-                })
-                .catch(error => console.error(`❌ ${path} failed:`, error));
+                });
+            }
+            
+            // Quality level change handler
+            const qualitySelect = document.getElementById('qualityLevel');
+            if (qualitySelect) {
+                qualitySelect.addEventListener('change', function() {
+                    const descriptions = {
+                        'professional': 'Template-driven professional diagrams with proper styling',
+                        'executive': '98%+ quality with banking-style PDFs using Playwright conversion',
+                        'technical': '90%+ quality with detailed annotations and technical layouts'
+                    };
+                    
+                    const desc = document.getElementById('qualityDescription');
+                    if (desc) {
+                        desc.textContent = descriptions[this.value] || 'Professional quality documentation';
+                    }
+                });
+            }
+            
+            // Application select handler
+            const appSelect = document.getElementById('applicationSelect');
+            if (appSelect) {
+                appSelect.addEventListener('change', function() {
+                    selectedApps.clear();
+                    Array.from(this.selectedOptions).forEach(option => {
+                        if (option.value) {
+                            selectedApps.add(option.value);
+                        }
+                    });
+                    updateSelectionCount();
+                    updateStats();
+                });
+            }
+            
+            console.log('📊 Documentation Dashboard Ready');
+            showToast('Documentation Dashboard loaded successfully!', 'success');
         });
+
+        console.log('📊 Documentation Dashboard Script Loaded Successfully');
     </script>
 </body>
 </html>

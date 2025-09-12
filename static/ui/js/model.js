@@ -148,7 +148,7 @@ function createThemeToggleForModel() {
     // Create theme toggle button
     const themeToggle = document.createElement('button');
     themeToggle.className = 'theme-toggle';
-    themeToggle.innerHTML = '🌙';
+    themeToggle.innerHTML = '☀️';
     themeToggle.setAttribute('aria-label', 'Toggle dark/light mode');
     
     // Add click handler

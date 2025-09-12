@@ -1,0 +1,196 @@
+{
+  "metadata": {
+    "archetype": "Containerized microservices architecture with service mesh",
+    "template": "templates/diagrams/microservices.json",
+    "layout": "distributed_grid",
+    "generated_at": "2025-08-29T14:33:20.602625",
+    "complexity_score": 8,
+    "application_name": "Banking App",
+    "application_data": {
+      "name": "Banking App",
+      "ports": [
+        80,
+        443,
+        3306
+      ]
+    }
+  },
+  "components": [
+    {
+      "id": "comp_1",
+      "name": "API Gateway",
+      "type": "gateway",
+      "position": {
+        "x": 100,
+        "y": 100
+      },
+      "properties": {
+        "technologies": [
+          "Docker",
+          "Kubernetes",
+          "Spring Boot",
+          "Node.js"
+        ],
+        "aws_services": [
+          "ECS",
+          "EKS",
+          "Lambda",
+          "API Gateway",
+          "Service Mesh"
+        ],
+        "ports": [
+          "80",
+          "443"
+        ],
+        "protocols": [
+          "HTTP",
+          "HTTPS"
+        ],
+        "actual_ports": [
+          80,
+          443,
+          3306
+        ]
+      },
+      "customizations": {}
+    },
+    {
+      "id": "comp_2",
+      "name": "Service Mesh",
+      "type": "mesh",
+      "position": {
+        "x": 300,
+        "y": 100
+      },
+      "properties": {
+        "technologies": [
+          "Docker",
+          "Kubernetes",
+          "Spring Boot",
+          "Node.js"
+        ],
+        "aws_services": [
+          "ECS",
+          "EKS",
+          "Lambda",
+          "API Gateway",
+          "Service Mesh"
+        ],
+        "actual_ports": [
+          80,
+          443,
+          3306
+        ]
+      },
+      "customizations": {}
+    },
+    {
+      "id": "comp_3",
+      "name": "Container Registry",
+      "type": "container",
+      "position": {
+        "x": 500,
+        "y": 100
+      },
+      "properties": {
+        "technologies": [
+          "Docker",
+          "Kubernetes",
+          "Spring Boot",
+          "Node.js"
+        ],
+        "aws_services": [
+          "ECS",
+          "EKS",
+          "Lambda",
+          "API Gateway",
+          "Service Mesh"
+        ],
+        "actual_ports": [
+          80,
+          443,
+          3306
+        ]
+      },
+      "customizations": {}
+    },
+    {
+      "id": "comp_4",
+      "name": "Load Balancer",
+      "type": "balancer",
+      "position": {
+        "x": 100,
+        "y": 250
+      },
+      "properties": {
+        "technologies": [
+          "Docker",
+          "Kubernetes",
+          "Spring Boot",
+          "Node.js"
+        ],
+        "aws_services": [
+          "ECS",
+          "EKS",
+          "Lambda",
+          "API Gateway",
+          "Service Mesh"
+        ],
+        "ports": [
+          "80",
+          "443"
+        ],
+        "protocols": [
+          "HTTP",
+          "TCP"
+        ],
+        "actual_ports": [
+          80,
+          443,
+          3306
+        ]
+      },
+      "customizations": {}
+    }
+  ],
+  "connections": [
+    {
+      "id": "conn_1",
+      "source": "comp_1",
+      "target": "comp_2",
+      "type": "HTTP/HTTPS",
+      "bidirectional": false
+    },
+    {
+      "id": "conn_2",
+      "source": "comp_2",
+      "target": "comp_3",
+      "type": "gRPC",
+      "bidirectional": false
+    },
+    {
+      "id": "conn_3",
+      "source": "comp_3",
+      "target": "comp_4",
+      "type": "Message Queue",
+      "bidirectional": false
+    }
+  ],
+  "layout_info": {},
+  "styling": {
+    "colors": {
+      "primary": "#6b7280",
+      "secondary": "#4b5563"
+    },
+    "fonts": {
+      "title": "Arial Bold 14pt",
+      "component": "Arial 10pt",
+      "connection": "Arial 8pt"
+    },
+    "shapes": {
+      "component_width": 120,
+      "component_height": 60,
+      "border_radius": 8
+    }
+  }
+}

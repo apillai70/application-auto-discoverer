@@ -1,0 +1,7 @@
+Name,Shape Library,Shape,Text Area 1,Position X,Position Y,Width,Height
+API Gateway,Standard,Rectangle,API Gateway,50,250,120,80
+PaymentSyste,Standard,Rectangle,PaymentSyste,250,150,100,60
+PaymentSyste,Standard,Rectangle,PaymentSyste,400,150,100,60
+PaymentSyste,Standard,Rectangle,PaymentSyste,550,150,100,60
+Shared DB,Standard,Cylinder,Shared DB,650,200,100,120
+Message Queue,Standard,Rectangle,Message Queue,450,400,120,60

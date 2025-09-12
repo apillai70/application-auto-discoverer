@@ -1,0 +1,615 @@
+archetypes:
+- description:
+  - Single-tier application where UI, business logic, and data access are tightly
+    integrated.
+  diagram_stub:
+  - monolithic-template.png
+  expected_hosts:
+  - Application server
+  - Local DB
+  expected_tiers:
+  - App+DB combined
+  indicators:
+  - direct DB access
+  - high port concentration
+  - no service boundary
+  - single process
+  name: Monolithic
+  traffic_pattern:
+  - inbound only
+  typical_ports:
+  - 3306
+  - 8080
+- description:
+  - Standard enterprise structure with separate UI, API, and database components.
+  diagram_stub:
+  - 3tier-template.png
+  expected_hosts:
+  - App Server
+  - DB Server
+  - Web Server
+  expected_tiers:
+  - API
+  - Database
+  - Web UI
+  indicators:
+  - distinct UI/API/DB tiers
+  - north-south traffic
+  - port layering
+  - stateful backend
+  name: 3-Tier
+  traffic_pattern:
+  - north-south
+  typical_ports:
+  - 80
+  - 443
+  - 3306
+  - 5432
+- description:
+  - Application composed of independent services communicating via REST/gRPC.
+  diagram_stub:
+  - microservices-template.png
+  expected_hosts:
+  - Containers
+  - Service nodes
+  - Sidecars
+  expected_tiers:
+  - API Gateway
+  - Service mesh
+  - Shared DBs
+  indicators:
+  - API gateway
+  - K8s/docker
+  - internal east-west traffic
+  - many services
+  name: Microservices
+  traffic_pattern:
+  - east-west
+  typical_ports:
+  - 3000
+  - 3001
+  - 3002
+  - 3003
+  - 3004
+  - 3005
+  - 3006
+  - 3007
+  - 3008
+  - 3009
+  - 3010
+  - 3011
+  - 3012
+  - 3013
+  - 3014
+  - 3015
+  - 3016
+  - 3017
+  - 3018
+  - 3019
+  - 3020
+  - 3021
+  - 3022
+  - 3023
+  - 3024
+  - 3025
+  - 3026
+  - 3027
+  - 3028
+  - 3029
+  - 3030
+  - 3031
+  - 3032
+  - 3033
+  - 3034
+  - 3035
+  - 3036
+  - 3037
+  - 3038
+  - 3039
+  - 3040
+  - 3041
+  - 3042
+  - 3043
+  - 3044
+  - 3045
+  - 3046
+  - 3047
+  - 3048
+  - 3049
+  - 3050
+  - 3051
+  - 3052
+  - 3053
+  - 3054
+  - 3055
+  - 3056
+  - 3057
+  - 3058
+  - 3059
+  - 3060
+  - 3061
+  - 3062
+  - 3063
+  - 3064
+  - 3065
+  - 3066
+  - 3067
+  - 3068
+  - 3069
+  - 3070
+  - 3071
+  - 3072
+  - 3073
+  - 3074
+  - 3075
+  - 3076
+  - 3077
+  - 3078
+  - 3079
+  - 3080
+  - 3081
+  - 3082
+  - 3083
+  - 3084
+  - 3085
+  - 3086
+  - 3087
+  - 3088
+  - 3089
+  - 3090
+  - 3091
+  - 3092
+  - 3093
+  - 3094
+  - 3095
+  - 3096
+  - 3097
+  - 3098
+  - 3099
+- description:
+  - Decoupled services communicating through message queues or pub/sub systems.
+  diagram_stub:
+  - event-driven-template.png
+  expected_hosts:
+  - Publisher
+  - Queue/Broker
+  - Subscriber
+  expected_tiers:
+  - Broker
+  - Consumer
+  - Producer
+  indicators:
+  - Kafka/RabbitMQ
+  - asynchronous traffic
+  - low direct coupling
+  - non-HTTP ports
+  name: Event-Driven
+  traffic_pattern:
+  - pub-sub / async
+  typical_ports:
+  - 5672
+  - 9092
+- description:
+  - Enterprise services exposed via ESB, typically with SOAP/XML or legacy protocols.
+  diagram_stub:
+  - soa-template.png
+  expected_hosts:
+  - ESB Gateway
+  - Legacy App
+  - Service Node
+  expected_tiers:
+  - Backend services
+  - ESB
+  - Service interface
+  indicators:
+  - ESB
+  - SOAP
+  - WSDL
+  - XML over HTTP
+  - service registry
+  name: SOA
+  traffic_pattern:
+  - service bus mediated
+  typical_ports:
+  - 8080
+- description:
+  - Stateless compute units triggered by events, typically on cloud providers.
+  diagram_stub:
+  - serverless-template.png
+  expected_hosts:
+  - API Gateway
+  - Lambda/Function endpoints
+  expected_tiers:
+  - API Gateway
+  - Function
+  - Storage
+  indicators:
+  - API Gateway
+  - AWS Lambda
+  - Azure Functions
+  - ephemeral endpoints
+  name: Serverless
+  traffic_pattern:
+  - on-demand stateless
+  typical_ports:
+  - 443
+- description:
+  - Traditional fat client connecting directly to backend services or databases.
+  diagram_stub:
+  - client-server-template.png
+  expected_hosts:
+  - Client PC
+  - SQL Server
+  expected_tiers:
+  - Client UI
+  - DB Server
+  indicators:
+  - MS SQL
+  - RDP/Citrix
+  - desktop installs
+  - thick client
+  name: Client-Server
+  traffic_pattern:
+  - persistent session
+  typical_ports:
+  - 1433
+  - 3389
+- description:
+  - Applications split between local edge devices and cloud-based control/analytics.
+  diagram_stub:
+  - edge-cloud-template.png
+  expected_hosts:
+  - Cloud API
+  - Edge Gateway
+  - Sensor
+  expected_tiers:
+  - Cloud
+  - Device
+  - Gateway
+  indicators:
+  - IoT
+  - cloud-REST targets
+  - gateway patterns
+  - remote sensor endpoints
+  name: Edge+Cloud Hybrid
+  traffic_pattern:
+  - device to cloud
+  typical_ports:
+  - 443
+  - 1883
+  - 8883
+- description:
+  - Batch or stream-based data processing flows for BI or analytics systems.
+  diagram_stub:
+  - etl-template.png
+  expected_hosts:
+  - Data lake
+  - ETL engine
+  - Warehouse
+  expected_tiers:
+  - Ingestion
+  - Processing
+  - Storage
+  indicators:
+  - Airflow
+  - Spark
+  - batch ports
+  - cron traffic
+  - data lake/DWH targets
+  name: ETL/Data Pipeline
+  traffic_pattern:
+  - batch or streaming
+  typical_ports:
+  - 21
+  - 8020
+- description:
+  - Decoupled frontend (SPA) and backend (REST API) layers deployed independently.
+  diagram_stub:
+  - web-api-template.png
+  expected_hosts:
+  - API Server
+  - Browser
+  - OAuth Provider
+  expected_tiers:
+  - Auth
+  - Backend API
+  - Frontend SPA
+  indicators:
+  - CORS
+  - OAuth flows
+  - REST API
+  - React/Vue
+  - frontend-backend split
+  name: Web + API Headless
+  traffic_pattern:
+  - frontend-backend async
+  typical_ports:
+  - 80
+  - 443
+- description:
+  - A centralized, high-performance computing system designed for large-scale transaction
+    processing and data management, often running legacy applications.
+  indicators:
+  - CICS/IMS
+  - COBOL/PL/I
+  - IBM z/OS
+  - SNA/VTAM protocols
+  - TN3270 terminals
+  - batch jobs
+  name: Mainframe
+- description:
+  - A decentralized network architecture where each node can function as both a client
+    and a server, sharing resources directly with other nodes.
+  indicators:
+  - BitTorrent
+  - Blockchain (e.g., Bitcoin)
+  - direct node-to-node connections
+  - distributed hash tables (DHT)
+  - gossip protocols
+  - no central server
+  name: Peer-to-Peer (P2P)
+- description:
+  - A model where one component (the master/primary) controls and coordinates other
+    components (the slaves/replicas) for replication, load balancing, or failover.
+  indicators:
+  - distributed caches (e.g., Redis)
+  - failover mechanisms
+  - leader election
+  - primary/secondary database setup
+  - read-only replicas
+  - replication protocols
+  name: Master-Slave / Primary-Replica
+- description:
+  - An architecture pattern that separates the read (query) and write (command) operations
+    into distinct models, often with separate data stores, to optimize performance
+    and scalability.
+  indicators:
+  - asynchronous updates to read models
+  - command bus
+  - event sourcing
+  - eventual consistency
+  - query bus
+  - separate read and write databases
+  name: CQRS (Command Query Responsibility Segregation)
+- description:
+  - A distributed system designed to avoid bottlenecks by partitioning data and computation
+    across multiple servers (called "processing units" or "spaces") that use in-memory
+    data grids.
+  indicators:
+  - GigaSpaces, Apache Ignite
+  - data replication across spaces
+  - distributed computing tasks
+  - high availability and scalability
+  - in-memory data grid (IMDG)
+  - no centralized database
+  name: Space-Based Architecture (SBA)
+- description:
+  - Applications built specifically for cloud environments, leveraging elasticity,
+    resilience, and scalability through containerization, microservices, and managed
+    cloud services.
+  indicators:
+  - CI/CD pipelines
+  - Kubernetes/EKS/GKE
+  - automated scaling
+  - container registries (e.g., ECR, GCR)
+  - managed cloud services (e.g., RDS, S3, Pub/Sub)
+  - service meshes (e.g., Istio)
+  name: Cloud-Native
+- description:
+  - A variation of SOA where services communicate primarily through a central message
+    broker instead of a direct ESB, allowing for greater decoupling.
+  indicators:
+  - ActiveMQ/WebSphere MQ
+  - JMS/AMQP protocols
+  - message queues for service requests
+  - message topics for pub/sub
+  - services as message producers/consumers
+  name: SOA with Message Broker
+- description:
+  - A distributed computing model where a network of computers is used to solve a
+    single, large computational problem, often in scientific or financial domains.
+  indicators:
+  - HPC (High-Performance Computing) clusters
+  - SGE (Sun Grid Engine), HTCondor
+  - compute-intensive tasks
+  - distributed resource managers
+  - parallel processing
+  - shared workload management
+  name: Grid Computing
+- description:
+  - A design pattern that abstracts the data persistence layer from the business logic,
+    providing a uniform way to access data from different sources (e.g., database,
+    file system, web service).
+  indicators:
+  - IRepository interfaces
+  - ORM (Object-Relational Mapping) tools
+  - data access objects (DAO)
+  - dependency injection for data access
+  - domain-driven design (DDD)
+  - in-memory data stores for testing
+  name: Repository Pattern
+- description:
+  - An approach to software development that models the application's design on the
+    core business domain. It breaks down a complex system into smaller, manageable
+    "bounded contexts."
+  indicators:
+  - Ubiquitous Language (UL)
+  - aggregates and entities
+  - anti-corruption layers (ACL)
+  - clear context boundaries
+  - distinct microservices per business domain
+  - eventual consistency between contexts
+  name: Domain-Driven Design (DDD) with Bounded Contexts
+- description:
+  - A general term for any multi-layered architecture where components are logically
+    separated into tiers, similar to 3-Tier but with more layers (e.g., presentation,
+    web server, application server, data).
+  indicators:
+  - DMZ (Demilitarized Zone)
+  - application server tier
+  - data tier
+  - distinct network subnets per tier
+  - load balancers between tiers
+  - web server tier
+  name: N-Tier Architecture
+- description:
+  - A central host computer serving dumb terminals, where all processing occurs on
+    the host.
+  indicators:
+  - character-based interfaces
+  - host-based processing only
+  - no local processing on user device
+  - proprietary protocols (e.g., RS-232, specific mainframe protocols)
+  - text-based terminals (VT100, 3270)
+  name: Host-Terminal
+- description:
+  - Applications primarily built around database stored procedures, functions, and
+    triggers, with minimal application-layer logic.
+  indicators:
+  - database as the primary application logic layer
+  - direct database client connections
+  - extensive use of stored procedures/functions
+  - heavy reliance on specific RDBMS features
+  - triggers for business rules
+  name: Database-Centric
+- description:
+  - Applications relying on specific file systems (often network shares) for data
+    storage and inter-application communication.
+  indicators:
+  - batch processing of files
+  - cron jobs for file transfers/processing
+  - file-locking mechanisms
+  - flat files (CSV, fixed-width)
+  - often used for ETL or data exchange
+  - shared network drives (SMB/NFS)
+  name: File-Based Integration
+- description:
+  - Legacy systems often integrated through custom scripts, file transfers, or direct
+    database links, lacking standardized interfaces.
+  indicators:
+  - FTP/SFTP for data exchange
+  - cron jobs for scheduled transfers
+  - custom scripts (e.g., Perl, Shell)
+  - difficult to change/maintain
+  - direct database links (DBLink)
+  - point-to-point connections
+  name: Ad-Hoc Integration
+- description:
+  - Middleware acting as a translator or adapter between systems with different protocols,
+    data formats, or technologies.
+  indicators:
+  - adapters for specific systems
+  - bridges between disparate technologies
+  - data format transformation
+  - often involves custom coding
+  - protocol conversion
+  name: Gateway/Adapter
+- description:
+  - Applications or services designed to exchange data using EDI standards over value-added
+    networks (VANs) or direct connections.
+  indicators:
+  - AS2 protocol
+  - EDIFACT/X12 standards
+  - VAN (Value-Added Network) usage
+  - batch processing of EDI messages
+  - often for B2B transactions
+  name: EDI (Electronic Data Interchange)
+- description:
+  - Systems that apply machine learning models for prediction, classification, or
+    decision-making.
+  indicators:
+  - GPU usage
+  - TensorFlow/PyTorch/Scikit-learn
+  - data drift monitoring
+  - feature stores
+  - inference endpoints (REST/gRPC)
+  - model training pipelines
+  name: AI/ML Application
+- description:
+  - A system where a central orchestrator defines and manages workflows, often spanning
+    multiple disparate systems.
+  indicators:
+  - BPM (Business Process Management) suites
+  - human interaction tasks
+  - long-running transactions
+  - stateful process management
+  - workflow engines (e.g., Camunda, Activiti)
+  name: Workflow-Driven
+- description:
+  - Applications where cryptographic techniques are used to build trustless, decentralized
+    ledgers.
+  indicators:
+  - blockchain nodes
+  - consensus mechanisms (PoW, PoS)
+  - cryptographic hashing
+  - distributed ledger technology (DLT)
+  - peer-to-peer networking (often)
+  - smart contracts
+  name: Blockchain/DLT Application
+- description:
+  - Systems designed to automate tasks, processes, or workflows without human intervention.
+  indicators:
+  - API calls to other systems for task execution
+  - Robotic Process Automation (RPA) tools (e.g., UiPath, Automation Anywhere)
+  - event-triggered automation
+  - orchestrators for task sequencing
+  - scheduled tasks/cron jobs
+  - scripting engines (e.g., PowerShell, Python scripts)
+  name: Automation System
+- description:
+  - Applications primarily designed to expose or consume functionality via structured
+    APIs.
+  indicators:
+  - API keys/tokens for authentication
+  - GraphQL queries
+  - HTTP/2 for gRPC
+  - OpenAPI/Swagger documentation
+  - RESTful endpoints (HTTP methods)
+  - XML/JSON data formats
+  - gRPC services
+  name: API-Centric (General)
+- description:
+  - A network security system that monitors and controls incoming and outgoing network
+    traffic based on predetermined security rules.
+  indicators:
+  - ACLs (Access Control Lists)
+  - NAT (Network Address Translation)
+  - Stateful packet inspection
+  - network segmentation enforcement
+  - port blocking/forwarding
+  - specific firewall vendors (e.g., Cisco ASA, Palo Alto, Fortinet)
+  name: Network Firewall
+- description:
+  - A security solution that protects web applications from common web exploits (e.g.,
+    SQL injection, XSS) by filtering and monitoring HTTP traffic.
+  indicators:
+  - HTTP/S traffic inspection
+  - OWASP Top 10 protection
+  - anomaly detection
+  - reverse proxy deployment
+  - signature-based attack detection
+  - specific WAF vendors (e.g., F5 BIG-IP ASM, Cloudflare WAF, Akamai Kona)
+  name: Web Application Firewall (WAF)
+- description:
+  - A device or software that distributes network traffic evenly across a group of
+    backend servers to ensure high availability and responsiveness.
+  indicators:
+  - SSL/TLS offloading
+  - VIP (Virtual IP) addresses
+  - health checks for backend servers
+  - session persistence
+  - specific vendors (e.g., F5 BIG-IP LTM, HAProxy, Nginx, AWS ELB/ALB)
+  - various load balancing algorithms (e.g., round-robin, least connections)
+  name: Load Balancer
+- description:
+  - Systems and configurations for replicating data and/or applications between geographically
+    separate sites for business continuity and disaster recovery.
+  indicators:
+  - DR site connectivity (VPN, dedicated links)
+  - RPO (Recovery Point Objective)
+  - RTO (Recovery Time Objective)
+  - application-level replication tools
+  - database replication technologies (e.g., AlwaysOn, Oracle Data Guard)
+  - storage replication (e.g., SAN replication)
+  - synchronous or asynchronous replication
+  name: Site Replication / Disaster Recovery

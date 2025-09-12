@@ -1,0 +1,24 @@
+servicenow:
+  assignment_groups:
+    application: Application Team
+    database: Database Team
+    default: IT Support
+    network: Network Team
+    security: Security Team
+  auto_incident_creation:
+    enabled: true
+    error_rate_threshold: 0.2
+    severity_threshold: CRITICAL
+    time_window_minutes: 15
+  base_url: https://your-instance.service-now.com
+  enabled: false
+  max_tickets_per_hour: 10
+  password: api_password
+  priority_mapping:
+    ALERT: 1
+    CRITICAL: 2
+    EMERGENCY: 1
+    ERROR: 3
+    WARNING: 4
+  table: incident
+  username: api_user

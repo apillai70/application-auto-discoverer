@@ -2,7 +2,7 @@
 <lucidchart version="2.0" professional_grade="true" quality_level="professional">
   <metadata>
     <title>Network Architecture Executive Summary</title>
-    <created>2025-07-23T15:24:46.520151</created>
+    <created>2025-08-29T17:53:28.185509</created>
     <quality_level>professional</quality_level>
     <professional_features>true</professional_features>
     <collaboration_ready>true</collaboration_ready>
@@ -58,7 +58,7 @@
     </typography>
   </design_system>
   <security_zones>
-    <zone id="internal" name="Internal" professional_styled="true">
+    <zone id="dmz" name="Dmz" professional_styled="true">
       <geometry>
         <x>120.0</x>
         <y>103.33745364647717</y>
@@ -66,7 +66,7 @@
         <height>593.3250927070457</height>
       </geometry>
       <professional_styling>
-        <fill_color>#4ECDC4</fill_color>
+        <fill_color>#FF6B35</fill_color>
         <border_color>#1E3A8A</border_color>
         <border_width>2pt</border_width>
         <border_style>dashed</border_style>
@@ -78,11 +78,11 @@
   <applications>
     <application id="app1" professional_grade="true">
       <application_metadata>
-        <name>Test App</name>
+        <name>Web Server</name>
         <business_criticality>low</business_criticality>
         <security_classification>internal</security_classification>
-        <architectural_tier>application</architectural_tier>
-        <zone>internal</zone>
+        <architectural_tier>presentation</architectural_tier>
+        <zone>dmz</zone>
       </application_metadata>
       <geometry>
         <x>292.8</x>
@@ -98,12 +98,12 @@
         <text_align>center</text_align>
         <shadow>True</shadow>
         <rounded_corners>True</rounded_corners>
-        <fill_color>#4ECDC4</fill_color>
+        <fill_color>#FF6B35</fill_color>
         <border_color>#9CA3AF</border_color>
         <shadow_intensity>minimal</shadow_intensity>
       </professional_styling>
       <professional_metadata>
-        <last_updated>2025-07-23T15:24:46.514177</last_updated>
+        <last_updated>2025-08-29T17:53:28.181508</last_updated>
         <documentation_standard>Enterprise Architecture Framework</documentation_standard>
         <review_cycle>Quarterly</review_cycle>
         <data_classification>internal</data_classification>

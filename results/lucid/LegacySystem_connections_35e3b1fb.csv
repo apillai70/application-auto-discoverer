@@ -1,0 +1,3 @@
+Source,Target,Label
+Load Balancer,Legacy Applicat,HTTP
+Legacy Applicat,Database,SQL

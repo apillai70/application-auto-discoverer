@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Debug Wrapper - Web Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .debug-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-right: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .results-panel {
+            background: #1e1e1e;
+            color: #f0f0f0;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            min-height: 200px;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .status-indicator {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+
+        .status-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .status-error {
+            background: #dc3545;
+            color: white;
+        }
+
+        .status-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .file-upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            transition: border-color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .file-upload-area:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .file-upload-area.drag-over {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 12px 25px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .tab.active {
+            border-bottom-color: #667eea;
+            color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .log-viewer {
+            background: #2d2d2d;
+            color: #f0f0f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.4;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Universal Debug Wrapper</h1>
+            <p>Debug Python, JavaScript, and HTML files with ease</p>
+        </div>
+
+        <div class="debug-panel">
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('file-debug')">📄 File Debug</div>
+                <div class="tab" onclick="switchTab('live-debug')">⚡ Live Debug</div>
+                <div class="tab" onclick="switchTab('batch-debug')">📁 Batch Debug</div>
+                <div class="tab" onclick="switchTab('settings')">⚙️ Settings</div>
+            </div>
+
+            <!-- File Debug Tab -->
+            <div id="file-debug" class="tab-content active">
+                <div class="form-group">
+                    <label>🎯 Select Debug Mode</label>
+                    <div class="form-row">
+                        <select id="debugMode" class="form-control">
+                            <option value="auto">🔄 Auto-detect</option>
+                            <option value="python">🐍 Python</option>
+                            <option value="javascript">🟨 JavaScript</option>
+                            <option value="html">🌐 HTML</option>
+                        </select>
+                        <select id="outputFormat" class="form-control">
+                            <option value="console">📺 Console Output</option>
+                            <option value="json">📋 JSON Format</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>📂 Select File or Drop Here</label>
+                    <div class="file-upload-area" id="fileUpload">
+                        <p>🚀 Click to select file or drag & drop</p>
+                        <p style="color: #666; font-size: 14px;">Supports: .py, .js, .html files</p>
+                        <input type="file" id="fileInput" accept=".py,.js,.html,.htm" style="display: none;">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-row">
+                        <label>
+                            <input type="checkbox" id="enableBrowser"> 🌐 Browser debugging (JS/HTML)
+                        </label>
+                        <label>
+                            <input type="checkbox" id="enablePerformance"> ⚡ Performance monitoring
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <button class="btn" onclick="debugFile()">🔍 Debug File</button>
+                    <button class="btn btn-secondary" onclick="clearResults()">🗑️ Clear Results</button>
+                    <button class="btn btn-success" onclick="downloadResults()">💾 Download Results</button>
+                </div>
+
+                <div class="progress-bar" id="progressBar" style="display: none;">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <!-- Live Debug Tab -->
+            <div id="live-debug" class="tab-content">
+                <div class="form-group">
+                    <label>📁 Watch Directory</label>
+                    <input type="text" id="watchDir" class="form-control" placeholder="./src" value="./src">
+                </div>
+
+                <div class="form-group">
+                    <label>🔧 File Extensions to Watch</label>
+                    <input type="text" id="watchExtensions" class="form-control" placeholder=".py,.js,.html" value=".py,.js,.html">
+                </div>
+
+                <div class="form-group">
+                    <button class="btn" id="watchBtn" onclick="toggleWatch()">👀 Start Watching</button>
+                    <button class="btn btn-secondary" onclick="clearLogs()">🗑️ Clear Logs</button>
+                </div>
+
+                <div class="log-viewer" id="liveLogs">
+                    <p>📝 Live debugging logs will appear here...</p>
+                </div>
+            </div>
+
+            <!-- Batch Debug Tab -->
+            <div id="batch-debug" class="tab-content">
+                <div class="form-group">
+                    <label>📁 Select Multiple Files</label>
+                    <input type="file" id="batchFiles" class="form-control" multiple accept=".py,.js,.html,.htm">
+                </div>
+
+                <div class="form-group">
+                    <button class="btn" onclick="debugBatch()">🔍 Debug All Files</button>
+                    <button class="btn btn-secondary" onclick="exportBatchResults()">📊 Export Report</button>
+                </div>
+
+                <div id="batchResults"></div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settings" class="tab-content">
+                <div class="form-group">
+                    <label>📊 Log Level</label>
+                    <select id="logLevel" class="form-control">
+                        <option value="DEBUG">🔍 Debug</option>
+                        <option value="INFO" selected>ℹ️ Info</option>
+                        <option value="WARNING">⚠️ Warning</option>
+                        <option value="ERROR">❌ Error</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>⚙️ Advanced Options</label>
+                    <div>
+                        <label><input type="checkbox" id="syntaxCheck" checked> ✅ Syntax checking</label><br>
+                        <label><input type="checkbox" id="memoryMonitor" checked> 💾 Memory monitoring</label><br>
+                        <label><input type="checkbox" id="autoReload"> 🔄 Auto-reload on changes</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <button class="btn" onclick="saveSettings()">💾 Save Settings</button>
+                    <button class="btn btn-secondary" onclick="resetSettings()">🔄 Reset Defaults</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Panel -->
+        <div class="results-panel" id="results">
+            <h3>🎯 Debug Results</h3>
+            <p>Results will appear here after debugging...</p>
+        </div>
+
+        <!-- Features Overview -->
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🐍</div>
+                <h3>Python Debug</h3>
+                <p>Syntax checking, runtime debugging, memory monitoring</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🟨</div>
+                <h3>JavaScript Debug</h3>
+                <p>Node.js integration, browser debugging, performance analysis</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🌐</div>
+                <h3>HTML Validation</h3>
+                <p>Structure validation, accessibility checks, best practices</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">👀</div>
+                <h3>Live Watching</h3>
+                <p>Auto-reload debugging, file system monitoring</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let watchingActive = false;
+        let debugResults = [];
+
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        // File upload handling
+        document.getElementById('fileUpload').addEventListener('click', () => {
+            document.getElementById('fileInput').click();
+        });
+
+        document.getElementById('fileInput').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                updateFileUploadUI(file.name);
+            }
+        });
+
+        // Drag and drop
+        const fileUpload = document.getElementById('fileUpload');
+        
+        fileUpload.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUpload.classList.add('drag-over');
+        });
+
+        fileUpload.addEventListener('dragleave', () => {
+            fileUpload.classList.remove('drag-over');
+        });
+
+        fileUpload.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUpload.classList.remove('drag-over');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                document.getElementById('fileInput').files = files;
+                updateFileUploadUI(files[0].name);
+            }
+        });
+
+        function updateFileUploadUI(filename) {
+            fileUpload.innerHTML = `
+                <p>✅ File selected: <strong>${filename}</strong></p>
+                <p style="color: #666; font-size: 14px;">Click to change file</p>
+            `;
+        }
+
+        // Debug functions
+        async function debugFile() {
+            const fileInput = document.getElementById('fileInput');
+            const mode = document.getElementById('debugMode').value;
+            const outputFormat = document.getElementById('outputFormat').value;
+            const enableBrowser = document.getElementById('enableBrowser').checked;
+            const enablePerformance = document.getElementById('enablePerformance').checked;
+
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert('Please select a file to debug');
+                return;
+            }
+
+            showProgress(true);
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<h3>🔄 Debugging in progress...</h3>';
+
+            try {
+                // Simulate API call to debug wrapper
+                const formData = new FormData();
+                formData.append('file', fileInput.files[0]);
+                formData.append('mode', mode);
+                formData.append('output_format', outputFormat);
+                formData.append('browser_debugging', enableBrowser);
+                formData.append('performance_monitoring', enablePerformance);
+
+                // Simulate debugging process
+                await simulateDebugProcess();
+
+                // Display mock results
+                displayDebugResults({
+                    success: Math.random() > 0.3,
+                    file_path: fileInput.files[0].name,
+                    language: mode === 'auto' ? detectLanguage(fileInput.files[0].name) : mode,
+                    execution_time: (Math.random() * 2).toFixed(3),
+                    syntax_valid: Math.random() > 0.2,
+                    syntax_errors: Math.random() > 0.7 ? [] : ['Example syntax error'],
+                    runtime_errors: Math.random() > 0.8 ? [] : ['Example runtime error'],
+                    warnings: Math.random() > 0.5 ? [] : ['Example warning'],
+                    output: 'Example debug output...',
+                    timestamp: new Date().toISOString()
+                });
+
+            } catch (error) {
+                resultsDiv.innerHTML = `<h3>❌ Debug Failed</h3><p>${error.message}</p>`;
+            } finally {
+                showProgress(false);
+            }
+        }
+
+        function detectLanguage(filename) {
+            const ext = filename.split('.').pop().toLowerCase();
+            const map = { 'py': 'python', 'js': 'javascript', 'html': 'html', 'htm': 'html' };
+            return map[ext] || 'unknown';
+        }
+
+        async function simulateDebugProcess() {
+            const steps = ['Checking syntax...', 'Running analysis...', 'Checking performance...', 'Generating report...'];
+            const progressFill = document.getElementById('progressFill');
+            
+            for (let i = 0; i < steps.length; i++) {
+                document.getElementById('results').innerHTML = `<h3>🔄 ${steps[i]}</h3>`;
+                progressFill.style.width = `${((i + 1) / steps.length) * 100}%`;
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+        }
+
+        function displayDebugResults(result) {
+            debugResults.push(result);
+            
+            const statusClass = result.success ? 'status-success' : 'status-error';
+            const statusIcon = result.success ? '✅' : '❌';
+            const syntaxIcon = result.syntax_valid ? '✅' : '❌';
+            
+            const html = `
+                <h3>🎯 Debug Results: ${result.file_path}</h3>
+                <div style="margin: 15px 0;">
+                    <span class="status-indicator ${statusClass}">${statusIcon} ${result.success ? 'SUCCESS' : 'FAILED'}</span>
+                    <span class="status-indicator">📄 ${result.language.toUpperCase()}</span>
+                    <span class="status-indicator">⏱️ ${result.execution_time}s</span>
+                    <span class="status-indicator">${syntaxIcon} Syntax ${result.syntax_valid ? 'Valid' : 'Invalid'}</span>
+                </div>
+                
+                ${result.syntax_errors.length > 0 ? `
+                    <div style="margin: 10px 0;">
+                        <strong>🚨 Syntax Errors:</strong>
+                        <ul>${result.syntax_errors.map(err => `<li>${err}</li>`).join('')}</ul>
+                    </div>
+                ` : ''}
+                
+                ${result.runtime_errors.length > 0 ? `
+                    <div style="margin: 10px 0;">
+                        <strong>💥 Runtime Errors:</strong>
+                        <ul>${result.runtime_errors.map(err => `<li>${err}</li>`).join('')}</ul>
+                    </div>
+                ` : ''}
+                
+                ${result.warnings.length > 0 ? `
+                    <div style="margin: 10px 0;">
+                        <strong>⚠️ Warnings:</strong>
+                        <ul>${result.warnings.map(warn => `<li>${warn}</li>`).join('')}</ul>
+                    </div>
+                ` : ''}
+                
+                ${result.output ? `
+                    <div style="margin: 10px 0;">
+                        <strong>📝 Output:</strong>
+                        <pre style="background: #f5f5f5; padding: 10px; border-radius: 5px; overflow-x: auto;">${result.output}</pre>
+                    </div>
+                ` : ''}
+                
+                <p style="color: #666; font-size: 12px;">🕐 ${new Date(result.timestamp).toLocaleString()}</p>
+            `;
+            
+            document.getElementById('results').innerHTML = html;
+        }
+
+        function showProgress(show) {
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+            
+            if (show) {
+                progressBar.style.display = 'block';
+                progressFill.style.width = '0%';
+            } else {
+                progressBar.style.display = 'none';
+                progressFill.style.width = '0%';
+            }
+        }
+
+        function toggleWatch() {
+            const btn = document.getElementById('watchBtn');
+            const logsDiv = document.getElementById('liveLogs');
+            
+            if (!watchingActive) {
+                watchingActive = true;
+                btn.innerHTML = '⏹️ Stop Watching';
+                btn.classList.add('btn-secondary');
+                
+                logsDiv.innerHTML = '<p>👀 File watching started...</p>';
+                simulateLiveLogging();
+            } else {
+                watchingActive = false;
+                btn.innerHTML = '👀 Start Watching';
+                btn.classList.remove('btn-secondary');
+            }
+        }
+
+        function simulateLiveLogging() {
+            if (!watchingActive) return;
+            
+            const messages = [
+                '📁 Watching directory: ./src',
+                '🔍 File changed: src/main.py',
+                '✅ Syntax check passed',
+                '⚡ Running debug analysis...',
+                '📊 Performance: 0.123s execution time',
+                '💾 Memory usage: 15.2 MB',
+                '✅ Debug completed successfully'
+            ];
+            
+            const logsDiv = document.getElementById('liveLogs');
+            let messageIndex = 0;
+            
+            const interval = setInterval(() => {
+                if (!watchingActive || messageIndex >= messages.length) {
+                    clearInterval(interval);
+                    if (watchingActive) {
+                        setTimeout(() => simulateLiveLogging(), 3000);
+                    }
+                    return;
+                }
+                
+                const timestamp = new Date().toLocaleTimeString();
+                logsDiv.innerHTML += `<br>[${timestamp}] ${messages[messageIndex]}`;
+                logsDiv.scrollTop = logsDiv.scrollHeight;
+                messageIndex++;
+            }, 1000);
+        }
+
+        // Utility functions
+        function clearResults() {
+            document.getElementById('results').innerHTML = '<h3>🎯 Debug Results</h3><p>Results will appear here after debugging...</p>';
+            debugResults = [];
+        }
+
+        function clearLogs() {
+            document.getElementById('liveLogs').innerHTML = '<p>📝 Live debugging logs will appear here...</p>';
+        }
+
+        function downloadResults() {
+            if (debugResults.length === 0) {
+                alert('No results to download');
+                return;
+            }
+            
+            const dataStr = JSON.stringify(debugResults, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `debug_results_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+        }
+
+        function debugBatch() {
+            const batchFiles = document.getElementById('batchFiles');
+            if (!batchFiles.files || batchFiles.files.length === 0) {
+                alert('Please select files to debug');
+                return;
+            }
+            
+            const resultsDiv = document.getElementById('batchResults');
+            resultsDiv.innerHTML = '<h3>🔄 Batch debugging in progress...</h3>';
+            
+            // Simulate batch debugging
+            setTimeout(() => {
+                let html = '<h3>📊 Batch Debug Results</h3>';
+                for (let i = 0; i < batchFiles.files.length; i++) {
+                    const file = batchFiles.files[i];
+                    const success = Math.random() > 0.2;
+                    const icon = success ? '✅' : '❌';
+                    html += `<p>${icon} ${file.name} - ${success ? 'PASSED' : 'FAILED'}</p>`;
+                }
+                resultsDiv.innerHTML = html;
+            }, 2000);
+        }
+
+        function saveSettings() {
+            const settings = {
+                logLevel: document.getElementById('logLevel').value,
+                syntaxCheck: document.getElementById('syntaxCheck').checked,
+                memoryMonitor: document.getElementById('memoryMonitor').checked,
+                autoReload: document.getElementById('autoReload').checked
+            };
+            
+            localStorage.setItem('debugSettings', JSON.stringify(settings));
+            alert('⚙️ Settings saved successfully!');
+        }
+
+        function resetSettings() {
+            localStorage.removeItem('debugSettings');
+            document.getElementById('logLevel').value = 'INFO';
+            document.getElementById('syntaxCheck').checked = true;
+            document.getElementById('memoryMonitor').checked = true;
+            document.getElementById('autoReload').checked = false;
+            alert('🔄 Settings reset to defaults!');
+        }
+
+        // Load saved settings on page load
+        window.addEventListener('load', () => {
+            const saved = localStorage.getItem('debugSettings');
+            if (saved) {
+                const settings = JSON.parse(saved);
+                document.getElementById('logLevel').value = settings.logLevel || 'INFO';
+                document.getElementById('syntaxCheck').checked = settings.syntaxCheck !== false;
+                document.getElementById('memoryMonitor').checked = settings.memoryMonitor !== false;
+                document.getElementById('autoReload').checked = settings.autoReload || false;
+            }
+        });
+    </script>
+</body>
+</html>

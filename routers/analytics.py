@@ -1,8 +1,4 @@
 # routers/analytics.py
-"""
-Analytics router for application discovery system
-"""
-
 from fastapi import APIRouter, Depends, HTTPException
 from typing import Dict, Any, Optional
 from datetime import datetime

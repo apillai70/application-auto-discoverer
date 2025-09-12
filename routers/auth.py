@@ -196,9 +196,20 @@ def check_permission(required_role: str):
     
     return permission_checker
 
-def require_role(required_role: str):
-    """Decorator to require specific role"""
-    return check_permission(required_role)
+def require_role(roles):
+    def decorator(func):
+        @wraps(func)
+        async def wrapper(*args, **kwargs):
+            # Get user from request context HERE
+            user = await get_current_user(...)
+            if not user:
+                raise HTTPException(status_code=401)
+            # Check roles HERE
+            if not any(role in user.roles for role in roles):
+                raise HTTPException(status_code=403)
+            return await func(*args, **kwargs)
+        return wrapper
+    return decorator
 
 def require_admin(current_user: str = Depends(get_current_user)):
     """Require admin role"""
@@ -223,6 +234,13 @@ def check_user_access(current_user: str = Depends(get_current_user)):
     user = USERS_DB.get(current_user)
     if not user or not any(role in user["roles"] for role in ["admin", "user", "security", "analyst"]):
         raise HTTPException(status_code=403, detail="User access required")
+    return current_user
+    
+def require_security_role(current_user: str = Depends(get_current_user)):
+    """Require security or analyst role"""
+    user = USERS_DB.get(current_user)
+    if not user or not any(role in user["roles"] for role in ["admin", "security", "analyst"]):
+        raise HTTPException(status_code=403, detail="Security access required")
     return current_user
 
 # Authentication endpoints
@@ -405,6 +423,7 @@ __all__ = [
     "get_current_user_roles",
     "require_role",
     "require_admin",
+    "require_security_role",
     "check_permission",          # ← This was missing and causing the error
     "check_admin_access",        
     "check_security_access",     

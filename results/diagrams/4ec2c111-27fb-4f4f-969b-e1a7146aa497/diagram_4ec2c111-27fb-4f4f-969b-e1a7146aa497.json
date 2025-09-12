@@ -1,0 +1,135 @@
+{
+  "metadata": {
+    "archetype": "Traditional 3-tier web application (presentation, business, data)",
+    "template": "templates/diagrams/three_tier.json",
+    "layout": "vertical_stack",
+    "generated_at": "2025-08-29T14:26:45.743403",
+    "complexity_score": 6
+  },
+  "components": [
+    {
+      "id": "comp_1",
+      "name": "Web Server",
+      "type": "web",
+      "position": {
+        "x": 200,
+        "y": 100
+      },
+      "properties": {
+        "technologies": [
+          "Java EE",
+          "ASP.NET",
+          "PHP",
+          "Oracle",
+          "SQL Server"
+        ],
+        "aws_services": [
+          "EC2",
+          "RDS",
+          "ElastiCache",
+          "CloudFront"
+        ],
+        "ports": [
+          "80",
+          "443"
+        ],
+        "protocols": [
+          "HTTP",
+          "HTTPS"
+        ]
+      },
+      "customizations": {}
+    },
+    {
+      "id": "comp_2",
+      "name": "Application Server",
+      "type": "app",
+      "position": {
+        "x": 200,
+        "y": 220
+      },
+      "properties": {
+        "technologies": [
+          "Java EE",
+          "ASP.NET",
+          "PHP",
+          "Oracle",
+          "SQL Server"
+        ],
+        "aws_services": [
+          "EC2",
+          "RDS",
+          "ElastiCache",
+          "CloudFront"
+        ]
+      },
+      "customizations": {}
+    },
+    {
+      "id": "comp_3",
+      "name": "Database Server",
+      "type": "database",
+      "position": {
+        "x": 200,
+        "y": 340
+      },
+      "properties": {
+        "technologies": [
+          "Java EE",
+          "ASP.NET",
+          "PHP",
+          "Oracle",
+          "SQL Server"
+        ],
+        "aws_services": [
+          "EC2",
+          "RDS",
+          "ElastiCache",
+          "CloudFront"
+        ],
+        "ports": [
+          "3306",
+          "5432",
+          "1433"
+        ],
+        "protocols": [
+          "SQL"
+        ]
+      },
+      "customizations": {}
+    }
+  ],
+  "connections": [
+    {
+      "id": "conn_1",
+      "source": "comp_1",
+      "target": "comp_2",
+      "type": "HTTP",
+      "bidirectional": false
+    },
+    {
+      "id": "conn_2",
+      "source": "comp_2",
+      "target": "comp_3",
+      "type": "JDBC/ODBC",
+      "bidirectional": false
+    }
+  ],
+  "layout_info": {},
+  "styling": {
+    "colors": {
+      "primary": "#6b7280",
+      "secondary": "#4b5563"
+    },
+    "fonts": {
+      "title": "Arial Bold 14pt",
+      "component": "Arial 10pt",
+      "connection": "Arial 8pt"
+    },
+    "shapes": {
+      "component_width": 120,
+      "component_height": 60,
+      "border_radius": 8
+    }
+  }
+}

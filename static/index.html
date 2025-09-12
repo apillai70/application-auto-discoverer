@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Topology Dashboard</title>
+    <link rel="stylesheet" href="/static/ui/css/common.css">
+    <link rel="stylesheet" href="/static/ui/css/topology.css">
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.min.js"></script>
+
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <div>
+                        <h1 class="header-title">Network Topology Dashboard</h1>
+                        <p class="header-subtitle">Visualize and analyze application network architecture and connections from real traffic data</p>
+                    </div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: var(--accent-blue);" id="totalNodes">Loading...</div>
+                        <div class="stat-label">Total Nodes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: var(--accent-green);" id="activeConnections">Loading...</div>
+                        <div class="stat-label">Active Connections</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: var(--accent-orange);" id="networkClusters">Loading...</div>
+                        <div class="stat-label">Applications</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: var(--accent-purple);" id="criticalPaths">Loading...</div>
+                        <div class="stat-label">Critical Paths</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <a href="/static/index.html" class="tab-btn active">
+                <span class="tab-icon">🗂️</span>
+                <span>Topology</span>
+            </a>
+            <a href="#" class="tab-btn disabled">
+                <span class="tab-icon">🔄</span>
+                <span>Convergence</span>
+            </a>
+            <a href="/static/ui/html/archetype.html" class="tab-btn">
+                <span class="tab-icon">🏗️</span>
+                <span>Archetype Classification</span>
+            </a>
+            <a href="/static/ui/html/integration.html" class="tab-btn">
+                <span class="tab-icon">🔗</span>
+                <span>Integration</span>
+            </a>
+            <a href="/static/ui/html/model.html" class="tab-btn">
+                <span class="tab-icon">📊</span>
+                <span>Model</span>
+            </a>
+            <a href="/static/ui/html/documentation.html" class="tab-btn">
+                <span class="tab-icon">📚</span>
+                <span>Documentation</span>
+            </a>
+            <a href="/static/ui/html/appRationalization.html" class="tab-btn">
+                <span class="tab-icon">7️⃣</span>
+                <span>App Rationalization</span>
+            </a>
+            <a href="/static/ui/html/recommendations.html" class="tab-btn">
+                <span class="tab-icon">💡</span>
+                <span>Recommendations</span>
+            </a>
+        </div>
+
+        <!-- Data Loading Status -->
+        <div id="data-loading-status" style="background: var(--bg-secondary); padding: 8px 16px; margin-bottom: 16px; border-radius: 8px; border-left: 4px solid var(--accent-blue); display: none;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div class="loading-spinner" style="width: 16px; height: 16px;"></div>
+                <span id="data-loading-text">Loading network data from CSV...</span>
+            </div>
+        </div>
+
+		<!-- Combined Data Source & Topology Management Bar -->
+		<div id="data-management-bar" style="background: var(--bg-secondary); padding: 12px 16px; margin-bottom: 16px; border-radius: 8px; border-left: 4px solid var(--accent-blue);">
+			<div style="display: flex; align-items: center; justify-content: space-between; gap: 20px;">
+				
+				<!-- Left Side: Data Source Info -->
+				<div style="flex: 1; display: flex; align-items: center; gap: 12px; min-width: 0;">
+					<strong style="white-space: nowrap;">📂 Data Source:</strong>
+					<div style="display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0;">
+						<div style="display: flex; align-items: center; gap: 8px;">
+							<div style="display: flex; align-items: center; gap: 8px;">
+								<!-- Upload Button -->
+								<button onclick="uploadCSVFiles()" 
+										class="topology-btn-small" 
+										style="background: var(--accent-blue); color: white; padding: 4px 8px; border: none; border-radius: 4px; cursor: pointer; font-size: 11px;">
+									📁 Upload CSV
+								</button>
+								
+								<!-- Clear Data Button -->
+								<button onclick="clearUploadedData()" 
+										class="topology-btn-small" 
+										style="background: var(--accent-orange); color: white; padding: 4px 8px; border: none; border-radius: 4px; cursor: pointer; font-size: 11px;">
+									🗑️ Clear
+								</button>
+								
+								<!-- Current Source Display -->
+								<span id="current-source-name" style="font-size: 11px; color: var(--text-muted);">
+									No files uploaded
+								</span>
+								
+								<!-- Hidden file input -->
+								<input type="file" id="csv-upload-input" accept=".csv" multiple style="display: none;">
+							</div>	
+						</div>
+						<div id="data-metadata" style="font-size: 11px; color: var(--text-muted);">
+							<!-- Metadata will be populated by JavaScript -->
+						</div>
+					</div>
+				</div>
+				
+				<!-- Center Divider -->
+				<div style="width: 1px; height: 40px; background: var(--border-color); opacity: 0.3;"></div>
+				
+				<!-- Right Side: Topology Management -->
+				<div style="flex: 1; display: flex; align-items: center; gap: 12px; min-width: 0;">
+					<strong style="white-space: nowrap;">💾 Topology:</strong>
+					
+					<!-- Action Buttons -->
+					<div style="display: flex; align-items: center; gap: 8px;">
+						<!-- Save Button -->
+						<button onclick="saveTopology()" 
+								class="topology-btn-small" 
+								style="background: var(--accent-green); color: white; padding: 4px 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; white-space: nowrap;">
+							📥 Save
+						</button>
+						
+						<!-- Load Button -->
+						<button onclick="document.getElementById('topology-file-input').click()" 
+								class="topology-btn-small" 
+								style="background: var(--accent-blue); color: white; padding: 4px 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; white-space: nowrap;">
+							📤 Load
+						</button>
+						
+						<!-- Hidden file input -->
+						<input type="file" id="topology-file-input" accept=".json" style="display: none;" onchange="loadTopologyFile(this)">
+						
+						<!-- Auto-save checkbox -->
+						<label style="display: flex; align-items: center; gap: 4px; font-size: 11px; white-space: nowrap; color: var(--text-muted);">
+							<input type="checkbox" id="auto-save-topology" checked style="width: 14px; height: 14px;">
+							<span>Auto-save</span>
+						</label>
+					</div>
+					
+					<!-- Topology Stats -->
+					<div id="topology-status" style="font-size: 11px; color: var(--text-muted); display: flex; gap: 8px; flex-wrap: wrap;">
+						<span style="white-space: nowrap;">Nodes: <strong id="topology-node-count">0</strong></span>
+						<span style="white-space: nowrap;">Links: <strong id="topology-link-count">0</strong></span>
+						<span style="white-space: nowrap;">Size: <strong id="topology-size">0 KB</strong></span>
+						<span id="topology-save-status"></span>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Data Loading Status (keep separate for visibility during loading) -->
+		<div id="data-loading-status" style="background: var(--bg-secondary); padding: 8px 16px; margin-bottom: 16px; border-radius: 8px; border-left: 4px solid var(--accent-orange); display: none;">
+			<div style="display: flex; align-items: center; gap: 8px;">
+				<div class="loading-spinner" style="width: 16px; height: 16px;"></div>
+				<span id="data-loading-text">Loading network data from CSV...</span>
+			</div>
+		</div>
+
+		<!-- Topology Download Notification (Hidden by default) -->
+		<div id="topology-notification" style="display: none;"></div>
+
+        <!-- Topology Main Content -->
+        <div class="topology-container">
+            <!-- Left Panel -->
+            <div id="left-panel">
+                <button class="hamburger" data-panel="left">☰</button>
+                
+                <div class="info-panel">
+                    <h3>🌐 Network Overview</h3>
+                    <ul>
+                        <li>Real-time network topology from traffic data</li>
+                        <li>Interactive connection mapping</li>
+                        <li>Application-based node clustering</li>
+                        <li>Traffic flow analysis with protocols</li>
+                        <li>Archetype-based visualization</li>
+                    </ul>
+                    <div id="csv-data-info" style="margin-top: 12px; padding: 8px; background: var(--bg-tertiary); border-radius: 6px; font-size: 11px;">
+                        <strong>📊 Data Status:</strong>
+                        <div id="csv-status">Initializing...</div>
+                    </div>
+                </div>
+
+                <!-- Application Filter Section -->
+                <div class="filter-section">
+                    <h4>🎯 Application Filter</h4>
+                    
+                    <!-- Search box for applications -->
+                    <input type="text" 
+                           id="app-search" 
+                           class="file-input" 
+                           placeholder="Search applications by name, archetype..." 
+                           style="margin-bottom: 8px;">
+                    
+                    <!-- Multi-select dropdown for applications -->
+                    <select id="app-filter" 
+                            class="topology-select" 
+                            multiple 
+                            size="6" 
+                            style="height: 120px; margin-bottom: 8px;">
+                        <option value="all" selected>🔄 Loading Applications...</option>
+                    </select>
+                    
+                    <!-- Quick filter buttons -->
+                    <div class="button-group" style="display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 8px;">
+                        <button class="topology-btn-small" onclick="selectAllApps()" title="Select all applications">All</button>
+                        <button class="topology-btn-small" onclick="clearAllApps()" title="Clear selection">None</button>
+                        <button class="topology-btn-small" onclick="selectCriticalApps()" title="Select critical applications">Critical</button>
+                        <button class="topology-btn-small" onclick="selectByArchetype('Database-Centric')" title="Select database-centric apps">DB-Centric</button>
+                        <button class="topology-btn-small" onclick="selectByArchetype('Microservices')" title="Select microservices">μServices</button>
+                    </div>
+                    
+                    <!-- Flow direction checkboxes -->
+                    <label class="topology-label">
+                        <input type="checkbox" class="topology-checkbox" id="show-upstream">
+                        ⬆️ Show Upstream Dependencies
+                        <small style="display: block; color: var(--text-muted); margin-left: 20px; font-size: 10px;">
+                            Include applications that provide services to selected apps
+                        </small>
+                    </label>
+                    <label class="topology-label">
+                        <input type="checkbox" class="topology-checkbox" id="show-downstream">
+                        ⬇️ Show Downstream Dependencies
+                        <small style="display: block; color: var(--text-muted); margin-left: 20px; font-size: 10px;">
+                            Include applications that consume services from selected apps
+                        </small>
+                    </label>
+                    
+                    <!-- Apply filter button -->
+                    <button class="topology-btn" onclick="applyApplicationFilter()" style="margin-top: 8px; background: var(--accent-blue); color: white;">
+                        🔍 Apply Filter
+                    </button>
+                    
+                    <!-- Filter stats -->
+                    <div id="app-filter-stats" style="font-size: 11px; color: var(--text-muted); margin-top: 8px; text-align: center;">
+                        Ready to filter applications...
+                    </div>
+                </div>
+
+                <!-- Node Type Filters -->
+                <div class="filter-section">
+                    <h4>🔧 Node Type Filters</h4>
+                    <label class="topology-label">
+                        <input type="checkbox" class="topology-checkbox" id="filter-servers" checked>
+                        Show Web & Application Servers
+                    </label>
+                    <label class="topology-label">
+                        <input type="checkbox" class="topology-checkbox" id="filter-databases" checked>
+                        Show Databases & Storage
+                    </label>
+                    <label class="topology-label">
+                        <input type="checkbox" class="topology-checkbox" id="filter-load-balancers" checked>
+                        Show Gateways & Load Balancers
+                    </label>
+                    <label class="topology-label">
+                        <input type="checkbox" class="topology-checkbox" id="filter-microservices" checked>
+                        Show Microservices & Workers
+                    </label>
+                </div>
+
+                <!-- Visualization Layouts -->
+                <div class="filter-section">
+                    <h4>🎨 Visualization Layout</h4>
+                    <button class="topology-btn active" onclick="setLayout('force')" id="force-btn">Force Layout</button>
+                    <button class="topology-btn" onclick="setLayout('hierarchical')" id="hierarchical-btn">Hierarchical</button>
+                    <button class="topology-btn" onclick="setLayout('circular')" id="circular-btn">Circular</button>
+                    <button class="topology-btn" onclick="setLayout('grid')" id="grid-btn">Grid Layout</button>
+                </div>
+
+                <!-- Analysis Tools -->
+                <div class="filter-section">
+                    <h4>📊 Analysis Tools</h4>
+                    <button class="topology-btn" onclick="analyzeTraffic()">🌊 Traffic Analysis</button>
+                    <button class="topology-btn" onclick="findCriticalPaths()">🎯 Critical Paths</button>
+                    <button class="topology-btn" onclick="detectClusters()">🌐 Cluster Detection</button>
+                    <button class="topology-btn" onclick="exportTopology()">📤 Export Data</button>
+                    <button class="topology-btn" onclick="reloadCSVData()" style="margin-top: 8px; background: var(--accent-orange);">🔄 Reload CSV</button>
+                </div>
+            </div>
+
+            <!-- Middle Canvas Area -->
+            <div id="middle-canvas-wrapper">
+                <div id="viz-canvas">
+                    <svg id="graph"></svg>
+                    
+                    <!-- Loading overlay -->
+                    <div id="topology-loading" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: white; padding: 20px; border-radius: 8px; display: none;">
+                        <div style="text-align: center;">
+                            <div class="loading-spinner" style="margin: 0 auto 10px;"></div>
+                            <div>Loading Network Topology...</div>
+                            <div style="font-size: 12px; color: #ccc; margin-top: 8px;">Processing CSV data</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Overlay Canvas for Analysis -->
+                <div id="overlay-canvas" style="display: none;">
+                    <button onclick="closeOverlay()" style="position: absolute; top: 10px; right: 10px; background: #ef4444; color: white; border: none; border-radius: 4px; padding: 4px 8px; cursor: pointer;">✕</button>
+                    <h3>Analysis Results</h3>
+                    <div id="analysis-content"></div>
+                </div>
+
+                <!-- Zoom Controls - Top Right Horizontal -->
+                <div id="zoom-controls">
+                    <button class="control-btn zoom-in" onclick="zoomIn()" title="Zoom In">+</button>
+                    <button class="control-btn zoom-out" onclick="zoomOut()" title="Zoom Out">−</button>
+                    <button class="control-btn reset-view" onclick="resetView()" title="Reset View">⌂</button>
+                </div>
+
+                <!-- Arrow Controls - Bottom Right -->
+                <div id="navigation-controls">
+                    <div id="arrow-controls">
+                        <div></div>
+                        <button class="control-btn" onclick="panDirection('up')" title="Pan Up">↑</button>
+                        <div></div>
+                        <button class="control-btn" onclick="panDirection('left')" title="Pan Left">←</button>
+                        <button class="control-btn" onclick="centerView()" title="Center View">⊙</button>
+                        <button class="control-btn" onclick="panDirection('right')" title="Pan Right">→</button>
+                        <div></div>
+                        <button class="control-btn" onclick="panDirection('down')" title="Pan Down">↓</button>
+                        <div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel -->
+            <div id="right-panel">
+                <button class="hamburger" data-panel="right">☰</button>
+
+                <div class="info-panel">
+                    <h3>📈 Network Statistics</h3>
+                    <div id="network-stats">
+                        <div class="stat-item">
+                            <span>Total Nodes:</span>
+                            <span id="stat-nodes">Loading...</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Total Links:</span>
+                            <span id="stat-links">Loading...</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Average Degree:</span>
+                            <span id="stat-avg-degree">Loading...</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Network Density:</span>
+                            <span id="stat-density">Loading...</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Clustering Coefficient:</span>
+                            <span id="stat-clustering">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <h4>🏷️ Node Type Legend</h4>
+                    <div id="node-legend">
+                        <div class="legend-item">
+                            <div style="width: 12px; height: 12px; background: #3b82f6; border-radius: 50%;"></div>
+                            <span>Web Servers</span>
+                        </div>
+                        <div class="legend-item">
+                            <div style="width: 12px; height: 12px; background: #eab308; border-radius: 50%;"></div>
+                            <span>Databases</span>
+                        </div>
+                        <div class="legend-item">
+                            <div style="width: 12px; height: 12px; background: #8b5cf6; border-radius: 50%;"></div>
+                            <span>Gateways</span>
+                        </div>
+                        <div class="legend-item">
+                            <div style="width: 12px; height: 12px; background: #ef4444; border-radius: 50%;"></div>
+                            <span>Core Services</span>
+                        </div>
+                        <div class="legend-item">
+                            <div style="width: 12px; height: 12px; background: #10b981; border-radius: 50%;"></div>
+                            <span>Processors</span>
+                        </div>
+                        <div class="legend-item">
+                            <div style="width: 12px; height: 12px; background: #06b6d4; border-radius: 50%;"></div>
+                            <span>Cache/Messaging</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <h4>🔍 Search & Select Nodes</h4>
+                    <input type="text" class="file-input" id="node-search" placeholder="Search nodes... (press Enter)">
+                    <select class="topology-select" id="node-selector" size="8">
+                        <option>Loading nodes...</option>
+                    </select>
+                </div>
+
+                <div class="filter-section">
+                    <h4>⚙️ Display Options</h4>
+                    <label class="topology-label">
+                        <input type="checkbox" class="topology-checkbox" id="show-labels" checked>
+                        Show Node Labels
+                    </label>
+                    <label class="topology-label">
+                        <input type="checkbox" class="topology-checkbox" id="show-ips">
+                        Show IP Addresses
+                    </label>
+                    <label class="topology-label">
+                        <input type="checkbox" class="topology-checkbox" id="show-link-labels">
+                        Show Connection Types
+                    </label>
+                    <label class="topology-label">
+                        <input type="checkbox" class="topology-checkbox" id="show-traffic">
+                        Show Traffic Flow Animation
+                    </label>
+                </div>
+
+                <!-- CSV Data Metadata -->
+                <div class="filter-section" id="csv-metadata-section">
+                    <h4>📊 Data Overview</h4>
+                    <div id="csv-metadata-content" style="font-size: 11px; line-height: 1.4;">
+                        <div class="stat-item">
+                            <span>CSV Records:</span>
+                            <span id="csv-total-records">Loading...</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Applications:</span>
+                            <span id="csv-total-apps">Loading...</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Unique IPs:</span>
+                            <span id="csv-total-ips">Loading...</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Protocols:</span>
+                            <span id="csv-protocols">Loading...</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Archetypes:</span>
+                            <span id="csv-archetypes">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tooltip -->
+        <div class="tooltip" id="tooltip"></div>
+        
+        <!-- Loading Spinner -->
+        <div class="loading-spinner" id="loading-spinner" style="display: none;"></div>
+        
+        <!-- Toast Container -->
+        <div id="toast-container"></div>
+    </div>
+
+    <!-- Scripts - IMPORTANT: Load order matters! -->
+    <script src="/static/ui/js/csv-data-loader.js"></script>
+    <script src="/static/ui/js/app-data.js"></script>
+	<script src="/static/ui/js/data-source-manager.js"></script> 
+    <script src="/static/ui/js/common.js"></script>
+    <script src="/static/ui/js/topology.js"></script>
+    <script src="/static/ui/js/enhanced-filters.js"></script>
+   <!-- <script src="/ui/js/topology-manager.js"></script> -->
+
+    <!-- Additional Functions for CSV Integration and Topology Management -->
+    <script>
+        // Global functions for CSV data management
+        function reloadCSVData() {
+            if (window.AppData && window.AppData.refreshData) {
+                showDataLoadingStatus(true);
+                window.AppData.refreshData().then(() => {
+                    showDataLoadingStatus(false);
+                    if (window.topologyDashboard) {
+                        window.topologyDashboard.populateApplicationFilter();
+                        window.topologyDashboard.updateNetworkData();
+                        window.topologyDashboard.render();
+                        window.topologyDashboard.updateStats();
+                    }
+                    updateTopologyStatus();
+                    createToast('CSV data reloaded successfully', 'success');
+                }).catch(error => {
+                    showDataLoadingStatus(false);
+                    console.error('Error reloading CSV data:', error);
+                    createToast('Failed to reload CSV data', 'error');
+                });
+            }
+        }
+
+        function showDataLoadingStatus(show, text = 'Loading network data from CSV...') {
+            const statusEl = document.getElementById('data-loading-status');
+            const textEl = document.getElementById('data-loading-text');
+            const topologyLoading = document.getElementById('topology-loading');
+            
+            if (statusEl) {
+                statusEl.style.display = show ? 'block' : 'none';
+                if (textEl) textEl.textContent = text;
+            }
+            
+            if (topologyLoading) {
+                topologyLoading.style.display = show ? 'block' : 'none';
+            }
+        }
+		
+        function updateDataSourceInfo() {
+            const metadata = window.AppData ? window.AppData.getMetadata() : {};
+            const infoEl = document.getElementById('data-source-info');
+            const metadataEl = document.getElementById('data-metadata');
+            
+            if (infoEl && metadataEl) {
+                infoEl.style.display = 'block';
+                
+                // Get the proper values from metadata
+                const recordCount = metadata.recordCount || 0;
+                const appCount = metadata.applicationCount || 0;
+                const nodeCount = metadata.nodeCount || 0;
+                const linkCount = metadata.linkCount || 0;
+                
+                metadataEl.innerHTML = `
+                    Records: ${recordCount.toLocaleString()} | 
+                    Apps: ${appCount} | 
+                    Nodes: ${nodeCount.toLocaleString()} | 
+                    Links: ${linkCount.toLocaleString()}
+                `;
+            }
+            
+            // Update CSV metadata in right panel
+            updateCSVMetadataPanel(metadata);
+            
+            // Update topology status
+            updateTopologyStatus();
+        }
+
+        function updateCSVMetadataPanel(metadata) {
+            // Use the summaryStats from metadata
+            const stats = metadata.summaryStats || {};
+            
+            document.getElementById('csv-total-records').textContent = (metadata.recordCount || 0).toLocaleString();
+            document.getElementById('csv-total-apps').textContent = metadata.applicationCount || 0;
+            document.getElementById('csv-total-ips').textContent = (stats.unique_sources || 0) + (stats.unique_destinations || 0);
+            document.getElementById('csv-protocols').textContent = stats.unique_protocols || 'N/A';
+            document.getElementById('csv-archetypes').textContent = metadata.applicationCount ? `${metadata.applicationCount} types` : 'N/A';
+        }
+
+        function updateCSVStatus(status) {
+            const statusEl = document.getElementById('csv-status');
+            if (statusEl) statusEl.textContent = status;
+        }
+
+        // Topology Management Functions
+        function saveTopology() {
+            if (!window.AppData) {
+                createToast('Data not loaded yet', 'error');
+                return;
+            }
+            
+            // Check if auto-save is enabled
+            const autoSave = document.getElementById('auto-save-topology').checked;
+            
+            // Try server save first if available, otherwise download
+            if (window.location.hostname === 'localhost' && window.AppData.saveTopologyToServer) {
+                window.AppData.saveTopologyToServer().then(result => {
+                    if (result && result.success) {
+                        updateTopologySaveStatus('Saved to server');
+                        createToast('Topology saved to server', 'success');
+                    }
+                }).catch(() => {
+                    // Fallback to download
+                    window.AppData.saveTopologyToFile();
+                    updateTopologySaveStatus('Downloaded');
+                });
+            } else if (window.AppData.saveTopologyToFile) {
+                window.AppData.saveTopologyToFile();
+                updateTopologySaveStatus('Downloaded');
+            }
+        }
+
+        function loadTopologyFile(input) {
+            const file = input.files[0];
+            if (file && window.AppData && window.AppData.loadTopologyFromFile) {
+                window.AppData.loadTopologyFromFile(file).then(success => {
+                    if (success) {
+                        updateTopologyStatus();
+                        if (window.topologyDashboard) {
+                            window.topologyDashboard.updateNetworkData();
+                            window.topologyDashboard.render();
+                            window.topologyDashboard.updateStats();
+                        }
+                        createToast('Topology loaded successfully', 'success');
+                    } else {
+                        createToast('Failed to load topology file', 'error');
+                    }
+                });
+            }
+            // Reset the input
+            input.value = '';
+        }
+
+        function updateTopologyStatus() {
+            if (!window.AppData || !window.AppData.networkTopology) return;
+            
+            const topology = window.AppData.networkTopology;
+            const nodeCount = topology.nodes?.length || 0;
+            const linkCount = topology.links?.length || 0;
+            
+            document.getElementById('topology-node-count').textContent = nodeCount.toLocaleString();
+            document.getElementById('topology-link-count').textContent = linkCount.toLocaleString();
+            
+            const size = JSON.stringify(topology).length;
+            const sizeText = size > 1024 * 1024 
+                ? `${(size / 1024 / 1024).toFixed(2)} MB` 
+                : `${(size / 1024).toFixed(2)} KB`;
+            document.getElementById('topology-size').textContent = sizeText;
+            
+            // Check if topology is large and auto-save is enabled
+            if (size > 1024 * 1024 && document.getElementById('auto-save-topology').checked) {
+                updateTopologySaveStatus('Large topology - auto-saved');
+            }
+        }
+
+        function updateTopologySaveStatus(status) {
+            const statusEl = document.getElementById('topology-save-status');
+            if (statusEl) {
+                statusEl.innerHTML = `<span style="color: var(--accent-green);">✓ ${status}</span>`;
+                setTimeout(() => {
+                    statusEl.innerHTML = '';
+                }, 5000);
+            }
+        }
+		
+		function uploadCSVFiles() {
+			if (window.dataSourceManager) {
+				window.dataSourceManager.triggerFileUpload();
+			} else {
+				document.getElementById('csv-upload-input').click();
+			}
+		}
+
+		function clearUploadedData() {
+			if (window.dataSourceManager) {
+				if (confirm('Clear all uploaded data and reset to empty state?')) {
+					window.dataSourceManager.clearAllData();
+				}
+			}
+		}
+
+		// Initialize dynamic data source after AppData is ready
+		document.addEventListener('DOMContentLoaded', () => {
+			setTimeout(() => {
+				if (window.AppData && typeof DataSourceManager !== 'undefined') {
+					setupDynamicDataSource();
+				}
+			}, 1500);
+		});
+		
+        // Initialize data loading status
+        document.addEventListener('DOMContentLoaded', () => {
+            showDataLoadingStatus(true);
+            updateCSVStatus('Loading CSV data...');
+            
+            // Listen for AppData ready state
+            const checkDataReady = () => {
+                if (window.AppData && window.AppData.isReady()) {
+                    showDataLoadingStatus(false);
+                    updateDataSourceInfo();
+                    updateCSVStatus('✅ CSV data loaded successfully');
+                    updateTopologyStatus();
+                    
+                    // Check if topology needs auto-save
+                    if (window.AppData.networkTopology) {
+                        const size = JSON.stringify(window.AppData.networkTopology).length;
+                        if (size > 1024 * 1024 && document.getElementById('auto-save-topology').checked) {
+                            console.log('Large topology detected, auto-saving...');
+                            // Auto-save is handled by app-data.js saveToCache method
+                        }
+                    }
+                } else {
+                    setTimeout(checkDataReady, 500);
+                }
+            };
+            
+            setTimeout(checkDataReady, 1000);
+        });
+
+        // Enhanced error handling
+        window.addEventListener('error', (event) => {
+            if (event.message && event.message.includes('CSV')) {
+                console.error('CSV-related error:', event);
+                updateCSVStatus('❌ Error loading CSV data');
+                showDataLoadingStatus(false);
+            }
+        });
+
+        // Listen for topology updates
+        window.addEventListener('topologyUpdated', () => {
+            updateTopologyStatus();
+        });
+    </script>
+</body>
+</html>

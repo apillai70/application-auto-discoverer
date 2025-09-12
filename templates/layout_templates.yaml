@@ -1,0 +1,239 @@
+# Layout Templates for Archetype-Based Diagrams
+# Place at: templates/layout_templates.yaml
+
+version: "1.0"
+description: "Layout patterns for different architecture archetypes"
+
+layouts:
+  monolithic:
+    name: "Monolithic Architecture"
+    canvas:
+      width: 800
+      height: 600
+    pattern: "vertical_stack"
+    components:
+      - id: "load_balancer"
+        stencil: "load_balancer"
+        position: { x: 400, y: 100 }
+        connections_from: []
+        connections_to: ["main_app"]
+      - id: "main_app"
+        stencil: "web_server"
+        position: { x: 400, y: 250 }
+        connections_from: ["load_balancer"]
+        connections_to: ["database"]
+      - id: "database"
+        stencil: "database"
+        position: { x: 400, y: 450 }
+        connections_from: ["main_app"]
+        connections_to: []
+
+  three_tier:
+    name: "Three-Tier Architecture"
+    canvas:
+      width: 900
+      height: 600
+    pattern: "horizontal_tiers"
+    zones:
+      - name: "Presentation Tier"
+        x: 50
+        y: 50
+        width: 200
+        height: 500
+        color: "#E3F2FD"
+      - name: "Application Tier"
+        x: 300
+        y: 50
+        width: 200
+        height: 500
+        color: "#FFF3E0"
+      - name: "Data Tier"
+        x: 550
+        y: 50
+        width: 200
+        height: 500
+        color: "#F3E5F5"
+    components:
+      - id: "load_balancer"
+        stencil: "load_balancer"
+        position: { x: 150, y: 150 }
+        zone: "presentation"
+        connections_to: ["web_servers"]
+      - id: "web_servers"
+        stencil: "web_server"
+        position: { x: 150, y: 250 }
+        zone: "presentation"
+        connections_from: ["load_balancer"]
+        connections_to: ["app_servers"]
+      - id: "app_servers"
+        stencil: "app_server"
+        position: { x: 400, y: 250 }
+        zone: "application"
+        connections_from: ["web_servers"]
+        connections_to: ["databases"]
+      - id: "databases"
+        stencil: "database"
+        position: { x: 650, y: 250 }
+        zone: "data"
+        connections_from: ["app_servers"]
+      - id: "cache"
+        stencil: "cache"
+        position: { x: 650, y: 400 }
+        zone: "data"
+        connections_from: ["app_servers"]
+
+  microservices:
+    name: "Microservices Architecture"
+    canvas:
+      width: 1000
+      height: 700
+    pattern: "service_mesh"
+    components:
+      - id: "api_gateway"
+        stencil: "api_gateway"
+        position: { x: 100, y: 350 }
+        connections_to: ["service_grid"]
+      - id: "service_grid"
+        stencil: "microservice"
+        position_pattern:
+          type: "grid"
+          start_x: 300
+          start_y: 150
+          spacing_x: 150
+          spacing_y: 120
+          rows: 2
+          cols: 3
+        connections_from: ["api_gateway"]
+        connections_to: ["shared_data"]
+      - id: "shared_data"
+        stencil: "database"
+        position: { x: 850, y: 300 }
+        connections_from: ["service_grid"]
+      - id: "cache"
+        stencil: "cache"
+        position: { x: 850, y: 450 }
+        connections_from: ["service_grid"]
+
+  event_driven:
+    name: "Event-Driven Architecture"
+    canvas:
+      width: 800
+      height: 700
+    pattern: "hub_spoke"
+    components:
+      - id: "event_bus"
+        stencil: "event_bus"
+        position: { x: 400, y: 350 }
+      - id: "services"
+        stencil: "microservice"
+        position_pattern:
+          type: "circle"
+          center_x: 400
+          center_y: 350
+          radius: 200
+          count: 6
+        connections_bidirectional: ["event_bus"]
+
+  serverless:
+    name: "Serverless Architecture"
+    canvas:
+      width: 800
+      height: 500
+    pattern: "function_grid"
+    components:
+      - id: "api_gateway"
+        stencil: "api_gateway"
+        position: { x: 150, y: 250 }
+        connections_to: ["lambda_functions"]
+      - id: "lambda_functions"
+        stencil: "lambda_function"
+        position_pattern:
+          type: "grid"
+          start_x: 350
+          start_y: 150
+          spacing_x: 120
+          spacing_y: 100
+          rows: 2
+          cols: 3
+        connections_from: ["api_gateway"]
+        connections_to: ["managed_storage"]
+      - id: "managed_storage"
+        stencil: "database"
+        position: { x: 750, y: 250 }
+        connections_from: ["lambda_functions"]
+
+  cloud_native:
+    name: "Cloud-Native Architecture"
+    canvas:
+      width: 1000
+      height: 700
+    pattern: "containerized_services"
+    components:
+      - id: "api_gateway"
+        stencil: "api_gateway"
+        position: { x: 100, y: 350 }
+        connections_to: ["container_services"]
+      - id: "container_services"
+        stencil: "kubernetes_pod"
+        position_pattern:
+          type: "grid"
+          start_x: 300
+          start_y: 150
+          spacing_x: 150
+          spacing_y: 120
+          rows: 2
+          cols: 3
+        connections_from: ["api_gateway"]
+        connections_to: ["data_layer"]
+      - id: "data_layer"
+        stencil: "database"
+        position: { x: 850, y: 300 }
+        connections_from: ["container_services"]
+
+# Connection styling templates
+connection_styles:
+  http:
+    color: "#4ECDC4"
+    width: 2
+    style: "solid"
+    arrow: true
+  
+  sql:
+    color: "#6C5CE7"
+    width: 2
+    style: "solid"
+    arrow: true
+  
+  publish:
+    color: "#E17055"
+    width: 2
+    style: "dashed"
+    arrow: true
+  
+  subscribe:
+    color: "#E17055"
+    width: 2
+    style: "dashed"
+    arrow: false
+  
+  trigger:
+    color: "#FF7675"
+    width: 2
+    style: "solid"
+    arrow: true
+
+# Default positioning rules
+positioning_rules:
+  spacing:
+    component_padding: 20
+    tier_spacing: 150
+    grid_spacing_x: 120
+    grid_spacing_y: 100
+  
+  alignment:
+    horizontal: "center"
+    vertical: "middle"
+  
+  margins:
+    canvas_margin: 50
+    zone_padding: 20

@@ -1,0 +1,7 @@
+Name,Shape Library,Shape,Text Area 1,Position X,Position Y,Width,Height
+API Gateway,Standard,Rectangle,API Gateway,50,250,120,80
+User Service,Standard,Rectangle,User Service,250,150,100,60
+Order Servic,Standard,Rectangle,Order Servic,400,150,100,60
+Payment Serv,Standard,Rectangle,Payment Serv,550,150,100,60
+Shared DB,Standard,Rectangle,Shared DB,250,270,100,60
+Shared DB,Standard,Cylinder,Shared DB,650,200,100,120

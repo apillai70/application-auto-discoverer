@@ -1,0 +1,317 @@
+# Stencil Library for LucidChart Generation
+# Place at: templates/stencil_library.yaml
+
+version: "1.0"
+description: "Professional stencil library for archetype-based diagrams"
+
+stencils:
+  # Web/Frontend Components
+  web_server:
+    name: "Web Server"
+    shape_type: "rectangle"
+    dimensions:
+      width: 120
+      height: 80
+    styling:
+      fill_color: "#4ECDC4"
+      border_color: "#45B7D1"
+      border_width: 2
+      corner_radius: 8
+    display:
+      icon: "🌐"
+      text_size: 10
+      font: "Arial"
+    category: "web_frontend"
+    
+  load_balancer:
+    name: "Load Balancer" 
+    shape_type: "diamond"
+    dimensions:
+      width: 100
+      height: 100
+    styling:
+      fill_color: "#96CEB4"
+      border_color: "#85C7AE"
+      border_width: 2
+      corner_radius: 8
+    display:
+      icon: "⚖️"
+      text_size: 10
+      font: "Arial"
+    category: "web_frontend"
+    
+  cdn:
+    name: "CDN"
+    shape_type: "cloud"
+    dimensions:
+      width: 140
+      height: 90
+    styling:
+      fill_color: "#A8E6CF"
+      border_color: "#88D8A3" 
+      border_width: 2
+      corner_radius: 12
+    display:
+      icon: "☁️"
+      text_size: 10
+      font: "Arial"
+    category: "web_frontend"
+
+  # Application Components  
+  app_server:
+    name: "Application Server"
+    shape_type: "rectangle"
+    dimensions:
+      width: 120
+      height: 80
+    styling:
+      fill_color: "#FFD93D"
+      border_color: "#FFC312"
+      border_width: 2
+      corner_radius: 8
+    display:
+      icon: "🏛️"
+      text_size: 10
+      font: "Arial"
+    category: "application_services"
+    
+  microservice:
+    name: "Microservice"
+    shape_type: "rounded_rectangle"
+    dimensions:
+      width: 90
+      height: 60
+    styling:
+      fill_color: "#74B9FF"
+      border_color: "#0984e3"
+      border_width: 2
+      corner_radius: 12
+    display:
+      icon: "🔧"
+      text_size: 9
+      font: "Arial"
+    category: "application_services"
+    
+  api_gateway:
+    name: "API Gateway"
+    shape_type: "hexagon"
+    dimensions:
+      width: 110
+      height: 80
+    styling:
+      fill_color: "#FD79A8"
+      border_color: "#E84393"
+      border_width: 2
+      corner_radius: 8
+    display:
+      icon: "🚪"
+      text_size: 10
+      font: "Arial"
+    category: "application_services"
+
+  # Data Components
+  database:
+    name: "Database"
+    shape_type: "cylinder"
+    dimensions:
+      width: 100
+      height: 120
+    styling:
+      fill_color: "#6C5CE7"
+      border_color: "#5F3DC4"
+      border_width: 2
+      corner_radius: 8
+    display:
+      icon: "🗄️"
+      text_size: 10
+      font: "Arial"
+    category: "data_storage"
+    
+  cache:
+    name: "Cache"
+    shape_type: "diamond"
+    dimensions:
+      width: 80
+      height: 80
+    styling:
+      fill_color: "#FDCB6E"
+      border_color: "#E17055"
+      border_width: 2
+      corner_radius: 8
+    display:
+      icon: "⚡"
+      text_size: 9
+      font: "Arial"
+    category: "data_storage"
+    
+  data_warehouse:
+    name: "Data Warehouse"
+    shape_type: "cylinder"
+    dimensions:
+      width: 140
+      height: 100
+    styling:
+      fill_color: "#00B894"
+      border_color: "#00A085"
+      border_width: 2
+      corner_radius: 8
+    display:
+      icon: "🏢"
+      text_size: 10
+      font: "Arial"
+    category: "data_storage"
+
+  # Messaging Components
+  message_queue:
+    name: "Message Queue"
+    shape_type: "parallelogram"
+    dimensions:
+      width: 120
+      height: 60
+    styling:
+      fill_color: "#E17055"
+      border_color: "#D63031"
+      border_width: 2
+      corner_radius: 8
+    display:
+      icon: "📮"
+      text_size: 10
+      font: "Arial"
+    category: "messaging"
+    
+  event_bus:
+    name: "Event Bus"
+    shape_type: "parallelogram"
+    dimensions:
+      width: 140
+      height: 70
+    styling:
+      fill_color: "#FD79A8"
+      border_color: "#E84393"
+      border_width: 2
+      corner_radius: 8
+    display:
+      icon: "🚌"
+      text_size: 10
+      font: "Arial"
+    category: "messaging"
+
+  # Cloud Components
+  lambda_function:
+    name: "Lambda Function"
+    shape_type: "rounded_rectangle"
+    dimensions:
+      width: 100
+      height: 50
+    styling:
+      fill_color: "#FF7675"
+      border_color: "#D63031"
+      border_width: 2
+      corner_radius: 12
+    display:
+      icon: "λ"
+      text_size: 12
+      font: "Arial"
+    category: "cloud_native"
+    
+  container:
+    name: "Container"
+    shape_type: "rounded_rectangle"
+    dimensions:
+      width: 80
+      height: 60
+    styling:
+      fill_color: "#74B9FF"
+      border_color: "#0984E3"
+      border_width: 2
+      corner_radius: 8
+    display:
+      icon: "📦"
+      text_size: 9
+      font: "Arial"
+    category: "cloud_native"
+    
+  kubernetes_pod:
+    name: "Kubernetes Pod"
+    shape_type: "rounded_rectangle"
+    dimensions:
+      width: 90
+      height: 70
+    styling:
+      fill_color: "#00CEC9"
+      border_color: "#00B894"
+      border_width: 2
+      corner_radius: 10
+    display:
+      icon: "🎯"
+      text_size: 9
+      font: "Arial"
+    category: "cloud_native"
+
+# Category-based groupings
+categories:
+  web_frontend:
+    name: "Web & Frontend"
+    description: "User-facing web components"
+    default_color: "#4ECDC4"
+    
+  application_services:
+    name: "Application Services"
+    description: "Business logic and API services"
+    default_color: "#74B9FF"
+    
+  data_storage:
+    name: "Data Storage"
+    description: "Databases, caches, and storage"
+    default_color: "#6C5CE7"
+    
+  messaging:
+    name: "Messaging"
+    description: "Message queues and event systems"
+    default_color: "#E17055"
+    
+  cloud_native:
+    name: "Cloud Native"
+    description: "Containers and serverless components"
+    default_color: "#FF7675"
+
+# Archetype-specific stencil mappings
+archetype_stencils:
+  monolithic:
+    - web_server
+    - database
+    - load_balancer
+    
+  three_tier:
+    - web_server
+    - app_server
+    - database
+    - load_balancer
+    - cache
+    
+  microservices:
+    - microservice
+    - api_gateway
+    - database
+    - cache
+    - container
+    - kubernetes_pod
+    
+  event_driven:
+    - microservice
+    - message_queue
+    - event_bus
+    - database
+    - api_gateway
+    
+  serverless:
+    - lambda_function
+    - api_gateway
+    - database
+    
+  cloud_native:
+    - container
+    - kubernetes_pod
+    - api_gateway
+    - database
+    - cache

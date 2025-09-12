@@ -1,1029 +1,998 @@
-// Enhanced Application Data Management - Web Application Integration
-// Integrates with ACTIVnet File Processing System using proper directory structure
-// Loads data from /templates/activnet_data.json and /static/ui/data/synthetic_flows_apps_archetype_mapped.xlsx
+/**
+ * Application Data Manager - Complete Rewrite
+ * Handles CSV loading, application management, and network topology generation
+ * Self-contained with robust error handling and no external dependencies
+ */
 
-// Check if ApplicationDataManager already exists to avoid redeclaration
-if (typeof window.ApplicationDataManager === 'undefined') {
+console.log('Loading rewritten app-data.js...');
+
+class ApplicationDataManager {
+    constructor() {
+        // Core data structures
+        this.applications = [];
+        this.trafficData = [];
+        this.networkTopology = { nodes: [], links: [] };
+        
+        // State management
+        this.isDataLoaded = false;
+        this.lastUpdate = null;
+        this.loadingProgress = 0;
+        this.errors = [];
+        
+        // Configuration
+        this.config = {
+            maxTrafficRows: 50000, // Limit for performance
+            csvPaths: {
+                applications: '/data_staging/applicationList.csv',
+                traffic: '/data_staging/updated_normalized_synthetic_traffic.csv'
+            },
+            archetypeClassification: {
+                // Keywords for classifying applications by name
+                'Microservices': ['api', 'service', 'micro', 'rest', 'endpoint', 'gateway'],
+                'Web + API Headless': ['web', 'portal', 'ui', 'frontend', 'site', 'dashboard'],
+                'Database-Centric': ['db', 'database', 'data', 'warehouse', 'storage', 'repo'],
+                'Event-Driven': ['event', 'queue', 'stream', 'message', 'broker', 'kafka', 'rabbit'],
+                'Monolithic': ['legacy', 'mainframe', 'core', 'enterprise', 'erp', 'crm'],
+                'SOA': ['soa', 'soap', 'enterprise service', 'esb'],
+                'Client-Server': ['client', 'desktop', 'thick client', 'fat client'],
+                '3-Tier': ['system', 'application', 'platform']
+            }
+        };
+        
+        this.init();
+    }
     
-    class ApplicationDataManager {
-        constructor() {
-            this.applications = [];
-            this.flows = [];
-            this.applicationList = [];
-            this.isDataLoaded = false;
-            this.networkTopology = { nodes: [], links: [] };
-            this.lastUpdate = null;
-            this.activnetData = []; // Store raw ACTIVnet data
-            this.portServiceMap = new Map(); // Cache for port service definitions
-            this.currentDataSource = null; // Track which file we're using
-			this.lastDataTimestamp = null;
-			this.lastDataETag = null;
-			this.lastCheckTime = null;
-            
-            // localStorage keys for caching
-            this.STORAGE_KEYS = {
-                APPLICATIONS: 'app_discovery_applications',
-                NETWORK_DATA: 'app_discovery_network_data',
-                ACTIVNET_DATA: 'app_discovery_activnet_data',
-                PORT_SERVICES: 'app_discovery_port_services',
-                LAST_UPDATE: 'app_discovery_last_update',
-                DATA_SOURCE: 'app_discovery_data_source',
-                VERSION: 'app_discovery_data_version'
-            };
-            
-            // Data version for cache invalidation
-            this.DATA_VERSION = '5.0.0-webapp';
-            
-            // Event listeners for data updates
-            this.dataLoadedCallbacks = [];
-            this.filterChangeCallbacks = [];
-            
-            // Dynamic color mapping based on real architectures
-            this.nodeColorMap = {};
-            
-            // Web application file paths
-            this.dataPaths = {
-                jsonData: '/templates/activnet_data.json',
-                masterExcel: '/static/ui/data/synthetic_flows_apps_archetype_mapped.xlsx',
-                fallbackPaths: [
-                    '/static/ui/data/activnet_data.json',
-                    '/templates/data.json',
-                    'activnet_data.json'
-                ]
-            };
-            
-            // Auto-refresh configuration
-            this.autoRefreshInterval = 60000; // Check for updates every minute
-            this.refreshTimer = null;
-            
-            // Initialize with enhanced loading
-            this.init();
-        }
+    async init() {
+        console.log('Initializing Application Data Manager...');
+        this.updateProgress(0, 'Starting initialization...');
         
-        async init() {
-            console.log('🚀 Initializing Web-Integrated ACTIVnet Application Data Manager...');
-            console.log('📁 Data paths configured:');
-            console.log(`   JSON: ${this.dataPaths.jsonData}`);
-            console.log(`   Excel: ${this.dataPaths.masterExcel}`);
+        try {
+            // Load applications first (always required)
+            await this.loadApplications();
+            this.updateProgress(50, 'Applications loaded, loading traffic data...');
             
-            // Check if we have valid cached data
-            if (this.hasCachedData() && this.isCacheValid()) {
-                console.log('📦 Loading data from localStorage cache...');
-                this.loadFromCache();
-                
-                // Still check for newer data in background
-                setTimeout(() => this.checkForNewerData(), 2000);
-            } else {
-                console.log('📁 Loading fresh data from web application...');
-                await this.loadWebApplicationData();
-            }
+            // Load traffic data (optional)
+            await this.loadTrafficData();
+            this.updateProgress(75, 'Generating network topology...');
             
-            this.setupFilterSync();
-            this.startAutoRefresh();
-            console.log('✅ Web-Integrated ACTIVnet Data Manager initialized');
-        }
-        
-        // ===========================
-        // WEB APPLICATION DATA LOADING
-        // ===========================
-        
-        async loadWebApplicationData() {
-            console.log('🔍 Loading data from web application structure...');
-            
-            let dataLoaded = false;
-            
-            // Try primary JSON data file first
-            try {
-                await this.loadFromJSONData(this.dataPaths.jsonData);
-                dataLoaded = true;
-                console.log('✅ Successfully loaded from primary JSON data');
-            } catch (error) {
-                console.log('⚠️ Primary JSON data loading failed:', error.message);
-            }
-            
-            // Try fallback paths if primary failed
-            if (!dataLoaded) {
-                for (const fallbackPath of this.dataPaths.fallbackPaths) {
-                    try {
-                        await this.loadFromJSONData(fallbackPath);
-                        dataLoaded = true;
-                        console.log(`✅ Successfully loaded from fallback: ${fallbackPath}`);
-                        break;
-                    } catch (error) {
-                        console.log(`⚠️ Fallback ${fallbackPath} failed:`, error.message);
-                    }
-                }
-            }
-            
-            // If still no data, try to load Excel file directly
-            if (!dataLoaded) {
-                try {
-                    await this.loadFromMasterExcel();
-                    dataLoaded = true;
-                    console.log('✅ Successfully loaded from Excel file');
-                } catch (error) {
-                    console.log('⚠️ Excel loading failed:', error.message);
-                }
-            }
-            
-            // Final fallback to sample data
-            if (!dataLoaded) {
-                console.warn('❌ Could not load any data files. Using sample data.');
-                console.warn('📋 Expected data files:');
-                console.warn(`   • ${this.dataPaths.jsonData}`);
-                console.warn(`   • ${this.dataPaths.masterExcel}`);
-                await this.createSampleData();
-                this.showDataSourceNotification('sample');
-            } else {
-                this.showDataSourceNotification('webapp', this.currentDataSource);
-            }
-            
-            // Process the loaded data
-            this.processLoadedData();
+            // Generate initial topology
             this.generateNetworkTopology();
-            this.saveToCache();
+            this.updateProgress(100, 'Initialization complete');
+            
             this.isDataLoaded = true;
             this.lastUpdate = new Date();
-            this.notifyDataLoaded();
-        }
-        
-        async loadFromJSONData(jsonPath) {
-            /**
-             * Load data from JSON file (primary method)
-             */
-            console.log(`📖 Loading data from: ${jsonPath}`);
             
-            const response = await fetch(jsonPath);
+            console.log(`Initialization complete: ${this.applications.length} apps, ${this.trafficData.length} traffic records`);
+            
+        } catch (error) {
+            console.error('Initialization failed:', error);
+            this.errors.push(`Initialization failed: ${error.message}`);
+            this.createFallbackData();
+        }
+    }
+    
+    updateProgress(percentage, message) {
+        this.loadingProgress = percentage;
+        console.log(`Progress: ${percentage}% - ${message}`);
+    }
+    
+    async loadApplications() {
+        console.log('Loading applications from CSV...');
+        
+        try {
+            const response = await fetch(this.config.csvPaths.applications);
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
             
-            const jsonData = await response.json();
+            const csvText = await response.text();
+            console.log(`Applications CSV loaded: ${csvText.length} characters`);
             
-            // Process JSON data structure
-            if (jsonData.applications) {
-                this.applications = jsonData.applications.map(app => this.enhanceApplicationData(app));
-                console.log(`📊 Loaded ${this.applications.length} applications from JSON`);
-            }
+            this.applications = this.parseApplicationsCSV(csvText);
+            console.log(`Parsed ${this.applications.length} applications`);
             
-            if (jsonData.raw_data_sample) {
-                this.activnetData = jsonData.raw_data_sample;
-                console.log(`📈 Loaded ${this.activnetData.length} raw data samples`);
-            }
-            
-            if (jsonData.port_services) {
-                this.portServiceMap = new Map(Object.entries(jsonData.port_services));
-                console.log(`🔌 Loaded ${this.portServiceMap.size} port service mappings`);
-            }
-            
-            // Store metadata
-            this.metadata = jsonData.metadata || {};
-            this.summaryStats = jsonData.summary_stats || {};
-            this.currentDataSource = jsonPath;
-            
-            console.log(`✅ JSON data loaded successfully from ${jsonPath}`);
+        } catch (error) {
+            console.error('Failed to load applications CSV:', error);
+            this.errors.push(`Applications loading failed: ${error.message}`);
+            this.createFallbackApplications();
+        }
+    }
+    
+    parseApplicationsCSV(csvText) {
+        const lines = csvText.trim().split('\n');
+        if (lines.length < 2) {
+            throw new Error('CSV file is empty or invalid');
         }
         
-        async loadFromMasterExcel() {
-            /**
-             * Load data from master Excel file (fallback method)
-             */
-            console.log(`📊 Attempting to load Excel data from: ${this.dataPaths.masterExcel}`);
+        // Parse header
+        const headers = this.parseCSVLine(lines[0])
+            .map(h => h.trim().toLowerCase().replace(/"/g, ''));
+        
+        const appIdIndex = headers.findIndex(h => h.includes('app_id') || h.includes('id'));
+        const appNameIndex = headers.findIndex(h => h.includes('app_name') || h.includes('name'));
+        
+        if (appIdIndex === -1 || appNameIndex === -1) {
+            throw new Error('Required columns (app_id, app_name) not found in CSV');
+        }
+        
+        console.log(`Found columns - app_id: ${headers[appIdIndex]}, app_name: ${headers[appNameIndex]}`);
+        
+        const applications = [];
+        
+        // Parse data rows
+        for (let i = 1; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (!line) continue;
             
-            // Note: This requires additional JavaScript libraries for Excel parsing
-            // For now, we'll create a placeholder that could be enhanced
             try {
-                const response = await fetch(this.dataPaths.masterExcel);
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
+                const columns = this.parseCSVLine(line);
                 
-                // Check if we have XLSX library available
-                if (typeof XLSX !== 'undefined') {
-                    const arrayBuffer = await response.arrayBuffer();
-                    const workbook = XLSX.read(arrayBuffer);
+                if (columns.length > Math.max(appIdIndex, appNameIndex)) {
+                    const appId = this.cleanCSVValue(columns[appIdIndex]);
+                    const appName = this.cleanCSVValue(columns[appNameIndex]);
                     
-                    // Get the main data sheet
-                    const sheetName = workbook.SheetNames.find(name => 
-                        name.includes('synthetic_flows') || name.includes('flows')
-                    ) || workbook.SheetNames[0];
-                    
-                    const worksheet = workbook.Sheets[sheetName];
-                    const jsonData = XLSX.utils.sheet_to_json(worksheet);
-                    
-                    this.activnetData = jsonData;
-                    this.processExcelDataIntoApplications();
-                    this.currentDataSource = this.dataPaths.masterExcel;
-                    
-                    console.log(`✅ Loaded ${jsonData.length} records from Excel`);
-                } else {
-                    throw new Error('XLSX library not available for Excel parsing');
+                    if (appId && appName) {
+                        const archetype = this.classifyArchetype(appName);
+                        
+                        applications.push({
+                            id: appId,
+                            name: appName,
+                            displayName: `${appName} [${appId}]`,
+                            archetype: archetype,
+                            businessFunction: this.inferBusinessFunction(appName),
+                            criticality: this.inferCriticality(appName),
+                            technology: this.inferTechnology(archetype),
+                            status: 'active',
+                            ports: this.generatePortsForArchetype(archetype),
+                            protocols: this.generateProtocolsForArchetype(archetype),
+                            searchText: `${appName} ${appId}`.toLowerCase(),
+                            // Metrics (synthetic for now)
+                            connectionCount: Math.floor(Math.random() * 100) + 10,
+                            trafficVolume: Math.floor(Math.random() * 1000) + 100,
+                            responseTime: Math.floor(Math.random() * 100) + 10
+                        });
+                    }
                 }
-                
-            } catch (error) {
-                console.error('Excel loading failed:', error);
-                throw error;
+            } catch (rowError) {
+                console.warn(`Skipping row ${i}: ${rowError.message}`);
             }
         }
         
-        processExcelDataIntoApplications() {
-            /**
-             * Process Excel data into application summaries
-             */
-            if (!this.activnetData || this.activnetData.length === 0) {
+        return applications.sort((a, b) => a.name.localeCompare(b.name));
+    }
+    
+    async loadTrafficData() {
+        console.log('Loading traffic data from CSV...');
+        
+        try {
+            const response = await fetch(this.config.csvPaths.traffic);
+            if (!response.ok) {
+                console.warn(`Traffic data not available: HTTP ${response.status}`);
                 return;
             }
             
-            // Group by application
-            const appMap = new Map();
+            const csvText = await response.text();
+            console.log(`Traffic CSV loaded: ${csvText.length} characters`);
             
-            this.activnetData.forEach(record => {
-                const appId = record.application || record.application_original || 'NETWORK_DATA';
+            this.trafficData = this.parseTrafficCSV(csvText);
+            console.log(`Parsed ${this.trafficData.length} traffic records`);
+            
+            // Enrich applications with traffic data
+            this.enrichApplicationsWithTraffic();
+            
+        } catch (error) {
+            console.warn('Traffic data loading failed (non-critical):', error);
+            this.errors.push(`Traffic loading failed: ${error.message}`);
+        }
+    }
+    
+    parseTrafficCSV(csvText) {
+        const lines = csvText.trim().split('\n');
+        if (lines.length < 2) {
+            console.warn('Traffic CSV is empty');
+            return [];
+        }
+        
+        // Parse header
+        const headers = this.parseCSVLine(lines[0])
+            .map(h => h.trim().toLowerCase().replace(/"/g, ''));
+        
+        console.log('Traffic CSV headers:', headers.slice(0, 10), '...');
+        
+        const trafficData = [];
+        const maxRows = Math.min(lines.length - 1, this.config.maxTrafficRows);
+        
+        // Parse data rows with progress tracking
+        for (let i = 1; i <= maxRows; i++) {
+            if (i % 5000 === 0) {
+                console.log(`Parsing traffic data: ${i}/${maxRows} rows`);
+            }
+            
+            const line = lines[i].trim();
+            if (!line) continue;
+            
+            try {
+                const columns = this.parseCSVLine(line);
+                const row = {};
                 
-                if (!appMap.has(appId)) {
-                    appMap.set(appId, {
-                        id: appId,
-                        name: this.getFullApplicationName(appId),
-                        records: [],
-                        protocols: new Set(),
-                        services: new Set(),
-                        bytesIn: 0,
-                        bytesOut: 0,
-                        sources: new Set(),
-                        destinations: new Set()
-                    });
+                headers.forEach((header, index) => {
+                    if (index < columns.length) {
+                        const value = this.cleanCSVValue(columns[index]);
+                        row[header] = this.convertValue(value);
+                    }
+                });
+                
+                // Only keep rows with meaningful data
+                if (row.source_ip || row.destination_ip || row.protocol) {
+                    trafficData.push(row);
                 }
                 
-                const app = appMap.get(appId);
-                app.records.push(record);
-                if (record.protocol) app.protocols.add(record.protocol);
-                if (record.service_definition) app.services.add(record.service_definition);
-                if (record.src) app.sources.add(record.src);
-                if (record.dst) app.destinations.add(record.dst);
-                app.bytesIn += parseFloat(record.bytes_in || 0);
-                app.bytesOut += parseFloat(record.bytes_out || 0);
+            } catch (rowError) {
+                // Skip problematic rows silently
+                if (i % 10000 === 0) {
+                    console.warn(`Traffic parsing issues around row ${i}`);
+                }
+            }
+        }
+        
+        return trafficData;
+    }
+    
+    enrichApplicationsWithTraffic() {
+        if (!this.trafficData.length) {
+            console.log('No traffic data available for enrichment');
+            return;
+        }
+        
+        console.log('Enriching applications with traffic data...');
+        
+        // Create traffic summaries by application
+        const trafficByApp = {};
+        
+        this.trafficData.forEach(record => {
+            // Try to match traffic to applications (this is simplified)
+            const appId = record.app_id || record.application_id || record.application;
+            
+            if (appId && !trafficByApp[appId]) {
+                trafficByApp[appId] = {
+                    totalRecords: 0,
+                    uniqueIPs: new Set(),
+                    protocols: new Set(),
+                    ports: new Set()
+                };
+            }
+            
+            if (appId) {
+                const summary = trafficByApp[appId];
+                summary.totalRecords++;
+                
+                if (record.source_ip) summary.uniqueIPs.add(record.source_ip);
+                if (record.destination_ip) summary.uniqueIPs.add(record.destination_ip);
+                if (record.protocol) summary.protocols.add(record.protocol);
+                if (record.port || record.dst_port) {
+                    summary.ports.add(record.port || record.dst_port);
+                }
+            }
+        });
+        
+        // Apply traffic data to applications
+        this.applications.forEach(app => {
+            const trafficSummary = trafficByApp[app.id];
+            if (trafficSummary) {
+                app.trafficRecords = trafficSummary.totalRecords;
+                app.uniqueIPs = trafficSummary.uniqueIPs.size;
+                app.observedProtocols = Array.from(trafficSummary.protocols);
+                app.observedPorts = Array.from(trafficSummary.ports);
+            }
+        });
+        
+        console.log(`Enriched ${Object.keys(trafficByApp).length} applications with traffic data`);
+    }
+    
+    generateNetworkTopology(selectedAppIds = ['all'], options = {}) {
+        const {
+            includeUpstream = true,
+            includeDownstream = true,
+            maxNodesPerApp = 3
+        } = options;
+        
+        console.log('Generating network topology for:', selectedAppIds);
+        
+        // Determine which applications to include
+        const selectedApps = selectedAppIds.includes('all') 
+            ? this.applications 
+            : this.applications.filter(app => selectedAppIds.includes(app.id));
+        
+        const nodes = [];
+        const links = [];
+        const nodeMap = new Map();
+        
+        // Generate nodes for each application
+        selectedApps.forEach((app, appIndex) => {
+            const tiers = this.getTiersForArchetype(app.archetype, maxNodesPerApp);
+            
+            tiers.forEach((tier, tierIndex) => {
+                const nodeId = `${app.id}_${tier.type}`;
+                
+                const node = {
+                    id: nodeId,
+                    name: `${app.name} ${tier.displayName}`,
+                    ip: `10.${Math.floor(appIndex / 254) + 1}.${(appIndex % 254) + 1}.${tierIndex + 10}`,
+                    application: app.name,
+                    applicationId: app.id,
+                    archetype: app.archetype,
+                    tier: tier.type,
+                    type: tier.type,
+                    status: app.status,
+                    criticality: app.criticality,
+                    businessFunction: app.businessFunction,
+                    technology: app.technology,
+                    
+                    // Network properties
+                    ports: tier.ports || app.ports || [],
+                    protocols: tier.protocols || app.protocols || [],
+                    
+                    // Performance metrics (synthetic)
+                    cpu: Math.floor(Math.random() * 80) + 10,
+                    memory: Math.floor(Math.random() * 90) + 10,
+                    connections: app.connectionCount || Math.floor(Math.random() * 50) + 5,
+                    responseTime: app.responseTime || Math.floor(Math.random() * 100) + 10,
+                    trafficVolume: app.trafficVolume || Math.floor(Math.random() * 1000) + 50,
+                    
+                    // Enrichment from traffic data
+                    trafficRecords: app.trafficRecords || 0,
+                    uniqueIPs: app.uniqueIPs || 0,
+                    observedProtocols: app.observedProtocols || [],
+                    observedPorts: app.observedPorts || []
+                };
+                
+                nodes.push(node);
+                nodeMap.set(nodeId, node);
             });
             
-            // Convert to application array
-            this.applications = Array.from(appMap.values()).map(app => ({
+            // Create internal links between tiers of the same application
+            for (let i = 0; i < tiers.length - 1; i++) {
+                const sourceId = `${app.id}_${tiers[i].type}`;
+                const targetId = `${app.id}_${tiers[i + 1].type}`;
+                
+                links.push(this.createLink(sourceId, targetId, {
+                    protocol: tiers[i].connectionProtocol || 'HTTP',
+                    port: tiers[i].connectionPort || '8080',
+                    type: 'internal',
+                    application: app.name,
+                    bandwidth: Math.floor(Math.random() * 1000) + 100,
+                    latency: Math.floor(Math.random() * 20) + 1
+                }));
+            }
+        });
+        
+        // Create inter-application links
+        if (selectedApps.length > 1 && (includeUpstream || includeDownstream)) {
+            this.generateInterApplicationLinks(selectedApps, links, { includeUpstream, includeDownstream });
+        }
+        
+        this.networkTopology = { nodes, links };
+        
+        console.log(`Generated topology: ${nodes.length} nodes, ${links.length} links`);
+        return this.networkTopology;
+    }
+    
+    generateInterApplicationLinks(applications, links, options) {
+        const { includeUpstream, includeDownstream } = options;
+        
+        for (let i = 0; i < applications.length - 1; i++) {
+            const sourceApp = applications[i];
+            const targetApp = applications[i + 1];
+            
+            if (includeDownstream) {
+                // App tier to web tier connection
+                const sourceNodeId = `${sourceApp.id}_app`;
+                const targetNodeId = `${targetApp.id}_web`;
+                
+                if (this.nodeExists(sourceNodeId) && this.nodeExists(targetNodeId)) {
+                    links.push(this.createLink(sourceNodeId, targetNodeId, {
+                        protocol: 'HTTP',
+                        port: '80',
+                        type: 'downstream',
+                        bandwidth: Math.floor(Math.random() * 500) + 50,
+                        latency: Math.floor(Math.random() * 30) + 5,
+                        color: '#10b981'
+                    }));
+                }
+            }
+            
+            if (includeUpstream) {
+                // Database to database connection
+                const sourceNodeId = `${targetApp.id}_data`;
+                const targetNodeId = `${sourceApp.id}_data`;
+                
+                if (this.nodeExists(sourceNodeId) && this.nodeExists(targetNodeId)) {
+                    links.push(this.createLink(sourceNodeId, targetNodeId, {
+                        protocol: 'SQL',
+                        port: '3306',
+                        type: 'upstream',
+                        bandwidth: Math.floor(Math.random() * 300) + 25,
+                        latency: Math.floor(Math.random() * 40) + 10,
+                        color: '#f59e0b'
+                    }));
+                }
+            }
+        }
+    }
+    
+    nodeExists(nodeId) {
+        return this.networkTopology.nodes.some(node => node.id === nodeId);
+    }
+    
+    createLink(sourceId, targetId, properties = {}) {
+        return {
+            id: `${sourceId}|${targetId}`,
+            source: sourceId,
+            target: targetId,
+            protocol: properties.protocol || 'TCP',
+            port: properties.port || '8080',
+            type: properties.type || 'connection',
+            status: properties.status || 'active',
+            bandwidth: properties.bandwidth || 100,
+            latency: properties.latency || 10,
+            color: properties.color || this.getProtocolColor(properties.protocol),
+            width: properties.width || 2,
+            ...properties
+        };
+    }
+    
+    // Helper methods for classification and inference
+    classifyArchetype(appName) {
+        const name = appName.toLowerCase();
+        
+        for (const [archetype, keywords] of Object.entries(this.config.archetypeClassification)) {
+            if (keywords.some(keyword => name.includes(keyword))) {
+                return archetype;
+            }
+        }
+        
+        return '3-Tier'; // Default
+    }
+    
+    inferBusinessFunction(appName) {
+        const name = appName.toLowerCase();
+        const functions = {
+            'Core Banking': ['banking', 'core', 'account', 'deposit'],
+            'Customer Services': ['customer', 'portal', 'service', 'support'],
+            'Payment Processing': ['payment', 'gateway', 'transaction', 'settle'],
+            'Risk & Compliance': ['risk', 'compliance', 'audit', 'regulatory'],
+            'Reporting & Analytics': ['report', 'analytics', 'dashboard', 'insight'],
+            'Security & Identity': ['security', 'auth', 'identity', 'access'],
+            'Trading & Markets': ['trade', 'trading', 'market', 'exchange'],
+            'Lending': ['loan', 'credit', 'lending', 'mortgage'],
+            'Operations': ['ops', 'operations', 'admin', 'management']
+        };
+        
+        for (const [func, keywords] of Object.entries(functions)) {
+            if (keywords.some(keyword => name.includes(keyword))) {
+                return func;
+            }
+        }
+        
+        return 'Operations';
+    }
+    
+    inferCriticality(appName) {
+        const name = appName.toLowerCase();
+        if (name.includes('core') || name.includes('critical') || name.includes('primary')) {
+            return 'critical';
+        }
+        if (name.includes('customer') || name.includes('payment') || name.includes('security')) {
+            return 'high';
+        }
+        if (name.includes('report') || name.includes('analytics') || name.includes('support')) {
+            return 'medium';
+        }
+        return 'low';
+    }
+    
+    inferTechnology(archetype) {
+        const techMap = {
+            'Microservices': 'Container Platform',
+            'Web + API Headless': 'Web Platform',
+            'Database-Centric': 'Database Platform',
+            'Event-Driven': 'Messaging Platform',
+            'Monolithic': 'Enterprise Platform',
+            'SOA': 'Service Platform',
+            'Client-Server': 'Desktop Platform',
+            '3-Tier': 'Web Application Platform'
+        };
+        return techMap[archetype] || 'Enterprise Platform';
+    }
+    
+    generatePortsForArchetype(archetype) {
+        const portMap = {
+            'Microservices': ['8080', '8443', '3000', '9000'],
+            'Web + API Headless': ['80', '443', '8080', '3000'],
+            'Database-Centric': ['3306', '5432', '1433', '1521'],
+            'Event-Driven': ['5672', '9092', '61616', '1883'],
+            'Monolithic': ['8080', '1433', '80'],
+            'SOA': ['8080', '8443', '7001', '9080'],
+            'Client-Server': ['1433', '3389', '1521'],
+            '3-Tier': ['80', '443', '8080', '3306']
+        };
+        return portMap[archetype] || ['8080'];
+    }
+    
+    generateProtocolsForArchetype(archetype) {
+        const protocolMap = {
+            'Microservices': ['HTTP', 'HTTPS', 'gRPC'],
+            'Web + API Headless': ['HTTP', 'HTTPS', 'WebSocket'],
+            'Database-Centric': ['SQL', 'TCP', 'HTTP'],
+            'Event-Driven': ['AMQP', 'MQTT', 'HTTP'],
+            'Monolithic': ['HTTP', 'SQL', 'TCP'],
+            'SOA': ['SOAP', 'HTTP', 'JMS'],
+            'Client-Server': ['TCP', 'SQL', 'RDP'],
+            '3-Tier': ['HTTP', 'HTTPS', 'SQL']
+        };
+        return protocolMap[archetype] || ['HTTP', 'TCP'];
+    }
+    
+    getTiersForArchetype(archetype, maxTiers = 3) {
+        const tierConfigs = {
+            'Microservices': [
+                { type: 'api', displayName: 'API Gateway', ports: ['8080', '8443'], connectionProtocol: 'HTTP', connectionPort: '8080' },
+                { type: 'service', displayName: 'Service', ports: ['9000', '9001'], connectionProtocol: 'gRPC', connectionPort: '9000' },
+                { type: 'data', displayName: 'Data Store', ports: ['3306', '6379'], connectionProtocol: 'SQL', connectionPort: '3306' }
+            ],
+            'Web + API Headless': [
+                { type: 'web', displayName: 'Frontend', ports: ['80', '443'], connectionProtocol: 'HTTP', connectionPort: '80' },
+                { type: 'api', displayName: 'API', ports: ['8080', '3000'], connectionProtocol: 'REST', connectionPort: '8080' },
+                { type: 'data', displayName: 'Database', ports: ['3306'], connectionProtocol: 'SQL', connectionPort: '3306' }
+            ],
+            'Database-Centric': [
+                { type: 'app', displayName: 'Application', ports: ['8080'], connectionProtocol: 'HTTP', connectionPort: '8080' },
+                { type: 'data', displayName: 'Database', ports: ['3306', '5432'], connectionProtocol: 'SQL', connectionPort: '3306' }
+            ],
+            'Event-Driven': [
+                { type: 'producer', displayName: 'Producer', ports: ['8080'], connectionProtocol: 'HTTP', connectionPort: '8080' },
+                { type: 'broker', displayName: 'Message Broker', ports: ['5672', '9092'], connectionProtocol: 'AMQP', connectionPort: '5672' },
+                { type: 'consumer', displayName: 'Consumer', ports: ['8081'], connectionProtocol: 'AMQP', connectionPort: '5672' }
+            ],
+            'Monolithic': [
+                { type: 'app', displayName: 'Application', ports: ['8080'], connectionProtocol: 'HTTP', connectionPort: '8080' },
+                { type: 'data', displayName: 'Database', ports: ['1433'], connectionProtocol: 'SQL', connectionPort: '1433' }
+            ],
+            'SOA': [
+                { type: 'service', displayName: 'Service', ports: ['8080'], connectionProtocol: 'SOAP', connectionPort: '8080' },
+                { type: 'esb', displayName: 'ESB', ports: ['7001'], connectionProtocol: 'JMS', connectionPort: '7001' },
+                { type: 'data', displayName: 'Database', ports: ['1521'], connectionProtocol: 'SQL', connectionPort: '1521' }
+            ]
+        };
+        
+        const defaultTiers = [
+            { type: 'web', displayName: 'Web Tier', ports: ['80', '443'], connectionProtocol: 'HTTP', connectionPort: '80' },
+            { type: 'app', displayName: 'App Tier', ports: ['8080'], connectionProtocol: 'HTTP', connectionPort: '8080' },
+            { type: 'data', displayName: 'Data Tier', ports: ['3306'], connectionProtocol: 'SQL', connectionPort: '3306' }
+        ];
+        
+        const tiers = tierConfigs[archetype] || defaultTiers;
+        return tiers.slice(0, maxTiers);
+    }
+    
+    getProtocolColor(protocol) {
+        const colorMap = {
+            'HTTP': '#3b82f6',
+            'HTTPS': '#10b981',
+            'SQL': '#f59e0b',
+            'TCP': '#8b5cf6',
+            'gRPC': '#06b6d4',
+            'AMQP': '#ef4444',
+            'SOAP': '#84cc16'
+        };
+        return colorMap[protocol] || '#6b7280';
+    }
+    
+    // CSV parsing utilities
+    parseCSVLine(line) {
+        const result = [];
+        let current = '';
+        let inQuotes = false;
+        
+        for (let i = 0; i < line.length; i++) {
+            const char = line[i];
+            
+            if (char === '"') {
+                if (inQuotes && line[i + 1] === '"') {
+                    current += '"';
+                    i++;
+                } else {
+                    inQuotes = !inQuotes;
+                }
+            } else if (char === ',' && !inQuotes) {
+                result.push(current);
+                current = '';
+            } else {
+                current += char;
+            }
+        }
+        
+        result.push(current);
+        return result;
+    }
+    
+    cleanCSVValue(value) {
+        if (!value) return '';
+        return value.trim().replace(/^"(.*)"$/, '$1');
+    }
+    
+    convertValue(value) {
+        if (!value || value === '') return null;
+        
+        // Try to convert to number
+        const num = parseFloat(value);
+        if (!isNaN(num) && isFinite(num) && value.toString() === num.toString()) {
+            return num;
+        }
+        
+        return value;
+    }
+    
+    // Fallback methods
+    createFallbackData() {
+        console.log('Creating fallback data...');
+        this.createFallbackApplications();
+        this.generateNetworkTopology();
+        this.isDataLoaded = true;
+        this.lastUpdate = new Date();
+    }
+    
+    createFallbackApplications() {
+        this.applications = [
+            {
+                id: 'CORE_BANKING',
+                name: 'Core Banking System',
+                displayName: 'Core Banking System [CORE_BANKING]',
+                archetype: 'Database-Centric',
+                businessFunction: 'Core Banking',
+                criticality: 'critical',
+                technology: 'Database Platform',
+                status: 'active',
+                ports: ['3306', '1433'],
+                protocols: ['SQL', 'HTTP'],
+                searchText: 'core banking system core_banking',
+                connectionCount: 150,
+                trafficVolume: 2500,
+                responseTime: 45
+            },
+            {
+                id: 'CUSTOMER_PORTAL',
+                name: 'Customer Portal',
+                displayName: 'Customer Portal [CUSTOMER_PORTAL]',
+                archetype: 'Web + API Headless',
+                businessFunction: 'Customer Services',
+                criticality: 'high',
+                technology: 'Web Platform',
+                status: 'active',
+                ports: ['80', '443', '8080'],
+                protocols: ['HTTP', 'HTTPS'],
+                searchText: 'customer portal customer_portal',
+                connectionCount: 85,
+                trafficVolume: 1800,
+                responseTime: 25
+            },
+            {
+                id: 'PAYMENT_API',
+                name: 'Payment API Gateway',
+                displayName: 'Payment API Gateway [PAYMENT_API]',
+                archetype: 'Microservices',
+                businessFunction: 'Payment Processing',
+                criticality: 'critical',
+                technology: 'Container Platform',
+                status: 'active',
+                ports: ['8080', '8443', '3000'],
+                protocols: ['HTTP', 'HTTPS', 'gRPC'],
+                searchText: 'payment api gateway payment_api',
+                connectionCount: 95,
+                trafficVolume: 3200,
+                responseTime: 15
+            },
+            {
+                id: 'ANALYTICS_ENGINE',
+                name: 'Analytics Engine',
+                displayName: 'Analytics Engine [ANALYTICS_ENGINE]',
+                archetype: 'Event-Driven',
+                businessFunction: 'Reporting & Analytics',
+                criticality: 'medium',
+                technology: 'Messaging Platform',
+                status: 'active',
+                ports: ['5672', '9092', '8080'],
+                protocols: ['AMQP', 'HTTP'],
+                searchText: 'analytics engine analytics_engine',
+                connectionCount: 45,
+                trafficVolume: 950,
+                responseTime: 35
+            }
+        ];
+        
+        console.log('Created fallback applications:', this.applications.length);
+    }
+    
+    // Public API methods
+    async loadData() {
+        if (!this.isDataLoaded) {
+            await this.init();
+        }
+        return Promise.resolve();
+    }
+    
+    isReady() {
+        return this.isDataLoaded;
+    }
+    
+    getStatus() {
+        return {
+            isReady: this.isDataLoaded,
+            dataLoaded: this.isDataLoaded,
+            applicationCount: this.applications.length,
+            trafficRecordCount: this.trafficData.length,
+            hasTrafficData: this.trafficData.length > 0,
+            lastUpdate: this.lastUpdate,
+            loadingProgress: this.loadingProgress,
+            errors: this.errors,
+            dataSource: this.trafficData.length > 0 ? 'CSV with traffic' : 'CSV applications only'
+        };
+    }
+    
+    getApplicationNamesForFilter() {
+        const apps = [
+            {
+                id: 'all',
+                name: 'ALL Applications',
+                displayName: `ALL Applications (${this.applications.length} total)`,
+                archetype: 'All',
+                status: 'active',
+                businessFunction: 'All',
+                criticality: 'all'
+            }
+        ];
+        
+        this.applications.forEach(app => {
+            apps.push({
                 id: app.id,
                 name: app.name,
-                total_records: app.records.length,
-                unique_sources: app.sources.size,
-                unique_destinations: app.destinations.size,
-                total_bytes: app.bytesIn + app.bytesOut,
-                most_common_protocol: Array.from(app.protocols)[0] || 'TCP',
-                most_common_service: Array.from(app.services)[0] || 'Network Service',
-                complexity: this.determineComplexity(app.records.length, app.services.size, app.sources.size + app.destinations.size),
-                protocols: Array.from(app.protocols),
-                archetype: 'Network Service'
-            })).map(app => this.enhanceApplicationData(app));
-            
-            // Sort by activity
-            this.applications.sort((a, b) => b.total_records - a.total_records);
-            
-            console.log(`📊 Processed ${this.applications.length} applications from Excel data`);
-        }
+                displayName: app.displayName,
+                fullName: app.name,
+                archetype: app.archetype,
+                businessFunction: app.businessFunction,
+                criticality: app.criticality,
+                technology: app.technology,
+                status: app.status,
+                searchText: app.searchText
+            });
+        });
         
-        enhanceApplicationData(app) {
-            /**
-             * Enhance application data with additional computed fields
-             */
-            return {
-                ...app,
-                app_id: app.id, // Backward compatibility
-                app_name: app.name, // Backward compatibility
-                displayName: `${app.name} (${app.id})`,
-                searchText: `${app.name} ${app.id} ${app.most_common_protocol || ''} ${app.most_common_service || ''}`.toLowerCase(),
-                isActive: true,
-                priority: this.calculatePriority(app),
-                color: this.getColorForArchetype(app.archetype || 'Network Service'),
-                nodeCount: this.calculateNodesFromComplexity(app.complexity || 'medium', app.id),
+        return apps;
+    }
+    
+    getApplicationById(id) {
+        if (id === 'all') {
+            return { id: 'all', name: 'ALL Applications' };
+        }
+        return this.applications.find(app => app.id === id);
+    }
+    
+    getApplicationsByIds(ids) {
+        if (ids.includes('all')) {
+            return this.applications;
+        }
+        return this.applications.filter(app => ids.includes(app.id));
+    }
+    
+    searchApplications(query) {
+        if (!query || query.trim() === '') return this.applications;
+        
+        const searchTerm = query.toLowerCase().trim();
+        return this.applications.filter(app => 
+            app.searchText.includes(searchTerm) ||
+            app.archetype.toLowerCase().includes(searchTerm) ||
+            app.businessFunction.toLowerCase().includes(searchTerm)
+        );
+    }
+    
+    getMetadata() {
+        return {
+            dataSource: 'applicationList.csv + traffic data',
+            lastUpdate: this.lastUpdate ? this.lastUpdate.toISOString() : null,
+            applicationCount: this.applications.length,
+            trafficRecordCount: this.trafficData.length,
+            hasTrafficData: this.trafficData.length > 0,
+            version: '2.0.0',
+            loadTime: this.lastUpdate ? this.lastUpdate.toISOString() : null,
+            archetypeDistribution: this.getArchetypeDistribution(),
+            criticalityDistribution: this.getCriticalityDistribution(),
+            businessFunctionDistribution: this.getBusinessFunctionDistribution()
+        };
+    }
+    
+    getArchetypeDistribution() {
+        const distribution = {};
+        this.applications.forEach(app => {
+            distribution[app.archetype] = (distribution[app.archetype] || 0) + 1;
+        });
+        return distribution;
+    }
+    
+    getCriticalityDistribution() {
+        const distribution = {};
+        this.applications.forEach(app => {
+            distribution[app.criticality] = (distribution[app.criticality] || 0) + 1;
+        });
+        return distribution;
+    }
+    
+    getBusinessFunctionDistribution() {
+        const distribution = {};
+        this.applications.forEach(app => {
+            distribution[app.businessFunction] = (distribution[app.businessFunction] || 0) + 1;
+        });
+        return distribution;
+    }
+    
+    async refreshData() {
+        console.log('Refreshing application data...');
+        this.isDataLoaded = false;
+        this.applications = [];
+        this.trafficData = [];
+        this.errors = [];
+        await this.init();
+        return this.getStatus();
+    }
+    
+    // Topology management methods
+    saveTopologyToFile() {
+        const topologyData = {
+            metadata: {
+                generated: new Date().toISOString(),
+                nodeCount: this.networkTopology.nodes?.length || 0,
+                linkCount: this.networkTopology.links?.length || 0,
+                applications: this.applications.length,
+                version: '2.0.0',
+                source: 'ApplicationDataManager'
+            },
+            topology: this.networkTopology,
+            applications: this.applications.map(app => ({
+                id: app.id,
+                name: app.name,
+                archetype: app.archetype,
+                businessFunction: app.businessFunction,
+                criticality: app.criticality
+            })),
+            selectedApps: window.topologyDashboard?.selectedApps || [],
+            displayOptions: window.topologyDashboard?.displayOptions || {},
+            showUpstream: window.topologyDashboard?.showUpstream || true,
+            showDownstream: window.topologyDashboard?.showDownstream || true,
+            layout: window.topologyDashboard?.currentLayout || 'force'
+        };
+        
+        const blob = new Blob([JSON.stringify(topologyData, null, 2)], 
+                             { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `topology_${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        
+        URL.revokeObjectURL(url);
+        console.log('Topology saved to file');
+    }
+    
+    async loadSpecificTopology(filename) {
+        try {
+            const response = await fetch(`/saved_topologies/${filename}`);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const topologyData = await response.json();
+            
+            // Load the network topology
+            this.networkTopology = topologyData.topology;
+            
+            // Restore dashboard settings if available
+            if (window.topologyDashboard && topologyData) {
+                if (topologyData.selectedApps) {
+                    window.topologyDashboard.selectedApps = topologyData.selectedApps;
+                }
                 
-                // Enhanced metrics from web application data
-                webAppMetrics: {
-                    dataSource: this.currentDataSource,
-                    loadTime: new Date().toISOString(),
-                    isRealData: true,
-                    fromMasterFile: this.currentDataSource === this.dataPaths.masterExcel
+                if (topologyData.displayOptions) {
+                    window.topologyDashboard.displayOptions = topologyData.displayOptions;
                 }
-            };
-        }
-        
-		async checkForNewerData() {
-			console.log('🔍 Checking for newer web application data...');
-			
-			// Get the primary data source path
-			const primaryDataPath = this.dataPaths?.jsonData || '/templates/activnet_data.json';
-			
-			try {
-				
-				// Skip HEAD request entirely, go straight to GET
-				console.log('⚠️ Skipping HEAD request (server does not support HEAD method)');
-				let response = await this.tryGetRequest(primaryDataPath);
-				
-				// If HEAD fails with 501, fall back to GET request
-				if (!response || response.status === 501) {
-					console.warn('❌ Failed to check for newer data:', response?.status, response?.statusText);
-					return this.checkForNewerDataSimple(); // Fall back to time-based
-				}
-				
-				// Check headers for updates
-				const lastModified = response.headers.get('last-modified');
-				const etag = response.headers.get('etag');
-				
-				console.log('📊 Server response headers:');
-				console.log('  Last-Modified:', lastModified);
-				console.log('  ETag:', etag);
-				console.log('  Current data timestamp:', this.lastDataTimestamp);
-
-				// Check if data has been modified
-				if (lastModified) {
-					const serverTime = new Date(lastModified).getTime();
-					if (this.lastDataTimestamp && serverTime <= this.lastDataTimestamp) {
-						console.log('✅ Data is up to date (Last-Modified check)');
-						return false;
-					}
-					console.log('🔄 Newer data available (Last-Modified check)');
-					
-					// If newer data found, reload it
-					await this.loadWebApplicationData();
-					return true;
-				}
-				
-				if (etag && this.lastDataETag) {
-					if (etag === this.lastDataETag) {
-						console.log('✅ Data is up to date (ETag check)');
-						return false;
-					}
-					console.log('🔄 Newer data available (ETag check)');
-					
-					// If newer data found, reload it
-					await this.loadWebApplicationData();
-					return true;
-				}
-
-				// If no caching headers available, use simple time-based check
-				return this.checkForNewerDataSimple();
-
-			} catch (error) {
-				console.error('❌ Error checking for newer data:', error);
-				
-				// Fall back to simple time-based check
-				return this.checkForNewerDataSimple();
-			}
-		}
-
-		// Helper method to try HEAD request
-		async tryHeadRequest(dataPath) {
-			try {
-				console.log('🔍 Trying HEAD request to:', dataPath);
-				
-				const response = await fetch(dataPath, {
-					method: 'HEAD',
-					headers: {
-						'Cache-Control': 'no-cache',
-						'Accept': 'application/json'
-					},
-					// Add timeout to prevent hanging
-					signal: AbortSignal.timeout(10000) // 10 seconds timeout
-				});
-				
-				console.log(`📊 HEAD response: ${response.status} ${response.statusText}`);
-				return response;
-				
-			} catch (error) {
-				console.log('⚠️ HEAD request failed:', error.message);
-				return null;
-			}
-		}
-
-		// Helper method to try GET request (as fallback)
-		async tryGetRequest(dataPath) {
-			try {
-				console.log('🔍 Trying GET request to:', dataPath);
-				
-				const response = await fetch(dataPath, {
-					method: 'GET',
-					headers: {
-						'Cache-Control': 'no-cache',
-						'Accept': 'application/json',
-						// Only get headers, not full content (Range request)
-						'Range': 'bytes=0-0'
-					},
-					// Add timeout to prevent hanging
-					signal: AbortSignal.timeout(10000) // 10 seconds timeout
-				});
-				
-				console.log(`📊 GET response: ${response.status} ${response.statusText}`);
-				
-				// If Range request is not supported, we'll get 200 instead of 206
-				// This is fine for checking headers
-				if (response.status === 200 || response.status === 206) {
-					return response;
-				}
-				
-				return response;
-				
-			} catch (error) {
-				console.log('⚠️ GET request failed:', error.message);
-				return null;
-			}
-		}
-
-		// Simple time-based check (no HEAD requests needed)
-		checkForNewerDataSimple() {
-			console.log('🔄 Using simple data check (no HEAD requests)...');
-			
-			// Simple time-based check - reload data every X minutes
-			const CHECK_INTERVAL = 5 * 60 * 1000; // 5 minutes
-			const now = Date.now();
-			
-			if (!this.lastCheckTime || (now - this.lastCheckTime) > CHECK_INTERVAL) {
-				console.log('⏰ Time-based data refresh needed');
-				this.lastCheckTime = now;
-				
-				// Reload data in background
-				setTimeout(() => {
-					this.loadWebApplicationData().then(() => {
-						console.log('✅ Background data refresh completed');
-					});
-				}, 1000);
-				
-				return true;
-			}
-			
-			console.log('✅ Data is still fresh (time-based check)');
-			return false;
-		}
-
-		// ALSO UPDATE your loadFromJSONData method to store caching info:
-		async loadFromJSONData(jsonPath) {
-			console.log(`📖 Loading data from: ${jsonPath}`);
-			
-			const response = await fetch(jsonPath);
-			if (!response.ok) {
-				throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-			}
-			
-			// STORE CACHING INFORMATION
-			const lastModified = response.headers.get('last-modified');
-			const etag = response.headers.get('etag');
-			
-			if (lastModified) {
-				this.lastDataTimestamp = new Date(lastModified).getTime();
-				console.log('📅 Stored Last-Modified timestamp:', this.lastDataTimestamp);
-			}
-			
-			if (etag) {
-				this.lastDataETag = etag;
-				console.log('🏷️ Stored ETag:', this.lastDataETag);
-			}
-			
-			// Update timestamp for fallback
-			this.lastDataTimestamp = this.lastDataTimestamp || Date.now();
-			
-			const jsonData = await response.json();
-			
-			// ... rest of your existing loadFromJSONData code
-			
-			console.log(`✅ JSON data loaded successfully from ${jsonPath}`);
-		}
-
-		// Debug function to test server capabilities
-		async debugServerCapabilities() {
-			console.log('🔍 === Web App Server Capability Test ===');
-			
-			const testPaths = [
-				this.dataPaths?.jsonData || '/templates/activnet_data.json',
-				this.dataPaths?.masterExcel || '/static/ui/data/synthetic_flows_apps_archetype_mapped.xlsx'
-			];
-			
-			for (const path of testPaths) {
-				console.log(`\n🧪 Testing path: ${path}`);
-				
-				const methods = ['HEAD', 'GET', 'OPTIONS'];
-				
-				for (const method of methods) {
-					try {
-						const response = await fetch(path, {
-							method: method,
-							signal: AbortSignal.timeout(5000)
-						});
-						
-						console.log(`✅ ${method}: ${response.status} ${response.statusText}`);
-						
-						// Log relevant headers
-						const headers = ['last-modified', 'etag', 'cache-control', 'content-type'];
-						headers.forEach(header => {
-							const value = response.headers.get(header);
-							if (value) {
-								console.log(`  ${header}: ${value}`);
-							}
-						});
-						
-					} catch (error) {
-						console.log(`❌ ${method}: ${error.message}`);
-					}
-				}
-			}
-			
-			console.log('\n=== End Server Test ===');
-		}
-
-		// Console debugging commands:
-		// window.AppData.debugServerCapabilities() - Test your web app server
-		// window.AppData.checkForNewerData() - Test the data checking
-
-		// Usage instructions:
-		// 1. Replace your existing checkForNewerData method with the fixed version above
-		// 2. Add the helper methods (tryHeadRequest, tryGetRequest) to your class
-		// 3. Optionally, use debugServerCapabilities() to test your server
-		// 4. If you want to avoid HEAD requests entirely, use checkForNewerDataSimple() instead
-
-		// Console commands for debugging:
-		// window.AppData.debugServerCapabilities() - Test server methods
-		// window.AppData.checkForNewerData() - Test the fixed data checking
-        startAutoRefresh() {
-            /**
-             * Start automatic refresh timer to check for new data
-             */
-            if (this.refreshTimer) {
-                clearInterval(this.refreshTimer);
-            }
-            
-            this.refreshTimer = setInterval(() => {
-                this.checkForNewerData();
-            }, this.autoRefreshInterval);
-            
-            console.log(`🔄 Auto-refresh enabled (${this.autoRefreshInterval / 1000}s interval)`);
-        }
-        
-        stopAutoRefresh() {
-            /**
-             * Stop automatic refresh timer
-             */
-            if (this.refreshTimer) {
-                clearInterval(this.refreshTimer);
-                this.refreshTimer = null;
-                console.log('⏹️ Auto-refresh stopped');
-            }
-        }
-        
-        // ===========================
-        // FALLBACK AND UTILITY METHODS
-        // ===========================
-        
-        async createSampleData() {
-            /**
-             * Create minimal sample data when no real data is available
-             */
-            this.applications = [
-                {
-                    id: 'WEBAPP_DEMO',
-                    name: 'Web Application Demo Service',
-                    total_records: 0,
-                    complexity: 'low',
-                    archetype: 'Demo Service',
-                    most_common_protocol: 'TCP',
-                    most_common_service: 'Demo Service - Drop files in data_staging/ to load real data'
+                
+                if (topologyData.showUpstream !== undefined) {
+                    window.topologyDashboard.showUpstream = topologyData.showUpstream;
                 }
-            ].map(app => this.enhanceApplicationData(app));
-            
-            this.applicationList = this.applications;
-            this.activnetData = [];
-            this.isDataLoaded = true;
-            this.lastUpdate = new Date();
-            this.notifyDataLoaded();
-        }
-        
-        processLoadedData() {
-            /**
-             * Process and enhance loaded data
-             */
-            // Set backward compatibility
-            this.applicationList = this.applications;
-            
-            // Sort by priority and name
-            this.applications.sort((a, b) => {
-                if (a.priority !== b.priority) {
-                    return b.priority - a.priority;
+                
+                if (topologyData.showDownstream !== undefined) {
+                    window.topologyDashboard.showDownstream = topologyData.showDownstream;
                 }
-                return a.name.localeCompare(b.name);
-            });
-        }
-        
-        showDataSourceNotification(source, path = null) {
-            /**
-             * Show notification about data source
-             */
-            const notifications = {
-                'webapp': {
-                    title: '✅ Web Application Data Loaded',
-                    message: `Loaded real data from web application: ${path}`,
-                    type: 'success'
-                },
-                'sample': {
-                    title: '⚠️ Demo Mode Active',
-                    message: 'No data files found. Process files through data_staging/ to load real data.',
-                    type: 'warning'
+                
+                if (topologyData.layout) {
+                    window.topologyDashboard.setLayout(topologyData.layout);
                 }
-            };
-            
-            const notif = notifications[source];
-            console.log(`${notif.title}: ${notif.message}`);
-            
-            // Create visual notification if possible
-            if (typeof this.createUserNotification === 'function') {
-                this.createUserNotification(notif.title, notif.message, notif.type);
-            }
-        }
-        
-        notifyDataUpdated() {
-            /**
-             * Notify components that data has been updated
-             */
-            // Dispatch custom event
-            const event = new CustomEvent('activnetDataUpdated', {
-                detail: {
-                    source: this.currentDataSource,
-                    applicationCount: this.applications.length,
-                    updateTime: this.lastUpdate,
-                    dataSource: 'web-application'
-                }
-            });
-            window.dispatchEvent(event);
-            
-            // Update topology dashboard if available
-            if (window.topologyDashboard) {
-                window.topologyDashboard.populateApplicationFilter();
-                window.topologyDashboard.updateNetworkData();
+                
+                // Update the visualization
                 window.topologyDashboard.render();
                 window.topologyDashboard.updateStats();
             }
             
-            console.log('🔄 Data updated notification sent');
-        }
-        
-        // ===========================
-        // EXISTING METHODS (maintained for compatibility)
-        // ===========================
-        
-        getFullApplicationName(appId) {
-            const nameMap = {
-                'ACDM': 'Application Component Discovery and Mapping',
-                'HTTP': 'Web Service Application',
-                'HTTPS': 'Secure Web Service Application',
-                'DNS': 'Domain Name Service',
-                'NTP': 'Network Time Protocol Service',
-                'CIFS': 'Common Internet File System',
-                'NETWORK_DATA': 'Network Data Application'
-            };
-            return nameMap[appId] || appId;
-        }
-        
-        determineComplexity(recordCount, serviceCount, ipCount) {
-            if (recordCount > 100 || serviceCount > 10 || ipCount > 50) return 'very-high';
-            if (recordCount > 50 || serviceCount > 5 || ipCount > 20) return 'high';
-            if (recordCount > 10 || serviceCount > 2 || ipCount > 5) return 'medium';
-            return 'low';
-        }
-        
-        calculatePriority(app) {
-            let priority = 0;
-            if (app.complexity === 'very-high') priority += 100;
-            else if (app.complexity === 'high') priority += 50;
-            else if (app.complexity === 'medium') priority += 25;
-            
-            priority += (app.total_records || 0) / 10; // Boost by activity
-            return Math.floor(priority);
-        }
-        
-        getColorForArchetype(archetype) {
-            if (!this.nodeColorMap[archetype]) {
-                const colors = [
-                    '#3b82f6', '#10b981', '#f59e0b', '#ef4444', 
-                    '#8b5cf6', '#06b6d4', '#f97316', '#84cc16'
-                ];
-                const colorIndex = Object.keys(this.nodeColorMap).length % colors.length;
-                this.nodeColorMap[archetype] = colors[colorIndex];
-            }
-            return this.nodeColorMap[archetype];
-        }
-        
-        calculateNodesFromComplexity(complexity, appId = null) {
-            switch (complexity) {
-                case 'very-high': return Math.floor(Math.random() * 3) + 5;
-                case 'high': return 4;
-                case 'medium': return Math.floor(Math.random() * 2) + 3;
-                case 'low': return 2;
-                default: return 4;
-            }
-        }
-        
-        // ===========================
-        // NETWORK TOPOLOGY GENERATION
-        // ===========================
-        
-        generateNetworkTopology(selectedAppNames = ['all'], includeUpstream = true, includeDownstream = true) {
-            /**
-             * Generate network topology from web application data
-             */
-            if (!this.isDataLoaded || this.applications.length === 0) {
-                return { nodes: [], links: [] };
-            }
-            
-            let selectedApps = this.applications;
-            if (!selectedAppNames.includes('all')) {
-                selectedApps = this.applications.filter(app => 
-                    selectedAppNames.includes(app.id) || selectedAppNames.includes(app.name)
-                );
-            }
-            
-            const nodes = [];
-            const links = [];
-            
-            // Generate topology based on real web application data
-            selectedApps.forEach((app, appIndex) => {
-                const nodeCount = app.nodeCount || 4;
-                const appNodes = [];
-                
-                for (let i = 0; i < nodeCount; i++) {
-                    const subnet = 10 + (appIndex % 245);
-                    const host = 10 + i;
-                    const nodeId = `${subnet}.0.3.${host}`;
-                    
-                    const nodeTypes = ['gateway', 'processor', 'data-service', 'storage'];
-                    const nodeType = nodeTypes[i % nodeTypes.length];
-                    
-                    const node = {
-                        id: nodeId,
-                        name: `${app.id}-${nodeType}`,
-                        ip: nodeId,
-                        application: app.name,
-                        applicationId: app.id,
-                        archetype: app.archetype,
-                        tier: nodeType,
-                        color: this.getColorForArchetype(app.archetype),
-                        type: nodeType,
-                        status: 'active',
-                        size: 10 + (app.complexity === 'very-high' ? 6 : 2),
-                        isInternal: true,
-                        
-                        // Web application specific data
-                        webAppData: {
-                            source: this.currentDataSource,
-                            totalRecords: app.total_records || 0,
-                            complexity: app.complexity,
-                            realData: true
-                        }
-                    };
-                    
-                    nodes.push(node);
-                    appNodes.push(node);
-                }
-                
-                // Create internal links
-                for (let i = 0; i < appNodes.length - 1; i++) {
-                    links.push({
-                        source: appNodes[i].id,
-                        target: appNodes[i + 1].id,
-                        type: app.most_common_protocol || 'HTTP',
-                        isInternal: true,
-                        application: app.name,
-                        realData: true
-                    });
-                }
-            });
-            
-            console.log(`Generated web app topology: ${nodes.length} nodes, ${links.length} links`);
-            return { nodes, links };
-        }
-        
-        // ===========================
-        // CACHE MANAGEMENT
-        // ===========================
-        
-        hasCachedData() {
-            return localStorage.getItem(this.STORAGE_KEYS.APPLICATIONS) !== null &&
-                   localStorage.getItem(this.STORAGE_KEYS.LAST_UPDATE) !== null;
-        }
-        
-        isCacheValid() {
-            const cachedVersion = localStorage.getItem(this.STORAGE_KEYS.VERSION);
-            const lastUpdate = localStorage.getItem(this.STORAGE_KEYS.LAST_UPDATE);
-            
-            if (cachedVersion !== this.DATA_VERSION) {
-                console.log('📊 Cache version mismatch, invalidating cache');
-                return false;
-            }
-            
-            if (lastUpdate) {
-                const cacheAge = Date.now() - parseInt(lastUpdate);
-                const maxAge = 2 * 60 * 60 * 1000; // 2 hours for web app integration
-                
-                if (cacheAge > maxAge) {
-                    console.log('⏰ Cache expired, will reload from source');
-                    return false;
-                }
-            }
-            
+            console.log(`Loaded topology from ${filename}`);
             return true;
-        }
-        
-        saveToCache() {
-            try {
-                localStorage.setItem(this.STORAGE_KEYS.APPLICATIONS, JSON.stringify(this.applications));
-                localStorage.setItem(this.STORAGE_KEYS.NETWORK_DATA, JSON.stringify(this.networkTopology));
-                localStorage.setItem(this.STORAGE_KEYS.DATA_SOURCE, this.currentDataSource || '');
-                localStorage.setItem(this.STORAGE_KEYS.LAST_UPDATE, Date.now().toString());
-                localStorage.setItem(this.STORAGE_KEYS.VERSION, this.DATA_VERSION);
-                
-                console.log(`💾 Cached ${this.applications.length} applications`);
-            } catch (error) {
-                console.error('❌ Failed to save to localStorage:', error);
-            }
-        }
-        
-        loadFromCache() {
-            try {
-                const cachedApps = localStorage.getItem(this.STORAGE_KEYS.APPLICATIONS);
-                const cachedSource = localStorage.getItem(this.STORAGE_KEYS.DATA_SOURCE);
-                const lastUpdate = localStorage.getItem(this.STORAGE_KEYS.LAST_UPDATE);
-                
-                if (cachedApps) {
-                    this.applications = JSON.parse(cachedApps);
-                    this.applicationList = this.applications;
-                }
-                
-                if (cachedSource) {
-                    this.currentDataSource = cachedSource;
-                }
-                
-                if (lastUpdate) {
-                    this.lastUpdate = new Date(parseInt(lastUpdate));
-                }
-                
-                this.isDataLoaded = true;
-                this.notifyDataLoaded();
-                
-                console.log(`📦 Loaded ${this.applications.length} applications from cache`);
-            } catch (error) {
-                console.error('❌ Failed to load from cache:', error);
-                this.clearCache();
-            }
-        }
-        
-        clearCache() {
-            Object.values(this.STORAGE_KEYS).forEach(key => {
-                localStorage.removeItem(key);
-            });
-        }
-        
-        // ===========================
-        // EVENT SYSTEM & API METHODS
-        // ===========================
-        
-        onDataLoaded(callback) {
-            this.dataLoadedCallbacks.push(callback);
-            if (this.isDataLoaded) {
-                callback();
-            }
-        }
-        
-        notifyDataLoaded() {
-            this.dataLoadedCallbacks.forEach(callback => {
-                try {
-                    callback();
-                } catch (error) {
-                    console.error('Error in data loaded callback:', error);
-                }
-            });
-        }
-        
-        // Filter support
-        getApplicationNamesForFilter() {
-            const apps = [
-                { id: 'all', name: 'ALL Applications', archetype: 'All', status: 'active' }
-            ];
             
-            this.applicationList.forEach(app => {
-                apps.push({
-                    id: app.id,
-                    name: app.id,
-                    fullName: app.name,
-                    displayName: `${app.name} (${app.id})`,
-                    archetype: app.archetype || 'Unknown',
-                    dataSource: 'web-application'
-                });
-            });
-            
-            return apps;
-        }
-        
-        // API methods
-        getApplicationById(id) {
-            if (id === 'all') {
-                return { id: 'all', name: 'ALL Applications' };
-            }
-            return this.applications.find(app => app.id === id || app.app_id === id);
-        }
-        
-        getApplicationsByIds(ids) {
-            if (ids.includes('all')) {
-                return this.applications;
-            }
-            return this.applications.filter(app => ids.includes(app.id) || ids.includes(app.app_id));
-        }
-        
-        getCacheInfo() {
-            return {
-                hasCache: this.hasCachedData(),
-                isValid: this.isCacheValid(),
-                lastUpdate: this.lastUpdate,
-                version: this.DATA_VERSION,
-                applicationCount: this.applications.length,
-                currentDataSource: this.currentDataSource,
-                autoRefreshEnabled: !!this.refreshTimer,
-                dataSource: 'web-application',
-                expectedPaths: this.dataPaths
-            };
-        }
-        
-        async refreshData() {
-            console.log('🔄 Manually refreshing data from web application...');
-            this.clearCache();
-            await this.loadWebApplicationData();
-            return {
-                status: 'success',
-                message: 'Data refreshed from web application',
-                count: this.applications.length,
-                source: this.currentDataSource,
-                timestamp: new Date().toISOString()
-            };
-        }
-        
-        // Utility methods
-        setupFilterSync() {
-            // Placeholder for filter synchronization
-        }
-        
-        async loadData() {
-            console.log('Web-integrated application data ready');
-            return Promise.resolve();
+        } catch (error) {
+            console.error('Failed to load topology:', error);
+            this.errors.push(`Topology loading failed: ${error.message}`);
+            return false;
         }
     }
-
-    // Store the class globally to prevent redeclaration
-    window.ApplicationDataManager = ApplicationDataManager;
 }
 
-// Initialize global AppData only if it doesn't exist
-if (!window.AppData) {
-    window.AppData = new window.ApplicationDataManager();
+// Initialize global AppData instance
+console.log('Initializing global AppData...');
+
+try {
+    window.AppData = new ApplicationDataManager();
+    console.log('AppData initialized successfully');
+} catch (error) {
+    console.error('Failed to initialize AppData:', error);
+    
+    // Create minimal fallback
+    window.AppData = {
+        isDataLoaded: false,
+        applications: [],
+        networkTopology: { nodes: [], links: [] },
+        errors: [error.message],
+        
+        isReady: () => false,
+        getStatus: () => ({ 
+            isReady: false, 
+            error: error.message,
+            applicationCount: 0,
+            trafficRecordCount: 0 
+        }),
+        loadData: () => Promise.reject(error),
+        getApplicationNamesForFilter: () => [
+            { id: 'all', name: 'ALL Applications', displayName: 'ALL Applications (0 total)' }
+        ],
+        generateNetworkTopology: () => ({ nodes: [], links: [] }),
+        getMetadata: () => ({ error: error.message, version: '2.0.0' })
+    };
 }
 
-// Auto-load data when script loads
+// Auto-load on DOM ready
 document.addEventListener('DOMContentLoaded', async () => {
-    if (window.AppData && !window.AppData.isDataLoaded) {
-        await window.AppData.loadData();
-    }
-    
-    // Notify other components that web application data is ready
-    if (window.topologyDashboard) {
-        window.topologyDashboard.populateApplicationFilter();
-        window.topologyDashboard.updateNetworkData();
-        window.topologyDashboard.render();
-        window.topologyDashboard.updateStats();
-    }
-    
-    // Show current data source info
-    console.log('📊 Web Application Data Manager Status:', window.AppData.getCacheInfo());
-});
-
-// Listen for data updates
-window.addEventListener('activnetDataUpdated', (event) => {
-    console.log('🔄 ACTIVnet data updated from web application:', event.detail);
-    
-    // Refresh any dependent visualizations
-    if (window.topologyDashboard) {
-        window.topologyDashboard.populateApplicationFilter();
-        window.topologyDashboard.updateNetworkData();
-        window.topologyDashboard.render();
-        window.topologyDashboard.updateStats();
+    if (window.AppData && !window.AppData.isDataLoaded && window.AppData.loadData) {
+        console.log('Auto-loading data on DOM ready...');
+        try {
+            await window.AppData.loadData();
+            console.log('Auto-load completed successfully');
+        } catch (error) {
+            console.error('Auto-load failed:', error);
+        }
     }
 });
 
-// Cleanup on page unload
-window.addEventListener('beforeunload', () => {
-    if (window.AppData) {
-        window.AppData.stopAutoRefresh();
-    }
-});
+// Debug utilities
+window.AppDataUtils = {
+    refresh: () => window.AppData.refreshData(),
+    status: () => window.AppData.getStatus(),
+    apps: () => window.AppData.applications,
+    search: (query) => window.AppData.searchApplications(query),
+    metadata: () => window.AppData.getMetadata(),
+    topology: () => window.AppData.networkTopology,
+    generateTopology: (apps, options) => window.AppData.generateNetworkTopology(apps, options),
+    saveTopology: () => window.AppData.saveTopologyToFile(),
+    errors: () => window.AppData.errors
+};
 
-// Export for module systems
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { ApplicationDataManager };
-}
-
-console.log('🎯 Web-Integrated ACTIVnet Data Manager loaded - Connected to /templates/activnet_data.json and /static/ui/data/');
+console.log('Rewritten app-data.js loaded successfully');
+console.log('Features: CSV loading, traffic analysis, network topology, archetype classification');
+console.log('Debug: Use AppDataUtils.status() to check status or AppDataUtils.errors() to see any issues');

@@ -1,0 +1,36 @@
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+
+        <rect x="200" y="100" width="120" height="60" 
+              fill="#6b7280" stroke="#000" stroke-width="2" rx="8"/>
+        <text x="260" y="135" text-anchor="middle" 
+              font-family="Arial" font-size="10">Web Server</text>
+        
+
+        <rect x="200" y="220" width="120" height="60" 
+              fill="#6b7280" stroke="#000" stroke-width="2" rx="8"/>
+        <text x="260" y="255" text-anchor="middle" 
+              font-family="Arial" font-size="10">Application Server</text>
+        
+
+        <rect x="200" y="340" width="120" height="60" 
+              fill="#6b7280" stroke="#000" stroke-width="2" rx="8"/>
+        <text x="260" y="375" text-anchor="middle" 
+              font-family="Arial" font-size="10">Database Server</text>
+        
+
+            <line x1="260" y1="130" x2="260" y2="250" 
+                  stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+            
+
+            <line x1="260" y1="250" x2="260" y2="370" 
+                  stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+            
+
+    <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" 
+                refX="10" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#666"/>
+        </marker>
+    </defs>
+    
+</svg>

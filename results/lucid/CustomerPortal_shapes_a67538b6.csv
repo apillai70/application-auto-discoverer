@@ -1,0 +1,5 @@
+Name,Shape Library,Shape,Text Area 1,Position X,Position Y,Width,Height
+Load Balancer,Standard,Rectangle,Load Balancer,50,200,120,60
+Web Server,Standard,Rectangle,Web Server,250,200,120,80
+Customer Portal,Standard,Rectangle,Customer Portal,450,200,120,80
+Database,Standard,Cylinder,Database,650,180,100,120

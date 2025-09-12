@@ -1,0 +1,132 @@
+<!-- Add to your index.html -->
+<!-- Enhanced Frontend Logging Integration -->
+
+<!-- Comprehensive Security Logging -->
+<script src="/static/js/security-logging.js"></script>
+
+<!-- Auto-logging initialization -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize comprehensive logging
+    console.log('🛡️ Initializing comprehensive frontend logging...');
+    
+    // Enhanced error handling
+    window.addEventListener('error', function(event) {
+        securityLogger.logEvent({
+            event_type: 'error',
+            level: 'error',
+            action: 'javascript_error',
+            details: {
+                message: event.message,
+                filename: event.filename,
+                lineno: event.lineno,
+                colno: event.colno,
+                stack: event.error ? event.error.stack : null
+            }
+        });
+    });
+    
+    // Log page performance
+    window.addEventListener('load', function() {
+        setTimeout(() => {
+            securityLogger.logPerformanceMetrics();
+        }, 2000);
+    });
+    
+    // Log user interactions automatically
+    document.addEventListener('click', function(event) {
+        if (event.target.tagName === 'BUTTON' || event.target.type === 'submit') {
+            securityLogger.logUserInteraction(event.target, 'click', {
+                button_text: event.target.textContent || event.target.value,
+                form_id: event.target.form ? event.target.form.id : null
+            });
+        }
+    });
+    
+    // Log form submissions
+    document.addEventListener('submit', function(event) {
+        securityLogger.logUserInteraction(event.target, 'form_submit', {
+            form_id: event.target.id,
+            form_action: event.target.action,
+            input_count: event.target.querySelectorAll('input').length
+        });
+    });
+    
+    // Log API calls automatically
+    const originalFetch = window.fetch;
+    window.fetch = async function(...args) {
+        const startTime = Date.now();
+        const url = args[0];
+        const options = args[1] || {};
+        
+        try {
+            const response = await originalFetch(...args);
+            const endTime = Date.now();
+            
+            securityLogger.logApiCall(
+                url,
+                options.method || 'GET',
+                response.status,
+                endTime - startTime
+            );
+            
+            return response;
+        } catch (error) {
+            const endTime = Date.now();
+            
+            securityLogger.logApiCall(
+                url,
+                options.method || 'GET',
+                0,
+                endTime - startTime,
+                error.message
+            );
+            
+            throw error;
+        }
+    };
+    
+    console.log('✅ Comprehensive frontend logging initialized');
+});
+</script>
+
+<!-- Security monitoring -->
+<script>
+// Monitor for suspicious activities
+(function() {
+    let rapidClickCount = 0;
+    let lastClickTime = 0;
+    
+    document.addEventListener('click', function() {
+        const now = Date.now();
+        if (now - lastClickTime < 100) { // Less than 100ms between clicks
+            rapidClickCount++;
+            if (rapidClickCount > 10) {
+                securityLogger.logSecurityViolation(
+                    'rapid_clicking',
+                    'medium',
+                    'potential_bot_activity',
+                    { click_count: rapidClickCount }
+                );
+                rapidClickCount = 0;
+            }
+        } else {
+            rapidClickCount = 0;
+        }
+        lastClickTime = now;
+    });
+    
+    // Monitor for copy/paste of sensitive data
+    document.addEventListener('paste', function(event) {
+        const clipboardData = event.clipboardData.getData('text');
+        if (clipboardData.length > 1000) {
+            securityLogger.logSecurityViolation(
+                'large_data_paste',
+                'low',
+                'potential_data_exfiltration',
+                { data_length: clipboardData.length }
+            );
+        }
+    });
+})();
+</script>

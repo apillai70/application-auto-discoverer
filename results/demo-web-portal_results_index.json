@@ -1,0 +1,99 @@
+{
+  "generation_info": {
+    "app_id": "demo-web-portal",
+    "generated_at": "2025-08-29T17:43:22.221650",
+    "quality_level": "professional",
+    "professional_grade": true,
+    "banking_optimized": true
+  },
+  "executive_metadata": {
+    "document_classification": "CONFIDENTIAL - EXECUTIVE REVIEW",
+    "prepared_for": "C-Suite Leadership Team",
+    "document_type": "Network Architecture Executive Summary",
+    "preparation_date": "August 29, 2025",
+    "next_review_date": "September 29, 2025",
+    "document_owner": "Chief Technology Officer",
+    "distribution_list": [
+      "CTO",
+      "CISO",
+      "CRO",
+      "Chief Architect"
+    ],
+    "confidentiality_notice": "This document contains confidential and proprietary information"
+  },
+  "executive_insights": {
+    "total_applications": 4,
+    "critical_applications": 2,
+    "security_zones": 3,
+    "compliance_frameworks": [
+      "PCI-DSS",
+      "SOX",
+      "FFIEC",
+      "GDPR"
+    ],
+    "architecture_maturity": "Level 4 - Managed and Optimized",
+    "security_posture": "Strong - Multi-layered Defense",
+    "business_continuity": "Tier 1 - Mission Critical Protected"
+  },
+  "folder_structure": {
+    "visio": "Microsoft Visio diagrams (.vsdx)",
+    "lucid": "Lucidchart diagrams (.lucid)",
+    "document": "Microsoft Word documents (.docx)",
+    "excel": "Microsoft Excel spreadsheets (.xlsx)",
+    "pdf": "PDF reports (.pdf)"
+  },
+  "generated_files": [
+    {
+      "format": "visio",
+      "filename": "demo-web-portal.vsdx",
+      "folder": "results/visio/",
+      "file_path": "results\\visio\\demo-web-portal.vsdx",
+      "quality_level": "Professional Grade",
+      "target_audience": "Microsoft Visio Users",
+      "file_size": "3.9 KB"
+    },
+    {
+      "format": "lucid",
+      "filename": "demo-web-portal.lucid",
+      "folder": "results/lucid/",
+      "file_path": "results\\lucid\\demo-web-portal.lucid",
+      "quality_level": "Professional Grade",
+      "target_audience": "Business Stakeholders",
+      "file_size": "11.4 KB"
+    },
+    {
+      "format": "document",
+      "filename": "demo-web-portal.docx",
+      "folder": "results/document/",
+      "file_path": "results\\document\\demo-web-portal.docx",
+      "quality_level": "Professional Grade",
+      "target_audience": "Business Documentation",
+      "file_size": "2.2 KB"
+    },
+    {
+      "format": "excel",
+      "filename": "demo-web-portal.xlsx",
+      "folder": "results/excel/",
+      "file_path": "results\\excel\\demo-web-portal.xlsx",
+      "quality_level": "Professional Grade",
+      "target_audience": "Operational Analysis",
+      "file_size": "4.6 KB"
+    },
+    {
+      "format": "pdf",
+      "filename": "demo-web-portal.pdf",
+      "folder": "results/pdf/",
+      "file_path": "results\\pdf\\demo-web-portal.pdf",
+      "quality_level": "Professional Grade",
+      "target_audience": "Executive Presentations",
+      "file_size": "0.9 KB"
+    }
+  ],
+  "professional_features": {
+    "mathematical_layouts": "Golden ratio and professional spacing",
+    "design_system": "Corporate approved color palette and typography",
+    "executive_metadata": "C-suite appropriate annotations and insights",
+    "compliance_ready": "Banking regulation compliance built-in",
+    "multi_format": "Complete professional document suite"
+  }
+}

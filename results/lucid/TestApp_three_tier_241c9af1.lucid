@@ -1,0 +1,159 @@
+<?xml version="1.0" ?>
+<lucidchart version="2.0" archetype="three_tier" template_based="true">
+  <metadata>
+    <title>Three Tier Architecture</title>
+    <archetype>three_tier</archetype>
+    <generated_from_template>true</generated_from_template>
+    <application_count>3</application_count>
+  </metadata>
+  <canvas>
+    <width>900</width>
+    <height>600</height>
+  </canvas>
+  <zones>
+    <zone name="Presentation Tier">
+      <x>50</x>
+      <y>50</y>
+      <width>200</width>
+      <height>500</height>
+      <color>#E3F2FD</color>
+    </zone>
+    <zone name="Application Tier">
+      <x>300</x>
+      <y>50</y>
+      <width>200</width>
+      <height>500</height>
+      <color>#FFF3E0</color>
+    </zone>
+    <zone name="Data Tier">
+      <x>550</x>
+      <y>50</y>
+      <width>200</width>
+      <height>500</height>
+      <color>#F3E5F5</color>
+    </zone>
+  </zones>
+  <components>
+    <component id="load_balancer" type="load_balancer" template_based="true">
+      <name>TestApp Frontend</name>
+      <position>
+        <x>150</x>
+        <y>150</y>
+      </position>
+      <styling>
+        <width>100</width>
+        <height>100</height>
+        <fill_color>#96CEB4</fill_color>
+        <border_color>#85C7AE</border_color>
+        <border_width>2</border_width>
+        <corner_radius>8</corner_radius>
+        <shape_type>diamond</shape_type>
+        <icon>⚖️</icon>
+        <font>Arial</font>
+        <text_size>10</text_size>
+      </styling>
+    </component>
+    <component id="web_servers" type="web_server" template_based="true">
+      <name>TestApp API</name>
+      <position>
+        <x>150</x>
+        <y>250</y>
+      </position>
+      <styling>
+        <width>120</width>
+        <height>80</height>
+        <fill_color>#4ECDC4</fill_color>
+        <border_color>#45B7D1</border_color>
+        <border_width>2</border_width>
+        <corner_radius>8</corner_radius>
+        <shape_type>rectangle</shape_type>
+        <icon>🌐</icon>
+        <font>Arial</font>
+        <text_size>10</text_size>
+      </styling>
+    </component>
+    <component id="app_servers" type="app_server" template_based="true">
+      <name>TestApp Database</name>
+      <position>
+        <x>400</x>
+        <y>250</y>
+      </position>
+      <styling>
+        <width>120</width>
+        <height>80</height>
+        <fill_color>#FFD93D</fill_color>
+        <border_color>#FFC312</border_color>
+        <border_width>2</border_width>
+        <corner_radius>8</corner_radius>
+        <shape_type>rectangle</shape_type>
+        <icon>🏛️</icon>
+        <font>Arial</font>
+        <text_size>10</text_size>
+      </styling>
+    </component>
+    <component id="databases" type="database" template_based="true">
+      <name>Databases</name>
+      <position>
+        <x>650</x>
+        <y>250</y>
+      </position>
+      <styling>
+        <width>100</width>
+        <height>120</height>
+        <fill_color>#6C5CE7</fill_color>
+        <border_color>#5F3DC4</border_color>
+        <border_width>2</border_width>
+        <corner_radius>8</corner_radius>
+        <shape_type>cylinder</shape_type>
+        <icon>🗄️</icon>
+        <font>Arial</font>
+        <text_size>10</text_size>
+      </styling>
+    </component>
+    <component id="cache" type="cache" template_based="true">
+      <name>Cache</name>
+      <position>
+        <x>650</x>
+        <y>400</y>
+      </position>
+      <styling>
+        <width>80</width>
+        <height>80</height>
+        <fill_color>#FDCB6E</fill_color>
+        <border_color>#E17055</border_color>
+        <border_width>2</border_width>
+        <corner_radius>8</corner_radius>
+        <shape_type>diamond</shape_type>
+        <icon>⚡</icon>
+        <font>Arial</font>
+        <text_size>9</text_size>
+      </styling>
+    </component>
+  </components>
+  <connections>
+    <connection from="load_balancer" to="web_servers" type="http">
+      <styling>
+        <color>#4ECDC4</color>
+        <width>2</width>
+        <style>solid</style>
+        <arrow>true</arrow>
+      </styling>
+    </connection>
+    <connection from="web_servers" to="app_servers" type="http">
+      <styling>
+        <color>#4ECDC4</color>
+        <width>2</width>
+        <style>solid</style>
+        <arrow>true</arrow>
+      </styling>
+    </connection>
+    <connection from="app_servers" to="databases" type="http">
+      <styling>
+        <color>#4ECDC4</color>
+        <width>2</width>
+        <style>solid</style>
+        <arrow>true</arrow>
+      </styling>
+    </connection>
+  </connections>
+</lucidchart>

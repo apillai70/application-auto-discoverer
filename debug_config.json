@@ -1,0 +1,11 @@
+{
+  "log_level": "INFO",
+  "output_format": "console",
+  "auto_reload": false,
+  "watch_extensions": [".py", ".js", ".html", ".css", ".json"],
+  "performance_monitoring": true,
+  "syntax_checking": true,
+  "browser_debugging": false,
+  "debug_port": 9229,
+  "log_file": "debug.log"
+}

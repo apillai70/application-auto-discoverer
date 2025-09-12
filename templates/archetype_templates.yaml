@@ -1,0 +1,435 @@
+# PortScope Application Architecture Classification Configuration
+# This file defines application archetypes based on port patterns, traffic flows, and service indicators
+
+version: 1.0
+author: PortScope Team
+
+# Port Database Reference (comprehensive list)
+port_database:
+  well_known:
+    20: {name: "FTP-DATA", protocol: "TCP", category: "file_transfer"}
+    21: {name: "FTP", protocol: "TCP", category: "file_transfer", risk: "medium"}
+    22: {name: "SSH", protocol: "TCP", category: "remote_access", risk: "low"}
+    23: {name: "TELNET", protocol: "TCP", category: "remote_access", risk: "critical"}
+    25: {name: "SMTP", protocol: "TCP", category: "messaging"}
+    53: {name: "DNS", protocol: "TCP/UDP", category: "dns"}
+    67: {name: "DHCP-Server", protocol: "UDP", category: "network"}
+    68: {name: "DHCP-Client", protocol: "UDP", category: "network"}
+    69: {name: "TFTP", protocol: "UDP", category: "file_transfer"}
+    80: {name: "HTTP", protocol: "TCP", category: "web", risk: "medium"}
+    88: {name: "Kerberos", protocol: "TCP/UDP", category: "security"}
+    110: {name: "POP3", protocol: "TCP", category: "messaging"}
+    111: {name: "RPC-Portmapper", protocol: "TCP/UDP", category: "rpc"}
+    119: {name: "NNTP", protocol: "TCP", category: "messaging"}
+    123: {name: "NTP", protocol: "UDP", category: "time"}
+    135: {name: "RPC", protocol: "TCP", category: "windows", risk: "high"}
+    137: {name: "NetBIOS-NS", protocol: "UDP", category: "windows"}
+    138: {name: "NetBIOS-DGM", protocol: "UDP", category: "windows"}
+    139: {name: "NetBIOS-SSN", protocol: "TCP", category: "windows", risk: "high"}
+    143: {name: "IMAP", protocol: "TCP", category: "messaging"}
+    161: {name: "SNMP", protocol: "UDP", category: "monitoring"}
+    162: {name: "SNMPTRAP", protocol: "UDP", category: "monitoring"}
+    389: {name: "LDAP", protocol: "TCP", category: "directory"}
+    443: {name: "HTTPS", protocol: "TCP", category: "web", risk: "low"}
+    445: {name: "SMB", protocol: "TCP", category: "file_transfer", risk: "high"}
+    465: {name: "SMTPS", protocol: "TCP", category: "messaging"}
+    512: {name: "rexec", protocol: "TCP", category: "remote_access", risk: "critical"}
+    513: {name: "rlogin", protocol: "TCP", category: "remote_access", risk: "critical"}
+    514: {name: "rsh", protocol: "TCP", category: "remote_access", risk: "critical"}
+    514: {name: "Syslog", protocol: "UDP", category: "logging"}
+    515: {name: "LPD", protocol: "TCP", category: "printing"}
+    587: {name: "SMTP-Submission", protocol: "TCP", category: "messaging"}
+    623: {name: "IPMI", protocol: "UDP", category: "management"}
+    636: {name: "LDAPS", protocol: "TCP", category: "directory"}
+    853: {name: "DNS-over-TLS", protocol: "TCP", category: "dns"}
+    873: {name: "RSYNC", protocol: "TCP", category: "file_transfer"}
+    902: {name: "VMware-Auth", protocol: "TCP", category: "virtualization"}
+    993: {name: "IMAPS", protocol: "TCP", category: "messaging"}
+    995: {name: "POP3S", protocol: "TCP", category: "messaging"}
+
+  common_services:
+    1080: {name: "SOCKS", protocol: "TCP", category: "proxy"}
+    1194: {name: "OpenVPN", protocol: "TCP/UDP", category: "vpn"}
+    1433: {name: "MSSQL", protocol: "TCP", category: "database", risk: "high"}
+    1434: {name: "MSSQL-Browser", protocol: "UDP", category: "database"}
+    1521: {name: "Oracle", protocol: "TCP", category: "database", risk: "high"}
+    1723: {name: "PPTP", protocol: "TCP", category: "vpn"}
+    1812: {name: "RADIUS-Auth", protocol: "UDP", category: "security"}
+    1813: {name: "RADIUS-Acct", protocol: "UDP", category: "security"}
+    1883: {name: "MQTT", protocol: "TCP", category: "iot"}
+    1900: {name: "SSDP", protocol: "UDP", category: "discovery"}
+    2049: {name: "NFS", protocol: "TCP/UDP", category: "file_transfer"}
+    2181: {name: "ZooKeeper", protocol: "TCP", category: "coordination"}
+    2375: {name: "Docker", protocol: "TCP", category: "container"}
+    2376: {name: "Docker-SSL", protocol: "TCP", category: "container"}
+    2377: {name: "Docker-Swarm", protocol: "TCP", category: "container"}
+    3000: {name: "Node.js", protocol: "TCP", category: "web"}
+    3128: {name: "Squid", protocol: "TCP", category: "proxy"}
+    3268: {name: "GlobalCatalog", protocol: "TCP", category: "directory"}
+    3306: {name: "MySQL", protocol: "TCP", category: "database", risk: "high"}
+    3389: {name: "RDP", protocol: "TCP", category: "remote_access", risk: "high"}
+    3690: {name: "SVN", protocol: "TCP", category: "development"}
+    4369: {name: "EPMD", protocol: "TCP", category: "erlang"}
+    4443: {name: "Kubernetes-API-Alt", protocol: "TCP", category: "container"}
+    4444: {name: "Metasploit", protocol: "TCP", category: "security_tool"}
+    5000: {name: "Flask", protocol: "TCP", category: "web"}
+    5060: {name: "SIP", protocol: "TCP/UDP", category: "voip"}
+    5222: {name: "XMPP-Client", protocol: "TCP", category: "messaging"}
+    5432: {name: "PostgreSQL", protocol: "TCP", category: "database", risk: "high"}
+    5433: {name: "PostgreSQL-Alt", protocol: "TCP", category: "database"}
+    5671: {name: "AMQPS", protocol: "TCP", category: "messaging"}
+    5672: {name: "AMQP", protocol: "TCP", category: "messaging"}
+    5900: {name: "VNC", protocol: "TCP", category: "remote_access", risk: "high"}
+    5984: {name: "CouchDB", protocol: "TCP", category: "database"}
+    5985: {name: "WinRM-HTTP", protocol: "TCP", category: "windows"}
+    5986: {name: "WinRM-HTTPS", protocol: "TCP", category: "windows"}
+    6379: {name: "Redis", protocol: "TCP", category: "database", risk: "high"}
+    6443: {name: "Kubernetes", protocol: "TCP", category: "container"}
+    6660: {name: "IRC", protocol: "TCP", category: "chat"}
+    6881: {name: "BitTorrent", protocol: "TCP/UDP", category: "p2p"}
+    7000: {name: "Cassandra", protocol: "TCP", category: "database"}
+    7001: {name: "Cassandra-SSL", protocol: "TCP", category: "database"}
+    7474: {name: "Neo4j", protocol: "TCP", category: "database"}
+    8000: {name: "HTTP-Alt", protocol: "TCP", category: "web"}
+    8001: {name: "HTTP-Alt1", protocol: "TCP", category: "web"}
+    8008: {name: "HTTP-Alt8", protocol: "TCP", category: "web"}
+    8020: {name: "HDFS-NameNode", protocol: "TCP", category: "bigdata"}
+    8080: {name: "HTTP-Proxy", protocol: "TCP", category: "web", risk: "medium"}
+    8081: {name: "HTTP-Alt2", protocol: "TCP", category: "web"}
+    8086: {name: "InfluxDB", protocol: "TCP", category: "database"}
+    8088: {name: "HTTP-Alt3", protocol: "TCP", category: "web"}
+    8090: {name: "HTTP-Alt4", protocol: "TCP", category: "web"}
+    8091: {name: "CouchBase", protocol: "TCP", category: "database"}
+    8123: {name: "Home-Assistant", protocol: "TCP", category: "iot"}
+    8200: {name: "Vault", protocol: "TCP", category: "security"}
+    8300: {name: "Consul", protocol: "TCP", category: "coordination"}
+    8333: {name: "Bitcoin", protocol: "TCP", category: "blockchain"}
+    8443: {name: "HTTPS-Alt", protocol: "TCP", category: "web"}
+    8444: {name: "Jenkins", protocol: "TCP", category: "cicd"}
+    8500: {name: "Consul-HTTP", protocol: "TCP", category: "coordination"}
+    8545: {name: "Ethereum", protocol: "TCP", category: "blockchain"}
+    8761: {name: "Eureka", protocol: "TCP", category: "discovery"}
+    8834: {name: "Nessus", protocol: "TCP", category: "security_tool"}
+    8883: {name: "MQTT-SSL", protocol: "TCP", category: "iot"}
+    8888: {name: "HTTP-Alt6", protocol: "TCP", category: "web"}
+    9000: {name: "SonarQube", protocol: "TCP", category: "development"}
+    9042: {name: "Cassandra-Native", protocol: "TCP", category: "database"}
+    9090: {name: "Prometheus", protocol: "TCP", category: "monitoring"}
+    9092: {name: "Kafka", protocol: "TCP", category: "messaging"}
+    9093: {name: "Kafka-SSL", protocol: "TCP", category: "messaging"}
+    9100: {name: "Node-Exporter", protocol: "TCP", category: "monitoring"}
+    9200: {name: "Elasticsearch", protocol: "TCP", category: "search"}
+    9300: {name: "Elasticsearch-Node", protocol: "TCP", category: "search"}
+    9418: {name: "Git", protocol: "TCP", category: "development"}
+    10000: {name: "Webmin", protocol: "TCP", category: "admin"}
+    10050: {name: "Zabbix-Agent", protocol: "TCP", category: "monitoring"}
+    10051: {name: "Zabbix-Server", protocol: "TCP", category: "monitoring"}
+    10250: {name: "Kubelet", protocol: "TCP", category: "container"}
+    11211: {name: "Memcached", protocol: "TCP", category: "cache", risk: "high"}
+    15672: {name: "RabbitMQ-Management", protocol: "TCP", category: "messaging"}
+    25565: {name: "Minecraft", protocol: "TCP", category: "gaming"}
+    27017: {name: "MongoDB", protocol: "TCP", category: "database", risk: "high"}
+    27018: {name: "MongoDB-Shard", protocol: "TCP", category: "database"}
+    27019: {name: "MongoDB-Config", protocol: "TCP", category: "database"}
+    32400: {name: "Plex", protocol: "TCP", category: "media"}
+
+# Application Architecture Archetypes
+archetypes:
+  monolithic:
+    name: "Monolithic"
+    description: "Single-tier application where UI, business logic, and data access are tightly integrated"
+    indicators:
+      ports:
+        required: [8080]
+        optional: [3306, 5432, 8000, 8001]
+        forbidden: [6443, 2375, 9092]  # No containers or messaging
+      port_patterns:
+        - {range: [8000, 8100], min_count: 1, max_count: 3}
+        - {range: [3300, 3310], min_count: 1}
+      services:
+        required_categories: ["web"]
+        optional_categories: ["database"]
+        forbidden_categories: ["container", "messaging", "coordination"]
+      traffic:
+        pattern: "inbound_only"
+        port_concentration: "high"
+      host_count: {min: 1, max: 3}
+    risk_score_modifier: 1.2
+    diagram_stub: "monolithic-template.png"
+    
+  three_tier:
+    name: "3-Tier"
+    description: "Standard enterprise structure with separate UI, API, and database components"
+    indicators:
+      ports:
+        required_any: [[80, 443], [3306, 5432, 1433, 1521]]
+        optional: [6379, 11211, 8080]
+      port_patterns:
+        - {category: "web", min_count: 1}
+        - {category: "database", min_count: 1}
+      services:
+        required_categories: ["web", "database"]
+        optional_categories: ["cache", "proxy"]
+      traffic:
+        pattern: "north_south"
+        tier_separation: true
+      host_count: {min: 3, max: 10}
+    risk_score_modifier: 1.0
+    diagram_stub: "3tier-template.png"
+    
+  microservices:
+    name: "Microservices"
+    description: "Application composed of independent services communicating via REST/gRPC"
+    indicators:
+      ports:
+        required_any: [6443, 2375, 8500, 8761]
+        optional: [443, 3000, 8080, 9090]
+      port_patterns:
+        - {range: [3000, 3100], min_count: 5}
+        - {range: [8000, 9000], min_count: 3}
+        - {category: "container", min_count: 1}
+      services:
+        required_categories: ["container"]
+        optional_categories: ["messaging", "cache", "monitoring", "coordination"]
+      traffic:
+        pattern: "east_west"
+        service_mesh: true
+      host_count: {min: 5}
+    risk_score_modifier: 0.8
+    diagram_stub: "microservices-template.png"
+    
+  event_driven:
+    name: "Event-Driven"
+    description: "Decoupled services communicating through message queues or pub/sub systems"
+    indicators:
+      ports:
+        required_any: [5672, 9092, 1883, 15672, 5671]
+        optional: [8080, 3306, 6379]
+      port_patterns:
+        - {category: "messaging", min_count: 1}
+      services:
+        required_categories: ["messaging"]
+        optional_categories: ["web", "database", "cache"]
+      traffic:
+        pattern: "pub_sub"
+        async_communication: true
+    risk_score_modifier: 0.9
+    diagram_stub: "event-driven-template.png"
+    
+  soa:
+    name: "SOA"
+    description: "Enterprise services exposed via ESB, typically with SOAP/XML or legacy protocols"
+    indicators:
+      ports:
+        required_any: [8080, 8443]
+        optional: [1433, 1521, 3306]
+      services:
+        required_categories: ["web"]
+        optional_categories: ["database", "messaging"]
+      traffic:
+        pattern: "service_bus_mediated"
+        xml_traffic: true
+    risk_score_modifier: 1.1
+    diagram_stub: "soa-template.png"
+    
+  serverless:
+    name: "Serverless"
+    description: "Stateless compute units triggered by events, typically on cloud providers"
+    indicators:
+      ports:
+        required: [443]
+        forbidden: [22, 3389, 5900, 3306, 5432]
+      port_patterns:
+        - {range: [443, 443], exact: true}
+      services:
+        required_categories: ["web"]
+        forbidden_categories: ["database", "remote_access"]
+      traffic:
+        pattern: "on_demand"
+        stateless: true
+      host_count: {max: 1}
+    risk_score_modifier: 0.7
+    diagram_stub: "serverless-template.png"
+    
+  client_server:
+    name: "Client-Server"
+    description: "Traditional fat client connecting directly to backend services or databases"
+    indicators:
+      ports:
+        required_any: [1433, 1521, 3389]
+        optional: [445, 139]
+      port_patterns:
+        - {category: "database", min_count: 1}
+        - {category: "remote_access", min_count: 1}
+      services:
+        required_categories: ["database"]
+        optional_categories: ["remote_access", "windows"]
+      traffic:
+        pattern: "persistent_session"
+        thick_client: true
+    risk_score_modifier: 1.5
+    diagram_stub: "client-server-template.png"
+    
+  edge_cloud_hybrid:
+    name: "Edge+Cloud Hybrid"
+    description: "Applications split between local edge devices and cloud-based control/analytics"
+    indicators:
+      ports:
+        required_any: [443, 1883, 8883]
+        optional: [5672, 9092, 8123]
+      port_patterns:
+        - {category: "iot", min_count: 1}
+        - {category: "web", min_count: 1}
+      services:
+        required_categories: ["iot"]
+        optional_categories: ["web", "messaging", "monitoring"]
+      traffic:
+        pattern: "device_to_cloud"
+    risk_score_modifier: 1.1
+    diagram_stub: "edge-cloud-template.png"
+    
+  data_pipeline:
+    name: "ETL/Data Pipeline"
+    description: "Batch or stream-based data processing flows for BI or analytics systems"
+    indicators:
+      ports:
+        required_any: [8020, 9092, 9200, 5432]
+        optional: [21, 22, 2181]
+      port_patterns:
+        - {category: "bigdata", min_count: 1}
+        - {category: "database", min_count: 1}
+      services:
+        required_categories: ["database"]
+        optional_categories: ["messaging", "search", "bigdata"]
+      traffic:
+        pattern: "batch_streaming"
+    risk_score_modifier: 1.0
+    diagram_stub: "etl-template.png"
+    
+  cloud_native:
+    name: "Cloud-Native"
+    description: "Applications built specifically for cloud environments with containers and managed services"
+    indicators:
+      ports:
+        required_any: [6443, 2375, 10250]
+        optional: [443, 8080, 9090, 3000]
+      port_patterns:
+        - {category: "container", min_count: 2}
+      services:
+        required_categories: ["container"]
+        optional_categories: ["monitoring", "web", "messaging"]
+      traffic:
+        pattern: "elastic_scaling"
+    risk_score_modifier: 0.75
+    
+  mainframe:
+    name: "Mainframe"
+    description: "Centralized, high-performance computing system for large-scale transaction processing"
+    indicators:
+      ports:
+        required_any: [23, 3270]
+        optional: [21, 22]
+      services:
+        required_categories: ["remote_access"]
+      traffic:
+        pattern: "terminal_host"
+      host_count: {max: 5}
+    risk_score_modifier: 1.8
+    
+  p2p:
+    name: "Peer-to-Peer"
+    description: "Decentralized network where each node functions as both client and server"
+    indicators:
+      ports:
+        required_any: [6881, 8333, 8545]
+        optional: [4662, 6346]
+      port_patterns:
+        - {category: "p2p", min_count: 1}
+        - {category: "blockchain", min_count: 1}
+      services:
+        required_categories_any: ["p2p", "blockchain"]
+      traffic:
+        pattern: "mesh"
+    risk_score_modifier: 1.3
+
+# Classification Rules
+classification_rules:
+  confidence_thresholds:
+    high: 0.8
+    medium: 0.6
+    low: 0.4
+  
+  scoring_weights:
+    required_ports_match: 10
+    required_any_match: 8
+    optional_ports_match: 3
+    port_pattern_match: 5
+    required_category_match: 8
+    optional_category_match: 2
+    forbidden_violation: -15
+    traffic_pattern_match: 7
+    host_count_match: 4
+    
+  fallback_classification:
+    default: "unknown"
+    min_score_for_classification: 15
+
+# Risk Assessment Configuration
+risk_assessment:
+  port_risks:
+    critical:
+      ports: [23, 512, 513, 514]
+      score: 10
+    high:
+      ports: [135, 139, 445, 3389, 5900, 1433, 3306, 5432, 6379, 27017, 11211]
+      score: 7
+    medium:
+      ports: [21, 80, 8080, 161]
+      score: 4
+    low:
+      ports: [22, 443, 993, 995]
+      score: 1
+      
+  category_risks:
+    remote_access: 8
+    database: 6
+    file_transfer: 5
+    web: 3
+    monitoring: 2
+    container: 1
+
+# Service Categories (for classification)
+service_categories:
+  web: ["HTTP", "HTTPS", "HTTP-Proxy", "HTTP-Alt", "Flask", "Node.js", "nginx", "Apache", "IIS"]
+  database: ["MySQL", "PostgreSQL", "MongoDB", "Redis", "Cassandra", "Oracle", "MSSQL", "CouchDB", "InfluxDB", "Neo4j", "Memcached"]
+  messaging: ["SMTP", "POP3", "IMAP", "AMQP", "Kafka", "RabbitMQ", "MQTT", "XMPP", "ActiveMQ"]
+  remote_access: ["SSH", "RDP", "VNC", "TELNET", "rlogin", "TeamViewer"]
+  file_transfer: ["FTP", "SFTP", "TFTP", "SMB", "NFS", "RSYNC", "SCP"]
+  container: ["Docker", "Kubernetes", "Mesos", "Swarm", "OpenShift", "Rancher"]
+  monitoring: ["Prometheus", "Grafana", "SNMP", "Zabbix", "Nagios", "Datadog", "NewRelic"]
+  security: ["OpenVPN", "IPSec", "RADIUS", "Kerberos", "LDAP", "Vault"]
+  development: ["Git", "SVN", "Jenkins", "SonarQube", "Artifactory", "Nexus"]
+  iot: ["MQTT", "CoAP", "Zigbee", "LoRaWAN", "HomeAssistant"]
+  coordination: ["ZooKeeper", "Consul", "etcd", "Eureka"]
+  proxy: ["Squid", "HAProxy", "nginx", "Envoy"]
+  cache: ["Redis", "Memcached", "Varnish"]
+  search: ["Elasticsearch", "Solr", "Sphinx"]
+  bigdata: ["Hadoop", "Spark", "HDFS", "HBase"]
+  blockchain: ["Bitcoin", "Ethereum", "Hyperledger"]
+  p2p: ["BitTorrent", "Gnutella", "eMule"]
+  windows: ["RPC", "NetBIOS", "SMB", "WinRM", "MSSQL"]
+  voip: ["SIP", "H.323", "RTP", "Asterisk"]
+  virtualization: ["VMware", "Hyper-V", "Xen", "KVM"]
+  cicd: ["Jenkins", "GitLab", "Travis", "CircleCI"]
+
+# Output Configuration
+output:
+  include_confidence_score: true
+  include_risk_assessment: true
+  include_recommendations: true
+  include_port_details: true
+  include_evidence: true
+  include_alternatives: true
+  max_recommendations: 5
+  max_evidence_items: 10
+  generate_diagram_suggestion: true
