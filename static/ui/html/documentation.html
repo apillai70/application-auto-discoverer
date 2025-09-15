@@ -512,29 +512,6 @@
             console.log(`🎨 Theme changed to: ${theme}`);
         }
 
-        // Documentation view switching
-        function setDocumentationView(view) {
-            document.querySelectorAll('.view-controls .btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            const button = document.getElementById(view + 'Btn');
-            if (button) {
-                button.classList.add('active');
-            }
-            
-            document.querySelectorAll('.view-content').forEach(content => {
-                content.style.display = 'none';
-            });
-            
-            const viewElement = document.getElementById(view + 'View');
-            if (viewElement) {
-                viewElement.style.display = 'flex';
-            }
-            
-            console.log(`📋 View changed to: ${view}`);
-        }
-
         // Paper size management
         function changePaperSize() {
             const paperSelect = document.getElementById('paperSize');
@@ -736,41 +713,87 @@
         }
 
         // Processing
-        function processApplications() {
+        async function processApplications() {
             if (selectedApps.size === 0) {
                 showToast('Please select at least one application to process.', 'warning');
                 return;
             }
             
             const panel = document.getElementById('processingPanel');
-            if (panel) {
-                panel.classList.add('active');
-                panel.innerHTML = `
-                    <div>🚀 Processing ${selectedApps.size} Applications</div>
-                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">
-                        Generating enhanced documents...
-                    </div>
-                    <div class="progress-bar" style="margin-top: 10px;">
-                        <div class="progress-fill documentation" id="progressFill"></div>
-                    </div>
-                `;
-            }
+			if (panel) {
+				panel.classList.add('active');
+				panel.innerHTML = `
+					<div>🚀 Processing ${selectedApps.size} Applications</div>
+					<div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">
+						Calling FastAPI backend...
+					</div>
+					<div class="progress-bar" style="margin-top: 10px;">
+						<div class="progress-fill documentation" id="progressFill"></div>
+					</div>
+				`;
+			}
             
-            // Simulate processing
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += 20;
-                const progressBar = document.getElementById('progressFill');
-                if (progressBar) {
-                    progressBar.style.width = `${progress}%`;
-                }
-                
-                if (progress >= 100) {
-                    clearInterval(interval);
-                    completeProcessing();
-                }
-            }, 600);
-        }
+            try {
+				// Get the first selected app for testing
+				const firstApp = Array.from(selectedApps)[0];
+				const qualityLevel = document.getElementById('qualityLevel').value;
+				
+				// Call your working FastAPI endpoint
+				const response = await fetch(`http://localhost:8001/api/v1/archetype/generate-practical-diagrams?archetype=three_tier&app_name=${firstApp}`, {
+					method: 'GET',
+					headers: {
+						'Accept': 'application/json',
+					}
+				});
+				
+				if (!response.ok) {
+					throw new Error(`API returned ${response.status}: ${response.statusText}`);
+				}
+				
+				const result = await response.json();
+				console.log('Real API Response:', result);
+				
+				// Show real results
+				const resultPanel = document.getElementById('resultPanel');
+				const noResults = document.getElementById('noResults');
+				
+				if (resultPanel && noResults) {
+					noResults.style.display = 'none';
+					resultPanel.style.display = 'block';
+					
+					const preview = document.getElementById('jsonPreview');
+					if (preview) {
+						preview.textContent = JSON.stringify(result, null, 2);
+					}
+				}
+				
+				// Update panel with success
+				if (panel) {
+					panel.innerHTML = `
+						<div>✅ Real Processing Complete!</div>
+						<div style="font-size: 0.8rem; color: var(--accent-green); margin-top: 5px;">
+							Generated via FastAPI backend
+						</div>
+					`;
+				}
+				
+				showToast('Real documents generated! Check results folder.', 'success');
+				
+			} catch (error) {
+				console.error('Real API Error:', error);
+				
+				if (panel) {
+					panel.innerHTML = `
+						<div>❌ API Error</div>
+						<div style="font-size: 0.8rem; color: var(--accent-red); margin-top: 5px;">
+							${error.message}
+						</div>
+					`;
+				}
+				
+				showToast(`API Error: ${error.message}`, 'error');
+			}
+		}
 
         function completeProcessing() {
             const panel = document.getElementById('processingPanel');
