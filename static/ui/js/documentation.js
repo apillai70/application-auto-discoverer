@@ -281,17 +281,179 @@ function setDocumentationView(view) {
     }
     
     console.log(`View changed to: ${view}`);
+    
+    // Load data for specific views
+    if (view === 'preview') {
+        console.log("Calling loadPreviewData()"); // Add this debug line
+        loadPreviewData();
+    } else if (view === 'templates') {
+        console.log("Templates view loaded");
+	}
+}
+
+function loadPreviewData() {
+    console.log("Loading preview data...");
+    
+    const archetype = document.getElementById('archetype')?.value || 'three_tier';
+    const appName = document.getElementById('appName')?.value || 'Sample App';
+    
+    const previewArea = document.querySelector('#previewView .preview-placeholder');
+    
+    if (previewArea) {
+        // Force visibility and clear any conflicting styles
+        previewArea.style.display = 'block';
+        previewArea.style.visibility = 'visible';
+        previewArea.style.opacity = '1';
+        
+        previewArea.innerHTML = `
+            <div style="
+                border: 2px solid #3b82f6; 
+                padding: 20px; 
+                border-radius: 8px; 
+                background: white !important; 
+                position: relative; 
+                z-index: 999;
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                color: black !important;
+                font-size: 14px !important;
+            ">
+                <h4 style="color: black !important; margin: 0 0 10px 0;">PREVIEW: ${archetype.replace('_', ' ').toUpperCase()}</h4>
+                <p style="color: black !important;"><strong>Application:</strong> ${appName}</p>
+                <p style="color: black !important;"><strong>Architecture:</strong> ${archetype}</p>
+                <div style="margin-top: 15px; background: #f8f9fa; padding: 10px; border-radius: 4px; color: black !important;">
+                    Word Document: Professional template<br>
+                    Visio Diagram: Interactive layout<br>
+                    Excel Matrix: Component analysis<br>
+                    PDF Report: Executive summary
+                </div>
+                <button onclick="generateFromPreview()" style="margin-top: 15px; padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    Generate Documents
+                </button>
+            </div>
+        `;
+        
+        console.log("Preview updated with forced visibility");
+    }
+}
+
+function generateFromPreview() {
+    console.log("🚀 Generating from preview...");
+    // Switch back to generator and trigger generation
+    setDocumentationView('generator');
+    if (typeof generateEnhancedDiagram === 'function') {
+        generateEnhancedDiagram();
+    }
+}
+
+function loadTemplatesData() {
+    console.log("Loading templates data...");
+    // Templates are already static HTML in your case, so no additional loading needed
+    // But you could fetch dynamic templates from your API here if needed
 }
 
 // Template selection
 function selectTemplate(templateId) {
     console.log(`Template selected: ${templateId}`);
     
+    // Switch back to generator view
     if (typeof setDocumentationView === 'function') {
         setDocumentationView('generator');
     }
     
+    // Populate form with template data
+    populateFormWithTemplate(templateId);
+    
+    // Show success message
     showToast(`Template "${templateId}" selected! Ready for document generation.`, 'success');
+}
+
+function populateFormWithTemplate(templateId) {
+    // Define template configurations
+    const templates = {
+        'three_tier': {
+            archetype: 'three_tier',
+            apps: [
+                { name: 'Load Balancer', type: 'load_balancer' },
+                { name: 'Web Server', type: 'web_server' },
+                { name: 'Application Server', type: 'app_server' },
+                { name: 'Database', type: 'database' }
+            ]
+        },
+        'microservices': {
+            archetype: 'microservices',
+            apps: [
+                { name: 'API Gateway', type: 'api_gateway' },
+                { name: 'User Service', type: 'microservice' },
+                { name: 'Order Service', type: 'microservice' },
+                { name: 'Payment Service', type: 'microservice' },
+                { name: 'Message Queue', type: 'message_queue' },
+                { name: 'Database', type: 'database' }
+            ]
+        },
+        'banking_microservices': {
+            archetype: 'microservices_banking',
+            apps: [
+                { name: 'Banking API', type: 'api_gateway' },
+                { name: 'Account Service', type: 'microservice' },
+                { name: 'Transaction Service', type: 'microservice' },
+                { name: 'Fraud Detection', type: 'microservice' },
+                { name: 'Core Banking DB', type: 'database' },
+                { name: 'Event Stream', type: 'message_queue' }
+            ]
+        }
+    };
+    
+    const template = templates[templateId];
+    if (template) {
+        // Set archetype dropdown
+        const archetypeSelect = document.getElementById('archetype');
+        if (archetypeSelect) {
+            archetypeSelect.value = template.archetype;
+            // Trigger change event if needed
+            archetypeSelect.dispatchEvent(new Event('change'));
+        }
+        
+        // Set application name
+        const appNameInput = document.getElementById('appName');
+        if (appNameInput) {
+            appNameInput.value = template.appName;
+        }
+        
+        // Populate applications list if you have that functionality
+        if (template.applications && typeof populateApplicationsList === 'function') {
+            populateApplicationsList(template.applications);
+        }
+        
+        console.log(`Template ${templateId} populated successfully`);
+    } else {
+        console.warn(`Template ${templateId} not found`);
+    }
+}
+
+function populateApplicationsList(apps) {
+    // This depends on how your applications are structured in the form
+    // You might need to clear existing apps and add new ones
+    console.log('Populating applications:', apps);
+    
+    // Example implementation - adapt to your actual form structure
+    const appsContainer = document.getElementById('applications-container');
+    if (appsContainer) {
+        appsContainer.innerHTML = ''; // Clear existing
+        
+        apps.forEach((app, index) => {
+            // Add application to the form
+            // This is pseudo-code - adapt to your actual form structure
+            addApplicationToForm(app.name, app.type, index);
+        });
+    }
+}
+
+function addApplicationToForm(name, type, index) {
+    // Implementation depends on your specific form structure
+    // This is where you'd add the application data to your form
+    console.log(`Adding app: ${name} (${type}) at index ${index}`);
 }
 
 // =================== ARCHETYPE DETECTION ===================

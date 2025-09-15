@@ -362,3 +362,4 @@ python -c "import psutil; print(f'CPU: {psutil.cpu_percent()}%, Memory: {psutil.
 ---
 
 *This quick reference guide provides immediate security implementations that can be deployed today to significantly improve the security posture of your Regions Bank Network Scanning Platform.*
+

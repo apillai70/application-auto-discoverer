@@ -1087,7 +1087,8 @@ def create_app() -> FastAPI:
         redoc_url="/redoc",
         lifespan=lifespan
     )
-
+    
+    setup_websocket_endpoints(app)  # This adds both /ws and /api/v1/excel/ws
     # Add CORS middleware
     app.add_middleware(
         CORSMiddleware,
@@ -1172,7 +1173,7 @@ def create_app() -> FastAPI:
     
     setup_lucidchart_endpoints(app)
     setup_basic_endpoints(app)
-    setup_websocket_endpoints(app)  # This adds both /ws and /api/v1/excel/ws
+  
     setup_excel_integration(app)  # This adds Excel endpoints that work with WebSocket
     setup_error_handlers(app)
     
@@ -1224,5 +1225,6 @@ if __name__ == "__main__":
         port=8001, 
         reload=True,
         reload_dirs=[str(AppConfig.PROJECT_ROOT)],
-        log_level="info"
+        log_level="info",
+        ws="websockets"  # Force websockets implementation
     )

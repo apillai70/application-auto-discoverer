@@ -16,6 +16,7 @@ import re
 import logging
 import asyncio
 
+
 logger = logging.getLogger(__name__)
 
 # Import the new template processor
@@ -661,6 +662,496 @@ class PDFGenerator:
         return file_path
 
 
+class WordDocumentGenerator:
+    """Generate professional Word documents with embedded diagrams"""
+    
+    def generate_word_document(self, layout: Dict[str, Any], archetype: str, 
+                             app_name: str, job_id: str, results_dir: Path, 
+                             drawio_file_path: Path = None) -> Path:
+        """Generate Word document with embedded diagram matching ACBS template format"""
+        
+        try:
+            from docx import Document
+            from docx.shared import Inches, Pt, RGBColor
+            from docx.enum.text import WD_ALIGN_PARAGRAPH
+            from docx.enum.table import WD_TABLE_ALIGNMENT
+            from docx.oxml.shared import OxmlElement, qn
+            from docx.oxml.ns import nsdecls
+            from docx.oxml import parse_xml
+            
+            # Create new document
+            doc = Document()
+            
+            # Configure document margins
+            sections = doc.sections
+            for section in sections:
+                section.top_margin = Inches(1)
+                section.bottom_margin = Inches(1)
+                section.left_margin = Inches(1)
+                section.right_margin = Inches(1)
+            
+            # HEADER SECTION
+            header_para = doc.add_paragraph()
+            header_run = header_para.add_run("[Corporate Logo Placeholder]")
+            header_run.italic = True
+            header_run.font.color.rgb = RGBColor(128, 128, 128)
+            header_para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            
+            # MAIN TITLE
+            title = doc.add_heading('Solution Design Template', 0)
+            title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            title_run = title.runs[0]
+            title_run.font.color.rgb = RGBColor(0, 51, 102)
+            
+            # APPLICATION TITLE
+            app_title = doc.add_heading(f'{app_name} - {archetype.replace("_", " ").title()} Architecture', level=1)
+            app_title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            
+            # DATE AND METADATA
+            date_para = doc.add_paragraph(f'{datetime.now().strftime("%m/%d/%Y")}')
+            date_para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            
+            prepared_para = doc.add_paragraph('Prepared by Professional Banking Network Discovery Platform')
+            prepared_para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            
+            # PAGE BREAK
+            doc.add_page_break()
+            
+            # TABLE OF CONTENTS
+            doc.add_heading('Table of Contents', level=1)
+            toc_items = [
+                "1. Document Details",
+                "2. Project Summary", 
+                "3. Architecture Overview",
+                "4. Current-State Design",
+                "5. Data Flow Architecture",
+                "6. Security & Compliance View",
+                "7. Authors/Reviewers"
+            ]
+            
+            for item in toc_items:
+                toc_para = doc.add_paragraph(item, style='List Number')
+            
+            doc.add_page_break()
+            
+            # 1. DOCUMENT DETAILS
+            doc.add_heading('1. Document Details', level=1)
+            
+            # Document info table
+            doc_table = doc.add_table(rows=4, cols=2)
+            doc_table.style = 'Table Grid'
+            doc_table.alignment = WD_TABLE_ALIGNMENT.LEFT
+            
+            doc_data = [
+                ('Document Type', 'Solution Design Template'),
+                ('Application', app_name),
+                ('Architecture Pattern', archetype.replace('_', ' ').title()),
+                ('Generated Date', datetime.now().strftime('%m/%d/%Y %I:%M %p'))
+            ]
+            
+            for i, (label, value) in enumerate(doc_data):
+                doc_table.rows[i].cells[0].text = label
+                doc_table.rows[i].cells[1].text = value
+                # Bold the labels
+                doc_table.rows[i].cells[0].paragraphs[0].runs[0].bold = True
+            
+            # Confidentiality Agreement
+            doc.add_heading('1.1 Confidentiality Agreement', level=2)
+            conf_text = (
+                "This document is classified as Confidential and is provided to the intended recipients "
+                "for informational purposes only and may not be used, published or redistributed or "
+                "disclosed without prior consent. No part of it may be reproduced or disclosed without "
+                "prior consent."
+            )
+            doc.add_paragraph(conf_text)
+            
+            # 2. PROJECT SUMMARY
+            doc.add_heading('2. Project Summary', level=1)
+            
+            # Stakeholders table
+            doc.add_heading('2.1 Stakeholders', level=2)
+            stakeholder_table = doc.add_table(rows=1, cols=3)
+            stakeholder_table.style = 'Table Grid'
+            
+            # Headers
+            hdr_cells = stakeholder_table.rows[0].cells
+            hdr_cells[0].text = 'Role'
+            hdr_cells[1].text = 'Name'
+            hdr_cells[2].text = 'Contact'
+            
+            # Make headers bold
+            for cell in hdr_cells:
+                cell.paragraphs[0].runs[0].bold = True
+            
+            # Add stakeholder data
+            stakeholder_roles = [
+                ('Solution Architect', 'Professional Banking Network Discovery Platform', 'system@company.com'),
+                ('Project Manager', 'TBD', 'TBD'),
+                ('Business Contact', 'TBD', 'TBD'),
+                ('Technical Lead', 'TBD', 'TBD')
+            ]
+            
+            for role, name, contact in stakeholder_roles:
+                row_cells = stakeholder_table.add_row().cells
+                row_cells[0].text = role
+                row_cells[1].text = name
+                row_cells[2].text = contact
+            
+            # 3. ARCHITECTURE OVERVIEW
+            doc.add_heading('3. Architecture Overview', level=1)
+            
+            # EMBEDDED DIAGRAM SECTION
+            doc.add_heading('3.1 Architecture Diagram', level=2)
+            
+            # Try to embed the actual diagram
+            diagram_embedded = False
+            if drawio_file_path and drawio_file_path.exists():
+                try:
+                    # Convert Draw.io to image for embedding
+                    diagram_image = self._convert_drawio_to_image(drawio_file_path, results_dir)
+                    if diagram_image and diagram_image.exists():
+                        # Add figure caption
+                        fig_para = doc.add_paragraph("Figure 1: Current-State Architecture Diagram")
+                        fig_para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                        fig_run = fig_para.runs[0]
+                        fig_run.bold = True
+                        
+                        # Add the image
+                        doc.add_picture(str(diagram_image), width=Inches(6.5))
+                        diagram_embedded = True
+                        
+                        # Center the image
+                        last_paragraph = doc.paragraphs[-1]
+                        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                        
+                except Exception as e:
+                    logger.warning(f"Could not embed diagram image: {e}")
+            
+            if not diagram_embedded:
+                # ASCII diagram as fallback
+                doc.add_paragraph("Architecture Layout (ASCII Representation):")
+                ascii_diagram = self._create_ascii_diagram(layout)
+                ascii_para = doc.add_paragraph(ascii_diagram)
+                ascii_para.style.font.name = 'Courier New'
+                ascii_para.style.font.size = Pt(10)
+                
+                # Reference to external diagram
+                if drawio_file_path:
+                    ref_para = doc.add_paragraph(f"Professional diagram available in: {drawio_file_path.name}")
+                    ref_para.italic = True
+            
+            # 4. CURRENT-STATE DESIGN
+            doc.add_heading('4. Current-State Design', level=1)
+            
+            # Components table
+            doc.add_heading('4.1 Architecture Components', level=2)
+            comp_table = doc.add_table(rows=1, cols=4)
+            comp_table.style = 'Table Grid'
+            
+            # Component table headers
+            comp_hdr = comp_table.rows[0].cells
+            comp_hdr[0].text = 'Component Name'
+            comp_hdr[1].text = 'Type'
+            comp_hdr[2].text = 'Function'
+            comp_hdr[3].text = 'Technology'
+            
+            # Make headers bold
+            for cell in comp_hdr:
+                cell.paragraphs[0].runs[0].bold = True
+            
+            # Add component data
+            for comp in layout["components"]:
+                comp_row = comp_table.add_row().cells
+                comp_row[0].text = comp["name"]
+                comp_row[1].text = comp["type"].replace('_', ' ').title()
+                comp_row[2].text = self._get_component_function(comp["type"])
+                comp_row[3].text = self._get_component_technology(comp["type"])
+            
+            # 5. DATA FLOW ARCHITECTURE
+            if layout.get("connections"):
+                doc.add_heading('5. Data Flow Architecture', level=1)
+                doc.add_paragraph("The following table shows the data flows between components:")
+                
+                flow_table = doc.add_table(rows=1, cols=4)
+                flow_table.style = 'Table Grid'
+                
+                flow_hdr = flow_table.rows[0].cells
+                flow_hdr[0].text = 'Source Component'
+                flow_hdr[1].text = 'Target Component'
+                flow_hdr[2].text = 'Protocol/Type'
+                flow_hdr[3].text = 'Description'
+                
+                # Make headers bold
+                for cell in flow_hdr:
+                    cell.paragraphs[0].runs[0].bold = True
+                
+                for conn in layout["connections"]:
+                    source_name = next((c["name"] for c in layout["components"] if c["id"] == conn["from"]), conn["from"])
+                    target_name = next((c["name"] for c in layout["components"] if c["id"] == conn["to"]), conn["to"])
+                    
+                    flow_row = flow_table.add_row().cells
+                    flow_row[0].text = source_name
+                    flow_row[1].text = target_name
+                    flow_row[2].text = conn.get("label", "HTTP")
+                    flow_row[3].text = self._get_connection_description(conn.get("label", "HTTP"))
+            
+            # 6. SECURITY & COMPLIANCE
+            doc.add_heading('6. Security & Compliance View', level=1)
+            
+            compliance_table = doc.add_table(rows=1, cols=3)
+            compliance_table.style = 'Table Grid'
+            
+            comp_hdr = compliance_table.rows[0].cells
+            comp_hdr[0].text = 'Standard'
+            comp_hdr[1].text = 'Compliance Level'
+            comp_hdr[2].text = 'Notes'
+            
+            # Make headers bold
+            for cell in comp_hdr:
+                cell.paragraphs[0].runs[0].bold = True
+            
+            compliance_items = [
+                ('PCI-DSS', 'Level 1', 'Payment card data protection'),
+                ('SOX', 'Compliant', 'Financial reporting controls'),
+                ('FFIEC', 'Compliant', 'Banking supervision requirements'),
+                ('GDPR', 'Compliant', 'Data privacy protection')
+            ]
+            
+            for standard, level, notes in compliance_items:
+                comp_row = compliance_table.add_row().cells
+                comp_row[0].text = standard
+                comp_row[1].text = level
+                comp_row[2].text = notes
+            
+            # 7. AUTHORS/REVIEWERS
+            doc.add_heading('7. Authors/Reviewers', level=1)
+            author_table = doc.add_table(rows=1, cols=3)
+            author_table.style = 'Table Grid'
+            
+            author_hdr = author_table.rows[0].cells
+            author_hdr[0].text = 'Role'
+            author_hdr[1].text = 'Completed By'
+            author_hdr[2].text = 'Date'
+            
+            # Make headers bold
+            for cell in author_hdr:
+                cell.paragraphs[0].runs[0].bold = True
+            
+            # Add author info
+            author_row = author_table.add_row().cells
+            author_row[0].text = 'Solution Architecture'
+            author_row[1].text = 'Professional Banking Network Discovery Platform'
+            author_row[2].text = datetime.now().strftime('%m/%d/%Y')
+            
+            # Save document
+            clean_app_name = re.sub(r'[<>:"/\\|?*]', '-', app_name)
+            filename = f"{clean_app_name}_{archetype}_{job_id}.docx"
+            file_path = results_dir / filename
+            
+            doc.save(str(file_path))
+            logger.info(f"Generated professional Word document: {file_path}")
+            return file_path
+            
+        except ImportError as e:
+            logger.error(f"python-docx not available: {e}")
+            return self._create_text_fallback(layout, archetype, app_name, job_id, results_dir)
+        except Exception as e:
+            logger.error(f"Error creating professional Word document: {e}")
+            return self._create_text_fallback(layout, archetype, app_name, job_id, results_dir)
+        
+    def _convert_drawio_to_image(self, drawio_file: Path, output_dir: Path) -> Optional[Path]:
+        """Convert Draw.io file to PNG image for embedding"""
+        try:
+            from PIL import Image, ImageDraw, ImageFont
+            
+            logger.info(f"Attempting to create diagram image for {drawio_file}")
+            
+            # Create a simple diagram representation
+            img = Image.new('RGB', (800, 600), color='white')
+            draw = ImageDraw.Draw(img)
+            
+            # Use default font to avoid font loading issues
+            font = ImageFont.load_default()
+            
+            # Draw a simple representation
+            draw.rectangle([50, 50, 750, 550], outline='black', width=2)
+            draw.text((400, 30), "Architecture Diagram", fill='black', font=font, anchor='mm')
+            draw.text((400, 100), f"Generated from: {drawio_file.name}", fill='blue', font=font, anchor='mm')
+            
+            # Add some basic shapes to represent the architecture
+            draw.rectangle([100, 200, 250, 280], outline='blue', fill='lightblue', width=2)
+            draw.text((175, 240), "Load Balancer", fill='black', font=font, anchor='mm')
+            
+            draw.rectangle([300, 200, 450, 280], outline='green', fill='lightgreen', width=2)
+            draw.text((375, 240), "Web Server", fill='black', font=font, anchor='mm')
+            
+            draw.rectangle([500, 200, 650, 280], outline='orange', fill='lightyellow', width=2)
+            draw.text((575, 240), "App Server", fill='black', font=font, anchor='mm')
+            
+            draw.rectangle([600, 350, 700, 450], outline='purple', fill='lavender', width=2)
+            draw.text((650, 400), "Database", fill='black', font=font, anchor='mm')
+            
+            # Add arrows
+            draw.line([(250, 240), (300, 240)], fill='black', width=3)
+            draw.line([(450, 240), (500, 240)], fill='black', width=3)
+            draw.line([(575, 280), (650, 350)], fill='black', width=3)
+            
+            # Save the image
+            png_file = output_dir / f"{drawio_file.stem}_diagram.png"
+            img.save(str(png_file))
+            logger.info(f"Successfully created diagram image: {png_file}")
+            
+            # Verify the file was created
+            if png_file.exists():
+                logger.info(f"PNG file verified, size: {png_file.stat().st_size} bytes")
+                return png_file
+            else:
+                logger.error("PNG file was not created successfully")
+                return None
+            
+        except ImportError as e:
+            logger.error(f"PIL not available for diagram generation: {e}")
+            return None
+        except Exception as e:
+            logger.error(f"Failed to create diagram image: {e}")
+            return None
+    
+    def _get_connection_description(self, protocol: str) -> str:
+        """Get description for connection type"""
+        descriptions = {
+            'HTTP': 'Standard web protocol communication',
+            'HTTPS': 'Secure web protocol communication',
+            'SQL': 'Database query and data operations',
+            'API': 'Application programming interface calls',
+            'Message': 'Asynchronous message passing',
+            'TCP': 'Transmission control protocol'
+        }
+        return descriptions.get(protocol, 'Standard system communication')   
+        
+    def _get_component_function(self, comp_type: str) -> str:
+        """Get functional description for component type"""
+        functions = {
+            'web_server': 'Handles HTTP requests and serves web content',
+            'database': 'Stores and manages application data',
+            'api_gateway': 'Routes and manages API calls',
+            'microservice': 'Provides specific business functionality',
+            'load_balancer': 'Distributes traffic across multiple servers',
+            'message_queue': 'Handles asynchronous message processing',
+            'app_server': 'Processes business logic and application requests',
+            'data_warehouse': 'Stores and analyzes large datasets'
+        }
+        return functions.get(comp_type, 'Provides system functionality')
+        
+    def _get_component_technology(self, comp_type: str) -> str:
+        """Get technology stack for component type"""
+        technologies = {
+            'web_server': 'Apache/Nginx, Node.js',
+            'database': 'PostgreSQL/MySQL/MongoDB',
+            'api_gateway': 'Kong/AWS API Gateway',
+            'microservice': 'Docker, Kubernetes',
+            'load_balancer': 'HAProxy/AWS ALB',
+            'message_queue': 'Apache Kafka/RabbitMQ',
+            'app_server': 'Java Spring/Node.js/.NET',
+            'data_warehouse': 'Snowflake/Redshift/BigQuery'
+        }
+        return technologies.get(comp_type, 'Enterprise Standard')
+
+    def _create_ascii_diagram(self, layout: Dict[str, Any]) -> str:
+        """Create ASCII art representation of the architecture"""
+        components = layout.get("components", [])
+        if not components:
+            return "No components defined"
+        
+        # Simple ASCII representation
+        ascii_lines = [
+            "Architecture Layout:",
+            "=" * 50,
+            ""
+        ]
+        
+        # Group components by approximate Y position for layout
+        y_groups = {}
+        for comp in components:
+            y = comp.get("y", 0)
+            y_group = y // 100 * 100  # Group by 100px intervals
+            if y_group not in y_groups:
+                y_groups[y_group] = []
+            y_groups[y_group].append(comp)
+        
+        # Create ASCII layout
+        for y_level in sorted(y_groups.keys()):
+            level_components = sorted(y_groups[y_level], key=lambda c: c.get("x", 0))
+            
+            # Component boxes
+            comp_line = ""
+            for i, comp in enumerate(level_components):
+                if i > 0:
+                    comp_line += "  <-->  "
+                comp_name = comp["name"][:12]  # Truncate long names
+                comp_line += f"[{comp_name:^12}]"
+            
+            ascii_lines.append(comp_line)
+            ascii_lines.append("")
+        
+        # Add connections summary
+        connections = layout.get("connections", [])
+        if connections:
+            ascii_lines.append("Data Flows:")
+            ascii_lines.append("-" * 30)
+            for conn in connections:
+                source = next((c["name"] for c in components if c["id"] == conn["from"]), conn["from"])
+                target = next((c["name"] for c in components if c["id"] == conn["to"]), conn["to"])
+                label = conn.get("label", "")
+                ascii_lines.append(f"{source} --> {target} ({label})")
+        
+        return "\n".join(ascii_lines)
+        
+    def _create_text_fallback(self, layout: Dict[str, Any], archetype: str, 
+                            app_name: str, job_id: str, results_dir: Path) -> Path:
+        """Create text file fallback if Word generation fails"""
+        
+        clean_app_name = re.sub(r'[<>:"/\\|?*]', '-', app_name)
+        filename = f"{clean_app_name}_{archetype}_{job_id}.txt"
+        file_path = results_dir / filename
+        
+        content = f"""
+    Solution Design Template
+    {app_name} - {archetype.replace('_', ' ').title()} Architecture
+    Generated: {datetime.now().strftime('%B %d, %Y at %I:%M %p')}
+
+    COMPONENTS:
+    {chr(10).join(f"- {comp['name']} ({comp['type']})" for comp in layout['components'])}
+
+    DATA FLOWS:
+    """
+        
+        # Add connections if available
+        if layout.get("connections"):
+            for conn in layout["connections"]:
+                source_name = next((c["name"] for c in layout["components"] if c["id"] == conn["from"]), conn["from"])
+                target_name = next((c["name"] for c in layout["components"] if c["id"] == conn["to"]), conn["to"])
+                content += f"- {source_name} -> {target_name} ({conn.get('label', 'connection')})\n"
+        
+        content += """
+    COMPLIANCE:
+    - PCI-DSS (Payment Card Industry Data Security Standard)
+    - SOX (Sarbanes-Oxley Act) 
+    - FFIEC (Federal Financial Institutions Examination Council)
+    - GDPR (General Data Protection Regulation)
+
+    Note: Install python-docx for proper Word document generation.
+    pip install python-docx
+    """
+        
+        with open(file_path, 'w', encoding='utf-8') as f:
+            f.write(content)
+        
+        logger.info(f"Created text fallback: {file_path}")
+        return file_path
+
+
+        
+
 async def generate_high_quality_pdf(drawio_file_path: Path, output_dir: Path, job_id: str = None) -> Optional[Path]:
     """Generate high-quality PDF from Draw.io file using Playwright"""
     if not PLAYWRIGHT_AVAILABLE:
@@ -788,6 +1279,31 @@ def generate_all_formats(archetype: str, applications: List[Dict[str, Any]],
                 })
             except Exception as e:
                 logger.error(f"Fallback PDF generation failed: {e}")
+
+
+        # Generate Word Document
+        try:
+            word_gen = WordDocumentGenerator()
+            layout = drawio_gen._generate_layout_for_archetype(archetype, applications)
+            
+            # Create document directory
+            document_dir = base_results_dir / "document"
+            document_dir.mkdir(parents=True, exist_ok=True)
+            
+            word_file = word_gen.generate_word_document(layout, archetype, clean_app_name, job_id, document_dir)
+            
+            generated_files.append({
+                "format": "document",
+                "path": str(word_file),
+                "filename": word_file.name,
+                "file_size": word_file.stat().st_size,
+                "directory": "results/document/",
+                "description": "Professional Word documentation",
+                "quality": "professional"
+            })
+        except Exception as e:
+            logger.error(f"Word document generation failed: {e}")
+            
         
         result = {
             "success": True,
@@ -799,7 +1315,8 @@ def generate_all_formats(archetype: str, applications: List[Dict[str, Any]],
             "formats_generated": [f["format"] for f in generated_files],
             "directories": {
                 "draw_io_csv": str(lucid_dir),
-                "pdf": str(pdf_dir)
+                "pdf": str(pdf_dir),
+                "document": str(document_dir) 
             },
             "generated_at": datetime.now().isoformat(),
             "drawio_file_path": str(drawio_file) if drawio_file else None,

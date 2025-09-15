@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Universal Debug Wrapper Dependencies
 watchdog>=3.0.0
 psutil>=5.9.0
@@ -121,7 +120,6 @@ marshmallow==3.20.2
 
 # For statistical analysis in migration planning
 statsmodels==0.14.0
->>>>>>> 162c353321317a0094e7f5456cb8392b2851cea8
 
 # Optional but recommended
 beautifulsoup4>=4.11.0

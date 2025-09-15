@@ -27,3 +27,13 @@ debug_reports/
 # OS
 .DS_Store
 Thumbs.db
+
+# Application specific
+results/
+*.log
+*.xlsx
+*.docx
+*.pdf
+*.vsdx
+temp/
+logs/
