@@ -1,3 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.pytest_cache/
+*.egg-info/
+
+# Virtual Environment
+venv/
+env/
+.venv/
+
 # Debug Wrapper Files
 debug.log
 logs/
@@ -10,6 +25,22 @@ __pycache__/
 env/
 venv/
 .venv/
+
+# Data Files (exclude large datasets)
+data/App_Code_*.csv
+data/App_Code_*.xlsx
+*.csv
+*.xlsx
+
+
+# Output Directories (generated content)
+data_staging/
+complete_composite_analysis/
+enterprise_diagrams/
+animated_flow_diagrams/
+*_analysis_results/
+
+
 pip-log.txt
 pip-delete-this-directory.txt
 

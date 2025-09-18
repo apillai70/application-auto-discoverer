@@ -1,0 +1,79 @@
+NETWORK CONNECTIVITY PATTERN ANALYSIS
+==================================================
+
+TOP 15 TRAFFIC FLOWS:
+------------------------------
+ 1. 10.164.145.79 -> 10.164.105.247
+    Traffic: 10,972,850 bytes (2 connections)
+    Protocols: UDP
+
+ 2. 10.164.144.196 -> 10.164.176.47
+    Traffic: 9,950,097 bytes (1 connections)
+    Protocols: HTTPS
+
+ 3. 10.164.216.3 -> 10.164.105.183
+    Traffic: 9,852,826 bytes (1 connections)
+    Protocols: HTTP
+
+ 4. 2001:0db8:cc48:bf30:.. -> 2001:0db8:730b:20c8:..
+    Traffic: 9,843,289 bytes (1 connections)
+    Protocols: TCP
+
+ 5. 10.164.145.212 -> 10.164.105.21
+    Traffic: 9,725,027 bytes (1 connections)
+    Protocols: HTTPS
+
+ 6. 10.164.66.28 -> 10.164.105.57
+    Traffic: 9,695,564 bytes (1 connections)
+    Protocols: HTTPS
+
+ 7. 2001:0db8:cc48:bf30:.. -> 2001:0db8:730b:20c8:..
+    Traffic: 9,665,486 bytes (1 connections)
+    Protocols: UDP
+
+ 8. 2001:0db8:2bda:f8d3:.. -> 2001:0db8:548b:87b5:..
+    Traffic: 9,641,116 bytes (1 connections)
+    Protocols: HTTPS
+
+ 9. 2001:0db8:43be:f201:.. -> 2001:0db8:304b:31a0:..
+    Traffic: 9,623,735 bytes (1 connections)
+    Protocols: UDP
+
+10. 10.164.144.126 -> 10.164.105.233
+    Traffic: 9,610,493 bytes (1 connections)
+    Protocols: TCP
+
+11. 10.164.144.245 -> 10.164.105.8
+    Traffic: 9,592,962 bytes (1 connections)
+    Protocols: UDP
+
+12. 10.164.144.29 -> 10.164.105.94
+    Traffic: 9,521,925 bytes (1 connections)
+    Protocols: UDP
+
+13. 2001:0db8:ef1d:1bbc:.. -> 2001:0db8:37f2:7f4f:..
+    Traffic: 9,517,310 bytes (1 connections)
+    Protocols: TCP
+
+14. 10.165.162.83 -> 10.164.106.216
+    Traffic: 9,492,804 bytes (1 connections)
+    Protocols: UDP
+
+15. 10.164.145.144 -> 10.164.105.177
+    Traffic: 9,463,009 bytes (1 connections)
+    Protocols: HTTP
+
+NODE CONNECTIVITY ANALYSIS:
+------------------------------
+TOP CONNECTIVITY HUBS:
+
+ 1. 10.164.105.85 (Total: 11, Out: 0, In: 11)
+ 2. 10.164.105.226 (Total: 10, Out: 1, In: 9)
+ 3. 10.164.105.179 (Total: 10, Out: 1, In: 9)
+ 4. 10.164.105.16 (Total: 10, Out: 1, In: 9)
+ 5. 10.164.105.189 (Total: 10, Out: 3, In: 7)
+ 6. 10.164.105.229 (Total: 10, Out: 0, In: 10)
+ 7. 10.164.105.37 (Total: 9, Out: 4, In: 5)
+ 8. 10.164.105.117 (Total: 9, Out: 2, In: 7)
+ 9. 10.164.105.94 (Total: 9, Out: 2, In: 7)
+10. 10.164.105.116 (Total: 9, Out: 1, In: 8)
