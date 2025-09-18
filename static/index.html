@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+	<meta http-equiv="Pragma" content="no-cache">
+	<meta http-equiv="Expires" content="0">
     <title>Network Topology Dashboard</title>
     <link rel="stylesheet" href="/static/ui/css/common.css">
     <link rel="stylesheet" href="/static/ui/css/topology.css">
@@ -11,7 +14,29 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.min.js"></script>
+	<script>
+		// Force browser to clear cache for specific files
+		if ('caches' in window) {
+			caches.keys().then(function(names) {
+				names.forEach(function(name) {
+					caches.delete(name);
+				});
+			});
+		}
 
+		// Add version parameter to force reload
+		const version = new Date().getTime();
+		const scripts = [
+			'/static/ui/js/app-data.js',
+			'/static/ui/js/data-source-manager.js'
+		];
+
+		scripts.forEach(function(src) {
+			const script = document.createElement('script');
+			script.src = src + '?v=' + version;
+			document.head.appendChild(script);
+		});
+	</script>
 </head>
 <body>
     <div class="container">
@@ -93,37 +118,43 @@
 		<div id="data-management-bar" style="background: var(--bg-secondary); padding: 12px 16px; margin-bottom: 16px; border-radius: 8px; border-left: 4px solid var(--accent-blue);">
 			<div style="display: flex; align-items: center; justify-content: space-between; gap: 20px;">
 				
-				<!-- Left Side: Data Source Info -->
+				<!-- Left Side: Data Source Info with Pipeline Status -->
 				<div style="flex: 1; display: flex; align-items: center; gap: 12px; min-width: 0;">
 					<strong style="white-space: nowrap;">📂 Data Source:</strong>
 					<div style="display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0;">
 						<div style="display: flex; align-items: center; gap: 8px;">
 							<div style="display: flex; align-items: center; gap: 8px;">
-								<!-- Upload Button -->
+								<!-- Pipeline Status Indicator -->
+								<div id="pipeline-status-indicator" style="display: flex; align-items: center; gap: 4px;">
+									<span id="pipeline-status-dot" class="status-dot" style="width: 8px; height: 8px;"></span>
+									<span id="pipeline-status-text" style="font-size: 11px; color: var(--text-muted);">Checking...</span>
+								</div>
+								
+								<!-- Divider -->
+								<span style="color: var(--text-muted); font-size: 10px;">|</span>
+								
+								<!-- Your existing buttons -->
 								<button onclick="uploadCSVFiles()" 
 										class="topology-btn-small" 
 										style="background: var(--accent-blue); color: white; padding: 4px 8px; border: none; border-radius: 4px; cursor: pointer; font-size: 11px;">
 									📁 Upload CSV
 								</button>
 								
-								<!-- Clear Data Button -->
 								<button onclick="clearUploadedData()" 
 										class="topology-btn-small" 
 										style="background: var(--accent-orange); color: white; padding: 4px 8px; border: none; border-radius: 4px; cursor: pointer; font-size: 11px;">
 									🗑️ Clear
 								</button>
 								
-								<!-- Current Source Display -->
 								<span id="current-source-name" style="font-size: 11px; color: var(--text-muted);">
 									No files uploaded
 								</span>
 								
-								<!-- Hidden file input -->
 								<input type="file" id="csv-upload-input" accept=".csv" multiple style="display: none;">
-							</div>	
+							</div>  
 						</div>
 						<div id="data-metadata" style="font-size: 11px; color: var(--text-muted);">
-							<!-- Metadata will be populated by JavaScript -->
+							<span id="pipeline-file-info">Initializing pipeline discovery...</span>
 						</div>
 					</div>
 				</div>
@@ -472,11 +503,10 @@
         <!-- Toast Container -->
         <div id="toast-container"></div>
     </div>
-
+	
     <!-- Scripts - IMPORTANT: Load order matters! -->
-    <script src="/static/ui/js/csv-data-loader.js"></script>
-    <script src="/static/ui/js/app-data.js"></script>
-	<script src="/static/ui/js/data-source-manager.js"></script> 
+	<script src="/static/ui/js/data-config.js"></script>
+    <script src="/static/ui/js/csv-data-loader.js"></script>	
     <script src="/static/ui/js/common.js"></script>
     <script src="/static/ui/js/topology.js"></script>
     <script src="/static/ui/js/enhanced-filters.js"></script>
@@ -662,7 +692,7 @@
 				}
 			}
 		}
-
+		
 		// Initialize dynamic data source after AppData is ready
 		document.addEventListener('DOMContentLoaded', () => {
 			setTimeout(() => {
@@ -700,7 +730,127 @@
             
             setTimeout(checkDataReady, 1000);
         });
-
+		// Pipeline Status Management
+		class PipelineStatusManager {
+			constructor() {
+				this.statusDot = document.getElementById('pipeline-status-dot');
+				this.statusText = document.getElementById('pipeline-status-text');
+				this.fileInfo = document.getElementById('pipeline-file-info');
+				this.isInitialized = false;
+				
+				this.init();
+			}
+			
+			async init() {
+				await this.checkPipelineStatus();
+				this.startPeriodicChecks();
+				this.isInitialized = true;
+			}
+			
+			async checkPipelineStatus() {
+				try {
+					if (window.AppData && window.AppData.refreshPipelineStatus) {
+						const status = await window.AppData.refreshPipelineStatus();
+						this.updateStatus(status);
+					} else if (window.DataConfig && window.DataConfig.getConfig) {
+						const config = await window.DataConfig.getConfig();
+						this.updateFromConfig(config);
+					}
+				} catch (error) {
+					console.warn('Pipeline status check failed:', error);
+					this.updateStatus(null);
+				}
+			}
+			
+			updateStatus(pipelineStatus) {
+				if (!pipelineStatus) {
+					this.setStatus('unknown', 'Pipeline status unknown', 'No pipeline information available');
+					return;
+				}
+				
+				const health = pipelineStatus.pipeline_health || {};
+				const currentFile = pipelineStatus.current_active_file;
+				
+				switch (health.status) {
+					case 'healthy':
+						this.setStatus('healthy', 'Pipeline healthy', `Active: ${currentFile || 'No file'}`);
+						break;
+					case 'backlog':
+						this.setStatus('warning', 'Processing backlog', `${health.message || 'Files pending'}`);
+						break;
+					case 'issues':
+						this.setStatus('error', 'Pipeline issues', `${health.message || 'Check failed files'}`);
+						break;
+					case 'no_data':
+						this.setStatus('inactive', 'No data files', 'Add CSV files to data_staging/');
+						break;
+					default:
+						this.setStatus('unknown', 'Checking pipeline...', 'Status updating...');
+				}
+			}
+			
+			updateFromConfig(config) {
+				if (!config) {
+					this.setStatus('inactive', 'No data available', 'No CSV files found');
+					return;
+				}
+				
+				const filename = config.filename || 'Unknown file';
+				const status = config.status || 'unknown';
+				
+				switch (status) {
+					case 'available':
+						this.setStatus('healthy', 'Data available', `Using: ${filename}`);
+						break;
+					case 'fallback':
+						this.setStatus('warning', 'Using fallback', `Fallback: ${filename}`);
+						break;
+					case 'no_data':
+						this.setStatus('inactive', 'No data', 'No CSV files available');
+						break;
+					default:
+						this.setStatus('unknown', 'Checking...', 'Discovering files...');
+				}
+			}
+			
+			setStatus(type, text, fileInfo) {
+				const colors = {
+					'healthy': '#10b981',
+					'warning': '#f59e0b', 
+					'error': '#ef4444',
+					'inactive': '#6b7280',
+					'unknown': '#8b5cf6'
+				};
+				
+				if (this.statusDot) {
+					this.statusDot.style.background = colors[type] || colors.unknown;
+				}
+				
+				if (this.statusText) {
+					this.statusText.textContent = text;
+					this.statusText.style.color = colors[type] || colors.unknown;
+				}
+				
+				if (this.fileInfo) {
+					this.fileInfo.textContent = fileInfo;
+				}
+			}
+			
+			startPeriodicChecks() {
+				// Check pipeline status every 30 seconds
+				setInterval(() => {
+					this.checkPipelineStatus();
+				}, 30000);
+			}
+		}
+		// Initialize pipeline status manager
+		document.addEventListener('DOMContentLoaded', () => {
+			setTimeout(() => {
+				if (document.getElementById('pipeline-status-dot')) {
+					window.pipelineStatusManager = new PipelineStatusManager();
+				}
+			}, 2000); // Wait for AppData to initialize
+		});
         // Enhanced error handling
         window.addEventListener('error', (event) => {
             if (event.message && event.message.includes('CSV')) {

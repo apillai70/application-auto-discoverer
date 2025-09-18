@@ -100,7 +100,11 @@ class NetworkBasedArchetypeClassificationDashboard {
     async loadDataFromStaticFiles() {
         try {
             // Fallback to your mounted static files
-            const csvResponse = await fetch('/data_staging/updated_normalized_synthetic_traffic.csv');
+            const csvEndpoint = await getCurrentCsvEndpoint();
+			if (!csvEndpoint) {
+				throw new Error('No CSV data available');
+			}
+			const csvResponse = await fetch(csvEndpoint);
             const yamlResponse = await fetch('/templates/archetype_templates.yaml');
             
             if (csvResponse.ok && yamlResponse.ok) {

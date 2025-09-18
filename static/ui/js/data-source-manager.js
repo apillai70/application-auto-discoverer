@@ -185,12 +185,12 @@ class DataSourceManager {
             .map(item => item.record);
 
         // Update appData with consolidated data
-        this.appData.csvData = consolidatedRecords;
-        this.appData.csvTrafficData = consolidatedRecords;
+		//  this.appData.csvData = consolidatedRecords; // Disabled for pipeline workflow
+		//  this.appData.csvTrafficData = consolidatedRecords; // Disabled for pipeline workflow
 
         // Regenerate applications and topology
-        this.appData.processCSVData();
-        this.appData.generateBasicTopology();
+        // Note: processCSVData called elsewhere with proper parameters
+        this.appData.generateNetworkTopology(["all"]);
 
         console.log(`Consolidated ${consolidatedRecords.length} unique records from ${this.uploadedFiles.length} files`);
     }

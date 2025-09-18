@@ -1,0 +1,10 @@
+{
+  "filename": "XECHK_normalized_20250917_141802.csv",
+  "processed_at": "2025-09-17T19:29:04.562623",
+  "action": "processed",
+  "source_data": {
+    "recordCount": 5000,
+    "applicationCount": 264,
+    "processedAt": "2025-09-17T23:29:04.560Z"
+  }
+}

@@ -1,10 +1,10 @@
 {
   "metadata": {
     "export_date": "2025-08-25T09:04:40.912243",
-    "source_file": "updated_normalized_synthetic_traffic.csv",
+    "source_file": "{{DYNAMIC_CSV_FILENAME}}",
     "total_records": 100000,
     "version": "1.0.0",
-    "last_updated": "2025-08-25T09:04:40.912243"
+    "last_updated": "{{LAST_UPDATED}}"
   },
   "applications": [
     {

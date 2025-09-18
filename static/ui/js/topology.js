@@ -593,28 +593,37 @@ class NetworkTopologyDashboard {
         }, 3000);
     }
 
-    setupNodeTypeFilters() {
-        const filters = {
-            'filter-servers': ['web-tier', 'frontend', 'backend', 'app-tier'],
-            'filter-databases': ['database', 'storage', 'data-tier'],
-            'filter-load-balancers': ['gateway', 'api-gateway', 'load-balancer'],
-            'filter-microservices': ['service', 'microservice', 'worker']
-        };
-        
-        Object.entries(filters).forEach(([checkboxId, types]) => {
-            const checkbox = document.getElementById(checkboxId);
-            if (checkbox) {
-                checkbox.addEventListener('change', (e) => {
-                    if (e.target.checked) {
-                        types.forEach(t => this.filteredNodeTypes.add(t));
-                    } else {
-                        types.forEach(t => this.filteredNodeTypes.delete(t));
-                    }
-                    this.render();
-                });
-            }
-        });
-    }
+	setupNodeTypeFilters() {
+		// First, populate filteredNodeTypes with actual node types from your data
+		if (this.networkData && this.networkData.nodes) {
+			const actualTiers = [...new Set(this.networkData.nodes.map(n => n.tier).filter(t => t))];
+			const actualTypes = [...new Set(this.networkData.nodes.map(n => n.type).filter(t => t))];
+			this.filteredNodeTypes = new Set([...actualTiers, ...actualTypes]);
+		}
+		
+		// Then set up the checkbox filters (they'll start checked)
+		const filters = {
+			'filter-servers': ['web-tier', 'frontend', 'backend', 'app-tier'],
+			'filter-databases': ['database', 'storage', 'data-tier'],
+			'filter-load-balancers': ['gateway', 'api-gateway', 'load-balancer'],
+			'filter-microservices': ['service', 'microservice', 'worker']
+		};
+		
+		Object.entries(filters).forEach(([checkboxId, types]) => {
+			const checkbox = document.getElementById(checkboxId);
+			if (checkbox) {
+				checkbox.checked = true;
+				checkbox.addEventListener('change', (e) => {
+					if (e.target.checked) {
+						types.forEach(t => this.filteredNodeTypes.add(t));
+					} else {
+						types.forEach(t => this.filteredNodeTypes.delete(t));
+					}
+					this.render();
+				});
+			}
+		});
+	}
 
     // ============= PANELS =============
     
@@ -900,16 +909,32 @@ class NetworkTopologyDashboard {
         this.svg.selectAll(".empty-state").remove();
         
         const data = this.filterData();
-        
+         console.log('=== RENDER DEBUG ===');
+		console.log('Raw nodes:', this.networkData.nodes.length);
+		console.log('Filtered nodes:', data.nodes.length);
+		const allTiers = [...new Set(this.networkData.nodes.map(n => n.tier).filter(t => t))];
+		const allTypes = [...new Set(this.networkData.nodes.map(n => n.type).filter(t => t))];
+		console.log('Filter currently allows:', [...this.filteredNodeTypes]);
+		console.log('==================');
+		
+		// Temporarily fix the filter to include all your actual node types
+		this.filteredNodeTypes = new Set([...allTiers, ...allTypes]);
+		console.log('Filter updated to allow:', [...this.filteredNodeTypes]);
+	
+	    // Re-filter with updated types
+		const newData = this.filterData();
+		console.log('Nodes after filter update:', newData.nodes.length);
+		console.log('==================');
+		
         if (!data.nodes || data.nodes.length === 0) {
             this.renderEmptyState();
             return;
         }
         
-        this.setupSimulation(data);
-        this.renderLinks(data);
-        this.renderNodes(data);
-        this.renderLabels(data);
+        this.setupSimulation(newData);
+        this.renderLinks(newData);
+        this.renderNodes(newData);
+        this.renderLabels(newData);
         this.renderTrafficFlow();
         
         if (this.displayOptions.showLinkLabels) {
@@ -938,22 +963,37 @@ class NetworkTopologyDashboard {
             this.simulation.stop();
         }
         
-        data.nodes.forEach(node => {
-            if (!node.x) node.x = this.width / 2 + (Math.random() - 0.5) * 100;
-            if (!node.y) node.y = this.height / 2 + (Math.random() - 0.5) * 100;
-        });
+		const nodeCount = data.nodes.length;
+ 
+		data.nodes.forEach((node, i) => {
+			if (!node.x || !node.y) {
+				// Better initial positioning for large networks
+				const angle = (i / nodeCount) * 2 * Math.PI;
+				const radius = Math.min(this.width, this.height) * 0.4;
+				node.x = this.width / 2 + Math.cos(angle) * radius;
+				node.y = this.height / 2 + Math.sin(angle) * radius;
+			}
+		});
         
+		// Scale forces for large networks
+		const chargeStrength = Math.max(-50, -300 / Math.sqrt(nodeCount));
+		const linkDistance = nodeCount > 100 ? 30 : 50;
+		const linkStrength = nodeCount > 100 ? 0.05 : 0.1;
+    
+		
         this.simulation = d3.forceSimulation(data.nodes)
-            .force("link", d3.forceLink(data.links)
-                .id(d => d.id)
-                .distance(100)
-                .strength(0.5))
-            .force("charge", d3.forceManyBody().strength(-300))
-            .force("center", d3.forceCenter(this.width / 2, this.height / 2))
-            .on("tick", () => this.updatePositions());
-        
-        this.simulation.tick(50);
-    }
+			.force("link", d3.forceLink(data.links)
+				.id(d => d.id)
+				.distance(linkDistance)
+				.strength(linkStrength))
+			.force("charge", d3.forceManyBody().strength(chargeStrength))
+			.force("center", d3.forceCenter(this.width / 2, this.height / 2))
+			.force("collision", d3.forceCollide().radius(12))
+			.on("tick", () => this.updatePositions());
+		
+		const tickCount = nodeCount > 300 ? 30 : 50;
+		this.simulation.tick(tickCount);
+	}
 
     applyLayout() {
         if (!this.simulation) return;

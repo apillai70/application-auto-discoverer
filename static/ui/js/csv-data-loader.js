@@ -14,7 +14,13 @@ class CSVDataLoader {
     }
 
     // Load CSV file from the specified path
-    async loadCSVData(filePath = '../data_staging/updated_normalized_synthetic_traffic.csv') {
+    async loadCSVData(filePath = null) {
+		if (!filePath) {
+			filePath = await getCurrentCsvEndpoint();
+			if (!filePath) {
+				throw new Error('No CSV data available');
+			}
+		}
         try {
             console.log('📂 Loading CSV data from:', filePath);
             

@@ -1,12 +1,11 @@
-# main.py - Application Auto-Discovery Platform with Enhanced Diagram Service
-# Fixed version with proper WebSocket support
+# main.py - Application Auto-Discovery Platform with Enhanced Diagram Service and Dynamic File Discovery
+# Updated version with dynamic CSV file discovery for data_staging pipeline
 
 # =================== IMPORTS ===================
 from fastapi import FastAPI, HTTPException, BackgroundTasks, WebSocket, Request, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, FileResponse, HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
-from services.archetype_service import ArchetypeService
 from contextlib import asynccontextmanager
 from datetime import datetime
 from pydantic import BaseModel, validator
@@ -18,6 +17,8 @@ import sys
 import json
 import zipfile
 import tempfile
+import shutil
+import time
 import pandas as pd
 from pathlib import Path
 import uuid
@@ -32,28 +33,175 @@ logger = logging.getLogger(__name__)
 project_root = Path(__file__).parent
 sys.path.insert(0, str(project_root))
 
-# =================== ROUTER IMPORTS WITH ERROR HANDLING ===================
+# =================== REQUEST MODELS ===================
+class EnhancedDiagramRequest(BaseModel):
+    diagram_type: str = "network_topology"
+    data: Dict[str, Any] = {}
+    quality_level: Optional[str] = "professional"
+    output_format: Optional[str] = "lucid"
+    use_csv: Optional[bool] = True
+    
+    @validator('output_format')
+    def validate_format(cls, v):
+        valid_formats = ["lucid", "document", "excel", "pdf", "all"]
+        if v not in valid_formats:
+            return "lucid"
+        return v
+
+class LegacyDocumentRequest(BaseModel):
+    output_type: str = "all"
+    data: Dict[str, Any] = {}
+    user_preferences: Dict[str, Any] = {}
+
+class MoveFileRequest(BaseModel):
+    filename: str
+    action: str  # "processed" or "failed"
+    error: str = None
+    sourceData: dict = None
+    failedAt: str = None
+
+class SaveTopologyRequest(BaseModel):
+    filename: str
+    data: dict
+
+# =================== DYNAMIC FILE DISCOVERY SERVICE ===================
+class FileDiscoveryService:
+    """Dynamic file discovery service for data_staging pipeline"""
+    
+    def __init__(self, data_staging_dir: str = "data_staging"):
+        self.data_staging_dir = Path(data_staging_dir)
+        self.processed_dir = self.data_staging_dir / "processed"
+        self.failed_dir = self.data_staging_dir / "failed"
+        self.pending_dir = self.data_staging_dir  # Root level for pending files
+    
+    def get_latest_processed_csv(self, pattern: str = "*traffic*.csv") -> Optional[str]:
+        """Get the most recently processed CSV file"""
+        if not self.processed_dir.exists():
+            return None
+            
+        csv_files = list(self.processed_dir.glob(pattern))
+        if not csv_files:
+            # Try broader pattern
+            csv_files = list(self.processed_dir.glob("*.csv"))
+        
+        if not csv_files:
+            return None
+        
+        # Sort by modification time, get the latest
+        latest_file = max(csv_files, key=lambda f: f.stat().st_mtime)
+        return latest_file.name
+    
+    def get_pending_csv_files(self, pattern: str = "*.csv") -> List[str]:
+        """Get CSV files waiting to be processed (in root data_staging)"""
+        csv_files = []
+        for file_path in self.data_staging_dir.glob(pattern):
+            # Only include files in root directory (not in subdirectories)
+            if file_path.parent == self.data_staging_dir:
+                csv_files.append(file_path.name)
+        return sorted(csv_files, key=lambda f: (self.data_staging_dir / f).stat().st_mtime, reverse=True)
+    
+    def get_current_active_csv(self) -> Optional[str]:
+        """Get the CSV file that should be used by the frontend
+        Priority: 1) Latest processed, 2) Latest pending, 3) Legacy hardcoded file
+        """
+        # First, try to get latest processed file
+        latest_processed = self.get_latest_processed_csv()
+        if latest_processed:
+            return f"processed/{latest_processed}"
+        
+        # If no processed files, check for pending files with traffic pattern
+        pending_files = self.get_pending_csv_files("*traffic*.csv")
+        if pending_files:
+            return pending_files[0]  # Most recent pending
+        
+        # Check for any CSV files
+        pending_files = self.get_pending_csv_files("*.csv")
+        if pending_files:
+            return pending_files[0]
+        
+        # Fallback to hardcoded legacy filename if it exists
+        legacy_file = "updated_normalized_synthetic_traffic.csv"
+        if (self.data_staging_dir / legacy_file).exists():
+            return legacy_file
+        
+        return None
+    
+    def get_file_status_report(self) -> Dict:
+        """Complete status of all CSV files in the pipeline"""
+        processed_files = list(self.processed_dir.glob("*.csv")) if self.processed_dir.exists() else []
+        failed_files = list(self.failed_dir.glob("*.csv")) if self.failed_dir.exists() else []
+        pending_files = self.get_pending_csv_files()
+        
+        current_file = self.get_current_active_csv()
+        
+        return {
+            "current_active_file": current_file,
+            "current_endpoint": f"/data_staging/{current_file}" if current_file else None,
+            "status": {
+                "processed": {
+                    "count": len(processed_files),
+                    "files": [f.name for f in sorted(processed_files, key=lambda f: f.stat().st_mtime, reverse=True)]
+                },
+                "failed": {
+                    "count": len(failed_files), 
+                    "files": [f.name for f in sorted(failed_files, key=lambda f: f.stat().st_mtime, reverse=True)]
+                },
+                "pending": {
+                    "count": len(pending_files),
+                    "files": pending_files
+                }
+            },
+            "last_updated": datetime.now().isoformat(),
+            "pipeline_health": self._assess_pipeline_health(processed_files, failed_files, pending_files)
+        }
+    
+    def _assess_pipeline_health(self, processed_files, failed_files, pending_files) -> Dict:
+        """Assess the health of the data processing pipeline"""
+        total_files = len(processed_files) + len(failed_files) + len(pending_files)
+        
+        if total_files == 0:
+            return {"status": "no_data", "message": "No CSV files found in pipeline"}
+        
+        success_rate = len(processed_files) / total_files if total_files > 0 else 0
+        
+        if len(pending_files) > 5:
+            return {"status": "backlog", "message": f"{len(pending_files)} files waiting to be processed"}
+        elif success_rate < 0.8 and len(failed_files) > 0:
+            return {"status": "issues", "message": f"High failure rate: {len(failed_files)} failed files"}
+        elif len(processed_files) > 0:
+            return {"status": "healthy", "message": "Pipeline operating normally"}
+        else:
+            return {"status": "initializing", "message": "No processed files yet"}
+
+# =================== SERVICE IMPORTS WITH ERROR HANDLING ===================
+try:
+    from services.archetype_service import ArchetypeService
+    ARCHETYPE_SERVICE_AVAILABLE = True
+    logger.info("Archetype service imported successfully")
+except ImportError as e:
+    ARCHETYPE_SERVICE_AVAILABLE = False
+    logger.warning(f"Archetype service not available: {e}")
+
 try:
     from routers.archetype_router import router as archetype_router
     ARCHETYPE_ROUTER_AVAILABLE = True
-    logger.info("✓ Archetype router imported successfully")
+    logger.info("Archetype router imported successfully")
 except ImportError as e:
     ARCHETYPE_ROUTER_AVAILABLE = False
-    logger.warning(f"✗ Archetype router not available: {e}")
+    logger.warning(f"Archetype router not available: {e}")
     from fastapi import APIRouter
     archetype_router = APIRouter()
 
 try:
     from routers.excel_processing_router import router as excel_router
     EXCEL_ROUTER_AVAILABLE = True
-    logger.info("✓ Excel processing router imported successfully")
+    logger.info("Excel processing router imported successfully")
 except ImportError as e:
     EXCEL_ROUTER_AVAILABLE = False
-    logger.warning(f"✗ Excel processing router not available: {e}")
+    logger.warning(f"Excel processing router not available: {e}")
     from fastapi import APIRouter
     excel_router = APIRouter()
 
-# =================== SERVICE IMPORTS ===================
 # Enhanced Diagram Service
 try:
     from services.enhanced_diagram_generator import EnhancedDiagramService
@@ -159,9 +307,6 @@ class WebSocketConnectionManager:
             if job.get("status") in ["queued", "processing"]
         }
 
-# Global WebSocket manager
-websocket_manager = WebSocketConnectionManager()
-
 # =================== CONFIGURATION ===================
 class AppConfig:
     """Application configuration"""
@@ -193,15 +338,17 @@ class AppConfig:
         for subdir in ui_subdirs:
             dirs_to_create.append(cls.UI_DIR / subdir)
         
+        # Create data staging subdirectories
+        staging_subdirs = ["processed", "failed"]
+        for subdir in staging_subdirs:
+            dirs_to_create.append(cls.DATA_STAGING_DIR / subdir)
+        
         for dir_path in dirs_to_create:
             try:
                 dir_path.mkdir(parents=True, exist_ok=True)
                 logger.debug(f"Ensured directory exists: {dir_path}")
             except Exception as e:
                 logger.error(f"Failed to create directory {dir_path}: {e}")
-
-# Initialize directories
-AppConfig.ensure_directories()
 
 # =================== GLOBAL STATE ===================
 class JobManager:
@@ -222,28 +369,13 @@ class JobManager:
     def list_jobs(self) -> Dict[str, Any]:
         return self._jobs.copy()
 
-# Global job managers
+# Global instances
+file_discovery = FileDiscoveryService()
+websocket_manager = WebSocketConnectionManager()
 active_diagram_jobs = JobManager()
 
-# =================== REQUEST MODELS ===================
-class EnhancedDiagramRequest(BaseModel):
-    diagram_type: str = "network_topology"
-    data: Dict[str, Any] = {}
-    quality_level: Optional[str] = "professional"
-    output_format: Optional[str] = "lucid"
-    use_csv: Optional[bool] = True
-    
-    @validator('output_format')
-    def validate_format(cls, v):
-        valid_formats = ["lucid", "document", "excel", "pdf", "all"]
-        if v not in valid_formats:
-            return "lucid"
-        return v
-
-class LegacyDocumentRequest(BaseModel):
-    output_type: str = "all"
-    data: Dict[str, Any] = {}
-    user_preferences: Dict[str, Any] = {}
+# Initialize directories
+AppConfig.ensure_directories()
 
 # =================== UTILITY FUNCTIONS ===================
 def safe_path_join(base_dir: Path, filename: str) -> Optional[Path]:
@@ -321,250 +453,67 @@ def create_fallback_lucid_xml(archetype: str, app_name: str, job_id: str) -> str
   </connections>
 </lucidchart>'''
 
-# =================== WEBSOCKET ENDPOINTS ===================
-def setup_websocket_endpoints(app: FastAPI):
-    """Setup WebSocket endpoints for real-time communication"""
-    
-    @app.websocket("/ws")
-    async def main_websocket_endpoint(websocket: WebSocket):
-        """Main WebSocket endpoint for Excel processing and general updates"""
-        await websocket_manager.connect(websocket)
-        
-        try:
-            while True:
-                try:
-                    # Wait for messages with timeout to send heartbeat
-                    data = await asyncio.wait_for(websocket.receive_text(), timeout=30.0)
-                    
-                    try:
-                        message = json.loads(data)
-                        await handle_websocket_message(message, websocket)
-                    except json.JSONDecodeError:
-                        await websocket_manager.send_personal_message({
-                            "type": "error",
-                            "message": "Invalid JSON format"
-                        }, websocket)
-                        
-                except asyncio.TimeoutError:
-                    # Send heartbeat
-                    await websocket_manager.send_personal_message({
-                        "type": "heartbeat",
-                        "timestamp": datetime.now().isoformat(),
-                        "active_jobs": len(websocket_manager.list_active_jobs())
-                    }, websocket)
-                    
-        except WebSocketDisconnect:
-            logger.info("WebSocket client disconnected normally")
-        except Exception as e:
-            logger.error(f"WebSocket error: {e}")
-        finally:
-            websocket_manager.disconnect(websocket)
-    
-    @app.websocket("/api/v1/excel/ws")  
-    async def excel_websocket_endpoint(websocket: WebSocket):
-        """Dedicated Excel processing WebSocket endpoint"""
-        await websocket_manager.connect(websocket)
-        
-        try:
-            while True:
-                try:
-                    data = await asyncio.wait_for(websocket.receive_text(), timeout=30.0)
-                    
-                    try:
-                        message = json.loads(data)
-                        message["source"] = "excel_ws"  # Mark source
-                        await handle_websocket_message(message, websocket)
-                    except json.JSONDecodeError:
-                        await websocket_manager.send_personal_message({
-                            "type": "error",
-                            "message": "Invalid JSON format"
-                        }, websocket)
-                        
-                except asyncio.TimeoutError:
-                    await websocket_manager.send_personal_message({
-                        "type": "heartbeat",
-                        "timestamp": datetime.now().isoformat(),
-                        "active_excel_jobs": len([
-                            j for j in websocket_manager.processing_jobs.values() 
-                            if j.get("job_type") == "excel_processing"
-                        ])
-                    }, websocket)
-                    
-        except WebSocketDisconnect:
-            logger.info("Excel WebSocket client disconnected normally")
-        except Exception as e:
-            logger.error(f"Excel WebSocket error: {e}")
-        finally:
-            websocket_manager.disconnect(websocket)
-    
-    async def handle_websocket_message(message: dict, websocket: WebSocket):
-        """Handle incoming WebSocket messages"""
-        message_type = message.get("type", "unknown")
-        
-        if message_type == "ping":
-            await websocket_manager.send_personal_message({
-                "type": "pong", 
-                "timestamp": datetime.now().isoformat()
-            }, websocket)
-            
-        elif message_type == "get_job_status":
-            job_id = message.get("job_id")
-            if job_id:
-                job = websocket_manager.get_job(job_id)
-                await websocket_manager.send_personal_message({
-                    "type": "job_status",
-                    "job_id": job_id,
-                    "job": job
-                }, websocket)
-            else:
-                await websocket_manager.send_personal_message({
-                    "type": "error",
-                    "message": "job_id required"
-                }, websocket)
-                
-        elif message_type == "get_all_jobs":
-            active_jobs = websocket_manager.list_active_jobs()
-            await websocket_manager.send_personal_message({
-                "type": "all_jobs",
-                "jobs": active_jobs
-            }, websocket)
-            
-        elif message_type == "subscribe_job":
-            job_id = message.get("job_id")
-            # Could implement job-specific subscriptions here
-            await websocket_manager.send_personal_message({
-                "type": "subscribed",
-                "job_id": job_id
-            }, websocket)
-            
-        else:
-            logger.warning(f"Unknown WebSocket message type: {message_type}")
-    
-    # WebSocket health check endpoint
-    @app.get("/api/v1/ws/health")
-    async def websocket_health():
-        """WebSocket service health check"""
-        return {
-            "status": "healthy",
-            "active_connections": len(websocket_manager.active_connections),
-            "active_jobs": len(websocket_manager.processing_jobs),
-            "websocket_endpoints": [
-                "/ws",
-                "/api/v1/excel/ws"
-            ],
-            "timestamp": datetime.now().isoformat()
+def _get_demo_applications():
+    """Get demo applications when CSV is not available"""
+    return [
+        {
+            "id": "demo-web-portal",
+            "name": "Customer Web Portal",
+            "type": "web_application",
+            "owner": "Digital Banking Team"
+        },
+        {
+            "id": "demo-core-banking",
+            "name": "Core Banking System",
+            "type": "mainframe_system",
+            "owner": "Core Systems Team"
+        },
+        {
+            "id": "demo-payment-engine",
+            "name": "Payment Processing Engine",
+            "type": "service",
+            "owner": "Payments Team"
+        },
+        {
+            "id": "demo-customer-db",
+            "name": "Customer Database",
+            "type": "database",
+            "owner": "Data Management Team"
         }
-    
-    logger.info("WebSocket endpoints configured:")
-    logger.info("  - Main WebSocket: /ws")
-    logger.info("  - Excel WebSocket: /api/v1/excel/ws") 
-    logger.info("  - Health Check: /api/v1/ws/health")
+    ]
 
-# =================== EXCEL PROCESSING INTEGRATION ===================
-def setup_excel_integration(app: FastAPI):
-    """Setup Excel processing endpoints that work with main WebSocket"""
+def _get_pipeline_recommendations(status: dict) -> List[str]:
+    """Get recommendations based on pipeline status"""
+    recommendations = []
+    pipeline_health = status.get("pipeline_health", {})
     
-    @app.post("/api/v1/excel/process")
-    async def process_excel_main(
-        background_tasks: BackgroundTasks,
-        file_data: dict  # Simplified for demo - in real implementation use UploadFile
-    ):
-        """Excel processing endpoint integrated with main WebSocket"""
-        
-        job_id = str(uuid.uuid4())
-        
-        # Add job to WebSocket manager
-        websocket_manager.add_job(job_id, {
-            "job_id": job_id,
-            "job_type": "excel_processing", 
-            "status": "queued",
-            "progress": 0,
-            "message": "Job created",
-            "filename": file_data.get("filename", "unknown.xlsx")
-        })
-        
-        # Send initial update via WebSocket
-        await websocket_manager.send_job_update(job_id, {
-            "status": "queued",
-            "progress": 0,
-            "message": "Excel processing job created"
-        })
-        
-        # Start background processing
-        background_tasks.add_task(process_excel_background, job_id, file_data)
-        
-        return {
-            "success": True,
-            "job_id": job_id,
-            "status": "queued",
-            "message": "Excel processing started",
-            "websocket_support": True
-        }
+    if pipeline_health.get("status") == "no_data":
+        recommendations.append("Add CSV files to data_staging/ directory to begin processing")
+    elif pipeline_health.get("status") == "backlog":
+        recommendations.append("Consider investigating processing delays - multiple files are pending")
+    elif pipeline_health.get("status") == "issues":
+        recommendations.append("Check failed files in data_staging/failed/ directory")
+        recommendations.append("Review processing logs for error details")
+    elif pipeline_health.get("status") == "healthy":
+        recommendations.append("Pipeline is operating normally")
     
-    async def process_excel_background(job_id: str, file_data: dict):
-        """Background Excel processing with WebSocket updates"""
-        try:
-            # Update to processing
-            websocket_manager.update_job(job_id, {
-                "status": "processing",
-                "progress": 10,
-                "message": "Processing Excel file..."
-            })
-            await websocket_manager.send_job_update(job_id, {
-                "status": "processing", 
-                "progress": 10,
-                "message": "Processing Excel file..."
-            })
-            
-            # Simulate processing steps
-            for progress, message in [
-                (30, "Reading Excel data..."),
-                (50, "Analyzing applications..."),
-                (70, "Classifying architectures..."),
-                (90, "Generating results...")
-            ]:
-                await asyncio.sleep(2)  # Simulate work
-                websocket_manager.update_job(job_id, {
-                    "progress": progress,
-                    "message": message
-                })
-                await websocket_manager.send_job_update(job_id, {
-                    "progress": progress,
-                    "message": message
-                })
-            
-            # Complete
-            websocket_manager.update_job(job_id, {
-                "status": "completed",
-                "progress": 100,
-                "message": "Processing completed successfully"
-            })
-            await websocket_manager.send_job_update(job_id, {
-                "status": "completed",
-                "progress": 100, 
-                "message": "Processing completed successfully"
-            })
-            
-        except Exception as e:
-            logger.error(f"Excel processing error for job {job_id}: {e}")
-            websocket_manager.update_job(job_id, {
-                "status": "error",
-                "error": str(e)
-            })
-            await websocket_manager.send_job_update(job_id, {
-                "status": "error",
-                "error": str(e)
-            })
+    files = status.get("status", {})
+    if files.get("pending", {}).get("count", 0) > 0:
+        recommendations.append("Files are waiting to be processed")
     
-    @app.get("/api/v1/excel/job/{job_id}")
-    async def get_excel_job_status(job_id: str):
-        """Get Excel job status"""
-        job = websocket_manager.get_job(job_id)
-        if not job:
-            raise HTTPException(status_code=404, detail="Job not found")
-        return job
+    return recommendations
+
+def ensure_pipeline_directories():
+    """Ensure all pipeline directories exist"""
+    directories = [
+        Path("data_staging"),
+        Path("data_staging/processed"),
+        Path("data_staging/failed"),
+        Path("results")
+    ]
     
-    logger.info("Excel processing integration endpoints added")
+    for directory in directories:
+        directory.mkdir(parents=True, exist_ok=True)
 
 # =================== LUCIDCHART SETUP ===================
 def check_lucidchart_setup():
@@ -627,6 +576,660 @@ def check_lucidchart_setup():
     setup_status["ready"] = LUCIDCHART_SERVICE_AVAILABLE or directories_ok
     
     return setup_status
+
+# =================== WEBSOCKET HANDLERS ===================
+async def handle_websocket_message(message: dict, websocket: WebSocket):
+    """Handle incoming WebSocket messages"""
+    message_type = message.get("type", "unknown")
+    
+    if message_type == "ping":
+        await websocket_manager.send_personal_message({
+            "type": "pong", 
+            "timestamp": datetime.now().isoformat()
+        }, websocket)
+        
+    elif message_type == "get_pipeline_status":
+        pipeline_status = file_discovery.get_file_status_report()
+        await websocket_manager.send_personal_message({
+            "type": "pipeline_status",
+            **pipeline_status
+        }, websocket)
+        
+    elif message_type == "get_job_status":
+        job_id = message.get("job_id")
+        if job_id:
+            job = websocket_manager.get_job(job_id)
+            await websocket_manager.send_personal_message({
+                "type": "job_status",
+                "job_id": job_id,
+                "job": job
+            }, websocket)
+        else:
+            await websocket_manager.send_personal_message({
+                "type": "error",
+                "message": "job_id required"
+            }, websocket)
+            
+    elif message_type == "get_all_jobs":
+        active_jobs = websocket_manager.list_active_jobs()
+        await websocket_manager.send_personal_message({
+            "type": "all_jobs",
+            "jobs": active_jobs
+        }, websocket)
+        
+    elif message_type == "subscribe_job":
+        job_id = message.get("job_id")
+        # Could implement job-specific subscriptions here
+        await websocket_manager.send_personal_message({
+            "type": "subscribed",
+            "job_id": job_id
+        }, websocket)
+        
+    else:
+        logger.warning(f"Unknown WebSocket message type: {message_type}")
+
+# =================== EXCEL PROCESSING BACKGROUND TASK ===================
+async def process_excel_background(job_id: str, file_data: dict):
+    """Background Excel processing with WebSocket updates"""
+    try:
+        # Update to processing
+        websocket_manager.update_job(job_id, {
+            "status": "processing",
+            "progress": 10,
+            "message": "Processing Excel file..."
+        })
+        await websocket_manager.send_job_update(job_id, {
+            "status": "processing", 
+            "progress": 10,
+            "message": "Processing Excel file..."
+        })
+        
+        # Simulate processing steps
+        for progress, message in [
+            (30, "Reading Excel data..."),
+            (50, "Analyzing applications..."),
+            (70, "Classifying architectures..."),
+            (90, "Generating results...")
+        ]:
+            await asyncio.sleep(2)  # Simulate work
+            websocket_manager.update_job(job_id, {
+                "progress": progress,
+                "message": message
+            })
+            await websocket_manager.send_job_update(job_id, {
+                "progress": progress,
+                "message": message
+            })
+        
+        # Complete
+        websocket_manager.update_job(job_id, {
+            "status": "completed",
+            "progress": 100,
+            "message": "Processing completed successfully"
+        })
+        await websocket_manager.send_job_update(job_id, {
+            "status": "completed",
+            "progress": 100, 
+            "message": "Processing completed successfully"
+        })
+        
+    except Exception as e:
+        logger.error(f"Excel processing error for job {job_id}: {e}")
+        websocket_manager.update_job(job_id, {
+            "status": "error",
+            "error": str(e)
+        })
+        await websocket_manager.send_job_update(job_id, {
+            "status": "error",
+            "error": str(e)
+        })
+
+# =================== ENDPOINT SETUP FUNCTIONS ===================
+def setup_websocket_endpoints(app: FastAPI):
+    """Setup WebSocket endpoints for real-time communication"""
+    
+    @app.websocket("/ws")
+    async def main_websocket_endpoint(websocket: WebSocket):
+        """Main WebSocket endpoint for Excel processing and general updates"""
+        await websocket_manager.connect(websocket)
+        
+        try:
+            while True:
+                try:
+                    # Wait for messages with timeout to send heartbeat
+                    data = await asyncio.wait_for(websocket.receive_text(), timeout=30.0)
+                    
+                    try:
+                        message = json.loads(data)
+                        await handle_websocket_message(message, websocket)
+                    except json.JSONDecodeError:
+                        await websocket_manager.send_personal_message({
+                            "type": "error",
+                            "message": "Invalid JSON format"
+                        }, websocket)
+                        
+                except asyncio.TimeoutError:
+                    # Send heartbeat with pipeline status
+                    pipeline_status = file_discovery.get_file_status_report()
+                    await websocket_manager.send_personal_message({
+                        "type": "heartbeat",
+                        "timestamp": datetime.now().isoformat(),
+                        "active_jobs": len(websocket_manager.list_active_jobs()),
+                        "pipeline_health": pipeline_status["pipeline_health"],
+                        "current_csv": pipeline_status["current_active_file"]
+                    }, websocket)
+                    
+        except WebSocketDisconnect:
+            logger.info("WebSocket client disconnected normally")
+        except Exception as e:
+            logger.error(f"WebSocket error: {e}")
+        finally:
+            websocket_manager.disconnect(websocket)
+    
+    @app.websocket("/api/v1/excel/ws")  
+    async def excel_websocket_endpoint(websocket: WebSocket):
+        """Dedicated Excel processing WebSocket endpoint"""
+        await websocket_manager.connect(websocket)
+        
+        try:
+            while True:
+                try:
+                    data = await asyncio.wait_for(websocket.receive_text(), timeout=30.0)
+                    
+                    try:
+                        message = json.loads(data)
+                        message["source"] = "excel_ws"  # Mark source
+                        await handle_websocket_message(message, websocket)
+                    except json.JSONDecodeError:
+                        await websocket_manager.send_personal_message({
+                            "type": "error",
+                            "message": "Invalid JSON format"
+                        }, websocket)
+                        
+                except asyncio.TimeoutError:
+                    pipeline_status = file_discovery.get_file_status_report()
+                    await websocket_manager.send_personal_message({
+                        "type": "heartbeat",
+                        "timestamp": datetime.now().isoformat(),
+                        "active_excel_jobs": len([
+                            j for j in websocket_manager.processing_jobs.values() 
+                            if j.get("job_type") == "excel_processing"
+                        ]),
+                        "pipeline_health": pipeline_status["pipeline_health"]
+                    }, websocket)
+                    
+        except WebSocketDisconnect:
+            logger.info("Excel WebSocket client disconnected normally")
+        except Exception as e:
+            logger.error(f"Excel WebSocket error: {e}")
+        finally:
+            websocket_manager.disconnect(websocket)
+    
+    # WebSocket health check endpoint
+    @app.get("/api/v1/ws/health")
+    async def websocket_health():
+        """WebSocket service health check"""
+        pipeline_status = file_discovery.get_file_status_report()
+        return {
+            "status": "healthy",
+            "active_connections": len(websocket_manager.active_connections),
+            "active_jobs": len(websocket_manager.processing_jobs),
+            "pipeline_health": pipeline_status["pipeline_health"],
+            "current_csv": pipeline_status["current_active_file"],
+            "websocket_endpoints": [
+                "/ws",
+                "/api/v1/excel/ws"
+            ],
+            "timestamp": datetime.now().isoformat()
+        }
+    
+    logger.info("WebSocket endpoints configured")
+
+def setup_file_discovery_endpoints(app: FastAPI):
+    """Setup dynamic file discovery endpoints"""
+    
+    @app.get("/api/v1/data/status")
+    async def get_data_pipeline_status():
+        """Get complete status of the data processing pipeline"""
+        try:
+            return file_discovery.get_file_status_report()
+        except Exception as e:
+            logger.error(f"Error getting pipeline status: {e}")
+            return JSONResponse(
+                status_code=500,
+                content={"error": str(e), "status": "error"}
+            )
+
+    @app.get("/api/v1/data/current")
+    async def get_current_csv():
+        """Return available normalized CSV files with priority logic"""
+        try:
+            data_dir = project_root / "data_staging"
+            
+            # Check processed folder first for ready files
+            processed_dir = data_dir / "processed"
+            if processed_dir.exists():
+                processed_files = list(processed_dir.glob("*_normalized_*.csv"))
+                if processed_files:
+                    # Sort by modification time (newest first)
+                    sorted_files = sorted(processed_files, key=lambda f: f.stat().st_mtime, reverse=True)
+                    
+                    # Prefer XECHK files if available
+                    xechk_files = [f for f in sorted_files if f.name.startswith('XECHK')]
+                    primary_file = xechk_files[0] if xechk_files else sorted_files[0]
+                    
+                    return {
+                        "endpoint": f"/data_staging/processed/{primary_file.name}",
+                        "filename": primary_file.name, 
+                        "status": "ready",
+                        "source": "processed_folder",
+                        "pipeline_health": {"status": "healthy"}
+                    }
+            
+            # Fallback: check main data_staging folder for normalized files
+            normalized_files = [f for f in data_dir.glob("*_normalized_*.csv")]
+            
+            if normalized_files:
+                # Sort by modification time
+                sorted_files = sorted(normalized_files, key=lambda f: f.stat().st_mtime, reverse=True)
+                
+                # Prefer XECHK files if both exist
+                xechk_files = [f for f in sorted_files if f.name.startswith('XECHK')]
+                primary_file = xechk_files[0] if xechk_files else sorted_files[0]
+                
+                return {
+                    "endpoint": f"/data_staging/{primary_file.name}",
+                    "filename": primary_file.name, 
+                    "status": "available",
+                    "source": "main_folder",
+                    "pipeline_health": {"status": "healthy"}
+                }
+            else:
+                # No files found - return 404 gracefully
+                return JSONResponse(status_code=404, content={
+                    "error": "No normalized CSV files found", 
+                    "status": "no_data",
+                    "message": "Add CSV files to data_staging/ or data_staging/processed/",
+                    "pipeline_health": {"status": "no_data"}
+                })
+                
+        except Exception as e:
+            logger.error(f"Error in get_current_csv: {e}")
+            return JSONResponse(status_code=500, content={
+                "error": f"Server error: {str(e)}", 
+                "status": "error",
+                "pipeline_health": {"status": "error"}
+            })
+            
+    @app.get("/api/v1/data/files")
+    async def list_all_csv_files():
+        """List all CSV files in the pipeline with details"""
+        try:
+            status = file_discovery.get_file_status_report()
+            return {
+                "success": True,
+                "current_file": status["current_active_file"],
+                "files": status["status"],
+                "pipeline_health": status["pipeline_health"],
+                "recommendations": _get_pipeline_recommendations(status)
+            }
+        except Exception as e:
+            logger.error(f"Error listing CSV files: {e}")
+            return JSONResponse(
+                status_code=500,
+                content={"error": str(e), "success": False}
+            )
+    
+    logger.info("Dynamic file discovery endpoints added")
+
+def setup_file_movement_endpoints(app: FastAPI):
+    """Setup file movement and topology endpoints"""
+    @app.get("/api/v1/data/processed/{filename}")
+    async def get_processed_file(filename: str):
+        """Serve files from processed directory"""
+        try:
+            processed_dir = project_root / "data_staging" / "processed"
+            file_path = safe_path_join(processed_dir, filename)
+            
+            if file_path and file_path.exists():
+                return FileResponse(path=str(file_path), filename=filename)
+            else:
+                raise HTTPException(status_code=404, detail=f"Processed file not found: {filename}")
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error serving processed file: {str(e)}")
+
+    @app.get("/api/v1/data/failed/{filename}")  
+    async def get_failed_file(filename: str):
+        """Serve files from failed directory"""
+        try:
+            failed_dir = project_root / "data_staging" / "failed"
+            file_path = safe_path_join(failed_dir, filename)
+            
+            if file_path and file_path.exists():
+                return FileResponse(path=str(file_path), filename=filename)
+            else:
+                raise HTTPException(status_code=404, detail=f"Failed file not found: {filename}")
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error serving failed file: {str(e)}")
+    
+    logger.info("File movement endpoints added")
+    
+    @app.post("/api/v1/data/move")
+    async def move_file(request: MoveFileRequest):
+        """Move file from data_staging to processed or failed directory"""
+        try:
+            # Define paths
+            data_staging_dir = Path("data_staging")
+            source_file = data_staging_dir / request.filename
+            
+            # Ensure source file exists
+            if not source_file.exists():
+                raise HTTPException(status_code=404, detail=f"Source file {request.filename} not found")
+            
+            # Determine destination based on action
+            if request.action == "processed":
+                dest_dir = data_staging_dir / "processed"
+                dest_file = dest_dir / request.filename
+                
+                # Create processed directory if it doesn't exist
+                dest_dir.mkdir(exist_ok=True)
+                
+                # Move the file
+                shutil.move(str(source_file), str(dest_file))
+                
+                # Create processing metadata
+                metadata = {
+                    "filename": request.filename,
+                    "processed_at": datetime.now().isoformat(),
+                    "action": "processed",
+                    "source_data": request.sourceData or {}
+                }
+                
+                # Save metadata file
+                metadata_file = dest_dir / f"{request.filename}.meta.json"
+                with open(metadata_file, 'w') as f:
+                    json.dump(metadata, f, indent=2)
+                
+                return {
+                    "success": True,
+                    "action": "processed",
+                    "source_path": str(source_file),
+                    "destination_path": str(dest_file),
+                    "metadata": metadata
+                }
+                
+            elif request.action == "failed":
+                dest_dir = data_staging_dir / "failed"
+                dest_file = dest_dir / request.filename
+                
+                # Create failed directory if it doesn't exist
+                dest_dir.mkdir(exist_ok=True)
+                
+                # Move the file
+                shutil.move(str(source_file), str(dest_file))
+                
+                # Create failure metadata
+                metadata = {
+                    "filename": request.filename,
+                    "failed_at": request.failedAt or datetime.now().isoformat(),
+                    "action": "failed",
+                    "error": request.error,
+                    "source_data": request.sourceData or {}
+                }
+                
+                # Save metadata file
+                metadata_file = dest_dir / f"{request.filename}.meta.json"
+                with open(metadata_file, 'w') as f:
+                    json.dump(metadata, f, indent=2)
+                
+                return {
+                    "success": True,
+                    "action": "failed",
+                    "source_path": str(source_file),
+                    "destination_path": str(dest_file),
+                    "error": request.error,
+                    "metadata": metadata
+                }
+            else:
+                raise HTTPException(status_code=400, detail=f"Invalid action: {request.action}")
+                
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to move file: {str(e)}")
+
+    @app.get("/api/v1/data/pending")
+    async def list_pending_files():
+        """List files in data_staging directory waiting to be processed"""
+        try:
+            data_staging_dir = Path("data_staging")
+            
+            if not data_staging_dir.exists():
+                return {"files": [], "count": 0}
+            
+            # Get all CSV files in data_staging (excluding applicationList.csv)
+            csv_files = []
+            for file_path in data_staging_dir.glob("*.csv"):
+                if file_path.name != "applicationList.csv":  # Skip static file
+                    file_info = {
+                        "filename": file_path.name,
+                        "size": file_path.stat().st_size,
+                        "modified": datetime.fromtimestamp(file_path.stat().st_mtime).isoformat(),
+                        "path": str(file_path)
+                    }
+                    csv_files.append(file_info)
+            
+            # Sort by modification time (newest first)
+            csv_files.sort(key=lambda x: x["modified"], reverse=True)
+            
+            return {
+                "files": csv_files,
+                "count": len(csv_files),
+                "directory": str(data_staging_dir)
+            }
+            
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to list pending files: {str(e)}")
+
+    @app.get("/api/v1/data/directories")
+    async def check_pipeline_directories():
+        """Check status of pipeline directories"""
+        try:
+            data_staging_dir = Path("data_staging")
+            directories = {
+                "data_staging": data_staging_dir,
+                "processed": data_staging_dir / "processed",
+                "failed": data_staging_dir / "failed"
+            }
+            
+            status = {}
+            for name, dir_path in directories.items():
+                status[name] = {
+                    "exists": dir_path.exists(),
+                    "path": str(dir_path),
+                    "is_directory": dir_path.is_dir() if dir_path.exists() else False
+                }
+                
+                if dir_path.exists() and dir_path.is_dir():
+                    # Count files in directory
+                    csv_files = list(dir_path.glob("*.csv"))
+                    status[name]["csv_file_count"] = len(csv_files)
+                    status[name]["csv_files"] = [f.name for f in csv_files]
+            
+            return status
+            
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to check directories: {str(e)}")
+
+    @app.post("/api/v1/topology/save")
+    async def save_topology(request: SaveTopologyRequest):
+        """Save network topology to results directory"""
+        try:
+            # Create results directory if it doesn't exist
+            results_dir = Path("results")
+            results_dir.mkdir(exist_ok=True)
+            
+            # Define the file path
+            file_path = results_dir / request.filename
+            
+            # Save the topology data
+            with open(file_path, 'w') as f:
+                json.dump(request.data, f, indent=2)
+            
+            # Get file info
+            file_info = {
+                "filename": request.filename,
+                "path": str(file_path),
+                "size": file_path.stat().st_size,
+                "created": datetime.now().isoformat()
+            }
+            
+            return {
+                "success": True,
+                "message": f"Topology saved successfully",
+                "file_info": file_info
+            }
+            
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to save topology: {str(e)}")
+
+    @app.get("/api/v1/topology/list")
+    async def list_saved_topologies():
+        """List all saved topology files"""
+        try:
+            results_dir = Path("results")
+            
+            if not results_dir.exists():
+                return {"topologies": [], "count": 0}
+            
+            # Get all JSON files in results directory
+            topology_files = []
+            for file_path in results_dir.glob("*.json"):
+                if file_path.name.startswith("netseg_topology_"):
+                    file_info = {
+                        "filename": file_path.name,
+                        "size": file_path.stat().st_size,
+                        "created": datetime.fromtimestamp(file_path.stat().st_ctime).isoformat(),
+                        "modified": datetime.fromtimestamp(file_path.stat().st_mtime).isoformat(),
+                        "path": str(file_path)
+                    }
+                    topology_files.append(file_info)
+            
+            # Sort by creation time (newest first)
+            topology_files.sort(key=lambda x: x["created"], reverse=True)
+            
+            return {
+                "topologies": topology_files,
+                "count": len(topology_files),
+                "directory": str(results_dir)
+            }
+            
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to list topologies: {str(e)}")
+
+    @app.get("/api/v1/data/status/enhanced")
+    async def get_enhanced_data_status():
+        """Get comprehensive data pipeline status"""
+        try:
+            data_staging_dir = Path("data_staging")
+            
+            # Count files in each directory
+            pending_files = list(data_staging_dir.glob("*.csv"))
+            pending_files = [f for f in pending_files if f.name != "applicationList.csv"]
+            
+            processed_dir = data_staging_dir / "processed"
+            processed_files = list(processed_dir.glob("*.csv")) if processed_dir.exists() else []
+            
+            failed_dir = data_staging_dir / "failed"
+            failed_files = list(failed_dir.glob("*.csv")) if failed_dir.exists() else []
+            
+            # Get current file (most recent in data_staging)
+            current_file = None
+            if pending_files:
+                current_file = max(pending_files, key=lambda f: f.stat().st_mtime)
+            
+            status = {
+                "pipeline_health": {
+                    "status": "healthy" if len(pending_files) > 0 else "no_pending_files",
+                    "message": f"{len(pending_files)} files pending processing"
+                },
+                "status": {
+                    "pending": {
+                        "count": len(pending_files),
+                        "files": [f.name for f in pending_files]
+                    },
+                    "processed": {
+                        "count": len(processed_files),
+                        "files": [f.name for f in processed_files[-5:]]  # Last 5 only
+                    },
+                    "failed": {
+                        "count": len(failed_files),
+                        "files": [f.name for f in failed_files[-5:]]  # Last 5 only
+                    }
+                },
+                "current_active_file": current_file.name if current_file else None,
+                "directories": {
+                    "data_staging": str(data_staging_dir),
+                    "processed": str(processed_dir),
+                    "failed": str(failed_dir)
+                },
+                "timestamp": datetime.now().isoformat()
+            }
+            
+            return status
+            
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to get enhanced status: {str(e)}")
+    
+    logger.info("File movement endpoints added")
+
+def setup_excel_integration(app: FastAPI):
+    """Setup Excel processing endpoints that work with main WebSocket"""
+    
+    @app.post("/api/v1/excel/process")
+    async def process_excel_main(
+        background_tasks: BackgroundTasks,
+        file_data: dict  # Simplified for demo - in real implementation use UploadFile
+    ):
+        """Excel processing endpoint integrated with main WebSocket"""
+        
+        job_id = str(uuid.uuid4())
+        
+        # Add job to WebSocket manager
+        websocket_manager.add_job(job_id, {
+            "job_id": job_id,
+            "job_type": "excel_processing", 
+            "status": "queued",
+            "progress": 0,
+            "message": "Job created",
+            "filename": file_data.get("filename", "unknown.xlsx")
+        })
+        
+        # Send initial update via WebSocket
+        await websocket_manager.send_job_update(job_id, {
+            "status": "queued",
+            "progress": 0,
+            "message": "Excel processing job created"
+        })
+        
+        # Start background processing
+        background_tasks.add_task(process_excel_background, job_id, file_data)
+        
+        return {
+            "success": True,
+            "job_id": job_id,
+            "status": "queued",
+            "message": "Excel processing started",
+            "websocket_support": True
+        }
+    
+    @app.get("/api/v1/excel/job/{job_id}")
+    async def get_excel_job_status(job_id: str):
+        """Get Excel job status"""
+        job = websocket_manager.get_job(job_id)
+        if not job:
+            raise HTTPException(status_code=404, detail="Job not found")
+        return job
+    
+    logger.info("Excel processing integration endpoints added")
 
 def setup_lucidchart_endpoints(app: FastAPI):
     """Setup LucidChart-related endpoints"""
@@ -732,13 +1335,12 @@ def setup_lucidchart_endpoints(app: FastAPI):
     
     logger.info("LucidChart management endpoints added")
 
-# =================== DIAGRAM SERVICE ENDPOINTS ===================
 def setup_diagram_endpoints(app: FastAPI):
     """Setup Enhanced Diagram Service endpoints"""
     
     @app.post("/api/v1/diagram/generate-enhanced-diagram-by-format")
     async def generate_enhanced_diagram(request: EnhancedDiagramRequest):
-        """Main endpoint for generating enhanced diagrams"""
+        """Main endpoint for generating enhanced diagrams with dynamic CSV discovery"""
         try:
             if not DIAGRAM_SERVICE_AVAILABLE:
                 raise HTTPException(status_code=503, detail="Diagram service not available")
@@ -747,7 +1349,17 @@ def setup_diagram_endpoints(app: FastAPI):
             
             # Load CSV data if requested or no applications provided
             if request.use_csv or not data.get("applications"):
-                csv_path = AppConfig.DATA_STAGING_DIR / "applicationList.csv"
+                # Use dynamic file discovery to get the current CSV
+                current_csv = file_discovery.get_current_active_csv()
+                
+                if current_csv:
+                    csv_path = AppConfig.DATA_STAGING_DIR / current_csv
+                    logger.info(f"Using dynamically discovered CSV: {current_csv}")
+                else:
+                    # Fallback to legacy filename
+                    csv_path = AppConfig.DATA_STAGING_DIR / "applicationList.csv"
+                    logger.info("Using fallback CSV: applicationList.csv")
+                
                 if csv_path.exists():
                     try:
                         try:
@@ -764,12 +1376,16 @@ def setup_diagram_endpoints(app: FastAPI):
                                 "owner": row.get("owner", "Unknown")
                             })
                         data["applications"] = applications
-                        logger.info(f"Loaded {len(applications)} applications from CSV")
+                        data["csv_source"] = str(csv_path.name)
+                        logger.info(f"Loaded {len(applications)} applications from {csv_path.name}")
                     except Exception as e:
-                        logger.error(f"Error reading CSV: {e}")
+                        logger.error(f"Error reading CSV {csv_path}: {e}")
                         data["applications"] = _get_demo_applications()
+                        data["csv_source"] = "demo_data"
                 else:
                     data["applications"] = _get_demo_applications()
+                    data["csv_source"] = "demo_data"
+                    logger.info("No CSV file found, using demo applications")
             
             result = await diagram_service.generate_enhanced_diagram_by_format(
                 diagram_type=request.diagram_type,
@@ -838,7 +1454,8 @@ def setup_diagram_endpoints(app: FastAPI):
                 "status": "completed" if job.get("success") else "failed",
                 "files": job.get("files", []),
                 "quality_level": job.get("quality_level"),
-                "processing_time": job.get("processing_time")
+                "processing_time": job.get("processing_time"),
+                "csv_source": job.get("csv_source")
             }
         except HTTPException:
             raise
@@ -848,36 +1465,6 @@ def setup_diagram_endpoints(app: FastAPI):
     
     logger.info("Enhanced Diagram Service endpoints added")
 
-def _get_demo_applications():
-    """Get demo applications when CSV is not available"""
-    return [
-        {
-            "id": "demo-web-portal",
-            "name": "Customer Web Portal",
-            "type": "web_application",
-            "owner": "Digital Banking Team"
-        },
-        {
-            "id": "demo-core-banking",
-            "name": "Core Banking System",
-            "type": "mainframe_system",
-            "owner": "Core Systems Team"
-        },
-        {
-            "id": "demo-payment-engine",
-            "name": "Payment Processing Engine",
-            "type": "service",
-            "owner": "Payments Team"
-        },
-        {
-            "id": "demo-customer-db",
-            "name": "Customer Database",
-            "type": "database",
-            "owner": "Data Management Team"
-        }
-    ]
-
-# =================== BASIC ENDPOINTS ===================
 def setup_basic_endpoints(app: FastAPI):
     """Setup basic endpoints"""
     
@@ -911,8 +1498,9 @@ def setup_basic_endpoints(app: FastAPI):
     
     @app.get("/health")
     async def health_check():
-        """Health check endpoint"""
+        """Health check endpoint with pipeline status"""
         try:
+            pipeline_status = file_discovery.get_file_status_report()
             return {
                 "status": "healthy",
                 "timestamp": datetime.now().isoformat(),
@@ -935,7 +1523,16 @@ def setup_basic_endpoints(app: FastAPI):
                     "static": AppConfig.STATIC_DIR.exists(),
                     "ui": AppConfig.UI_DIR.exists()
                 },
-                "version": "2.2.1"
+                "data_pipeline": {
+                    "current_csv": pipeline_status["current_active_file"],
+                    "health": pipeline_status["pipeline_health"],
+                    "file_counts": {
+                        "processed": pipeline_status["status"]["processed"]["count"],
+                        "failed": pipeline_status["status"]["failed"]["count"],
+                        "pending": pipeline_status["status"]["pending"]["count"]
+                    }
+                },
+                "version": "2.3.0"
             }
         except Exception as e:
             logger.error(f"Health check error: {e}")
@@ -953,7 +1550,9 @@ def setup_basic_endpoints(app: FastAPI):
                 "Application Portfolio Management",
                 "Network Topology Discovery",
                 "Documentation Generation",
-                "Real-time WebSocket Communication"
+                "Real-time WebSocket Communication",
+                "Dynamic CSV File Discovery",
+                "Data Processing Pipeline Management"
             ]
             
             if DIAGRAM_SERVICE_AVAILABLE:
@@ -971,24 +1570,29 @@ def setup_basic_endpoints(app: FastAPI):
                     "Professional XML Export"
                 ])
             
+            pipeline_status = file_discovery.get_file_status_report()
+            
             return {
                 "platform": "Application Auto-Discovery with Enhanced Document Generation",
-                "version": "2.2.1",
+                "version": "2.3.0",
                 "capabilities": capabilities,
                 "supported_formats": ["lucid", "document", "excel", "pdf"],
                 "websocket_endpoints": ["/ws", "/api/v1/excel/ws"],
+                "data_endpoints": ["/api/v1/data/status", "/api/v1/data/current", "/api/v1/data/files"],
                 "services": {
                     "diagram_service": DIAGRAM_SERVICE_AVAILABLE,
                     "lucidchart_service": LUCIDCHART_SERVICE_AVAILABLE,
-                    "enhancement_service": ENHANCEMENT_AVAILABLE
+                    "enhancement_service": ENHANCEMENT_AVAILABLE,
+                    "file_discovery": True
                 },
+                "current_data_source": pipeline_status["current_active_file"],
+                "pipeline_health": pipeline_status["pipeline_health"],
                 "last_updated": datetime.now().isoformat()
             }
         except Exception as e:
             logger.error(f"API info error: {e}")
-            return {"error": str(e), "version": "2.2.1"}
+            return {"error": str(e), "version": "2.3.0"}
 
-# =================== ERROR HANDLERS ===================
 def setup_error_handlers(app: FastAPI):
     """Setup error handlers"""
     
@@ -999,7 +1603,7 @@ def setup_error_handlers(app: FastAPI):
             content={
                 "error": "Endpoint not found",
                 "message": "The requested endpoint is not available",
-                "available_endpoints": ["/docs", "/health", "/api/info", "/ws"],
+                "available_endpoints": ["/docs", "/health", "/api/info", "/ws", "/api/v1/data/status"],
                 "timestamp": datetime.now().isoformat()
             }
         )
@@ -1026,49 +1630,66 @@ async def lifespan(app: FastAPI):
     logger.info("Application Auto-Discovery Platform Starting")
     logger.info("=" * 60)
     
+    # Initialize pipeline directories
+    ensure_pipeline_directories()
+    logger.info("Pipeline directories initialized")
+    
     logger.info(f"Project root: {AppConfig.PROJECT_ROOT}")
     logger.info(f"Static files: {'Available' if AppConfig.STATIC_DIR.exists() else 'Not found'}")
     logger.info(f"UI files: {'Available' if AppConfig.UI_DIR.exists() else 'Not found'}")
     
+    # Check data pipeline
+    pipeline_status = file_discovery.get_file_status_report()
+    logger.info("Data Processing Pipeline:")
+    logger.info(f"  Current CSV: {pipeline_status['current_active_file'] or 'None'}")
+    logger.info(f"  Health: {pipeline_status['pipeline_health']['status']}")
+    logger.info(f"  Processed: {pipeline_status['status']['processed']['count']} files")
+    logger.info(f"  Failed: {pipeline_status['status']['failed']['count']} files")
+    logger.info(f"  Pending: {pipeline_status['status']['pending']['count']} files")
+    
     # Check archetype service
-    try:
-        archetype_service = ArchetypeService()
-        archetypes = archetype_service.get_archetypes()
-        logger.info(f"Archetype Service: Available ({len(archetypes['archetypes'])} archetypes)")
-    except Exception as e:
-        logger.warning(f"Archetype Service: Not available ({e})")
+    if ARCHETYPE_SERVICE_AVAILABLE:
+        try:
+            archetype_service = ArchetypeService()
+            archetypes = archetype_service.get_archetypes()
+            logger.info(f"Archetype Service: Available ({len(archetypes['archetypes'])} archetypes)")
+        except Exception as e:
+            logger.warning(f"Archetype Service: Error loading ({e})")
+    else:
+        logger.warning("Archetype Service: Not available")
     
     # LucidChart Service Check
     logger.info("LucidChart Service:")
     lucid_setup = check_lucidchart_setup()
     
     if lucid_setup["service_available"]:
-        logger.info("✓ LucidChart Generation: Available")
+        logger.info("LucidChart Generation: Available")
         template_count = sum(1 for tf in lucid_setup['template_files'].values() if tf.get('exists', False))
-        logger.info(f"✓ Template files: {template_count}/{len(lucid_setup['template_files'])} found")
+        logger.info(f"Template files: {template_count}/{len(lucid_setup['template_files'])} found")
     else:
-        logger.info("✗ LucidChart Generation: Not available (basic XML generation will be used)")
+        logger.info("LucidChart Generation: Not available (basic XML generation will be used)")
     
     # WebSocket Service Check
     logger.info("WebSocket Service:")
-    logger.info("✓ Main WebSocket: /ws")
-    logger.info("✓ Excel WebSocket: /api/v1/excel/ws")
-    logger.info("✓ Health Check: /api/v1/ws/health")
+    logger.info("Main WebSocket: /ws")
+    logger.info("Excel WebSocket: /api/v1/excel/ws")
+    logger.info("Health Check: /api/v1/ws/health")
     
     # Report available endpoints
     logger.info("Enterprise Features:")
     if EXCEL_ROUTER_AVAILABLE:
-        logger.info("✓ Excel Processing: http://localhost:8001/api/v1/excel/")
+        logger.info("Excel Processing: http://localhost:8001/api/v1/excel/")
     else:
-        logger.info("✗ Excel Processing: Not available")
+        logger.info("Excel Processing: Not available")
         
     if ARCHETYPE_ROUTER_AVAILABLE:
-        logger.info("✓ Archetype Classification: http://localhost:8001/api/v1/archetype/")
+        logger.info("Archetype Classification: http://localhost:8001/api/v1/archetype/")
     else:
-        logger.info("✗ Archetype Classification: Not available")
+        logger.info("Archetype Classification: Not available")
         
-    logger.info("✓ API Documentation: http://localhost:8001/docs")
-    logger.info("✓ WebSocket Endpoints: ws://localhost:8001/ws")
+    logger.info("Dynamic File Discovery: http://localhost:8001/api/v1/data/status")
+    logger.info("API Documentation: http://localhost:8001/docs")
+    logger.info("WebSocket Endpoints: ws://localhost:8001/ws")
     
     yield
     
@@ -1081,14 +1702,13 @@ def create_app() -> FastAPI:
     
     app = FastAPI(
         title="Application Auto-Discovery Platform with Enhanced Document Generation",
-        description="Comprehensive application portfolio management with professional document generation and real-time WebSocket communication",
-        version="2.2.1",
+        description="Comprehensive application portfolio management with professional document generation, real-time WebSocket communication, and dynamic CSV file discovery",
+        version="2.3.0",
         docs_url="/docs",
         redoc_url="/redoc",
         lifespan=lifespan
     )
     
-    setup_websocket_endpoints(app)  # This adds both /ws and /api/v1/excel/ws
     # Add CORS middleware
     app.add_middleware(
         CORSMiddleware,
@@ -1097,6 +1717,33 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+    # Add cache-busting middleware right after CORS
+    @app.middleware("http")
+    async def add_cache_control_headers(request, call_next):
+        response = await call_next(request)
+        
+        # More aggressive cache busting for all static content
+        if any(request.url.path.endswith(ext) for ext in ['.js', '.css', '.html', '.json']):
+            response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+            response.headers["Pragma"] = "no-cache"
+            response.headers["Expires"] = "Thu, 01 Jan 1970 00:00:00 GMT"
+            response.headers["Last-Modified"] = datetime.now().strftime('%a, %d %b %Y %H:%M:%S GMT')
+            response.headers["ETag"] = f'"{int(time.time())}"'
+        
+        return response
+        
+    # Setup all endpoint groups
+    setup_websocket_endpoints(app)
+    setup_file_discovery_endpoints(app)
+    setup_file_movement_endpoints(app)
+    setup_excel_integration(app)
+    
+    if DIAGRAM_SERVICE_AVAILABLE:
+        setup_diagram_endpoints(app)
+    
+    setup_lucidchart_endpoints(app)
+    setup_basic_endpoints(app)
+    setup_error_handlers(app)
     
     # Mount static files - ORDER MATTERS!
     static_ui_dir = AppConfig.STATIC_DIR / "ui"
@@ -1118,6 +1765,11 @@ def create_app() -> FastAPI:
     if AppConfig.TEMPLATES_DIR.exists():
         app.mount("/templates", StaticFiles(directory=str(AppConfig.TEMPLATES_DIR)), name="templates")
         logger.info(f"Template files mounted from {AppConfig.TEMPLATES_DIR}")
+        
+    topology_dir = AppConfig.RESULTS_BASE_DIR
+    if topology_dir.exists():
+        app.mount("/results", StaticFiles(directory=str(topology_dir)), name="results")
+        logger.info(f"Results directory mounted from {topology_dir}")
     
     # Include routers with error handling
     try:
@@ -1127,7 +1779,7 @@ def create_app() -> FastAPI:
                 prefix="/api/v1/excel",
                 tags=["excel-processing"]
             )
-            logger.info("✓ Excel router included at /api/v1/excel")
+            logger.info("Excel router included at /api/v1/excel")
 
         if ARCHETYPE_ROUTER_AVAILABLE:
             app.include_router(
@@ -1135,7 +1787,7 @@ def create_app() -> FastAPI:
                 prefix="/api/v1/archetype",
                 tags=["archetype-classification", "diagram-generation"]
             )
-            logger.info("✓ Archetype router included at /api/v1/archetype")
+            logger.info("Archetype router included at /api/v1/archetype")
     except Exception as e:
         logger.error(f"Error including routers: {e}")
     
@@ -1167,16 +1819,6 @@ def create_app() -> FastAPI:
                 logger.error(f"Supported archetypes error: {e}")
                 return {"supported_archetypes": {}, "error": str(e)}
     
-    # Add service endpoints
-    if DIAGRAM_SERVICE_AVAILABLE:
-        setup_diagram_endpoints(app)
-    
-    setup_lucidchart_endpoints(app)
-    setup_basic_endpoints(app)
-  
-    setup_excel_integration(app)  # This adds Excel endpoints that work with WebSocket
-    setup_error_handlers(app)
-    
     return app
 
 # =================== CREATE APP INSTANCE ===================
@@ -1185,37 +1827,40 @@ app = create_app()
 # =================== MAIN EXECUTION ===================
 if __name__ == "__main__":
     logger.info("\n" + "=" * 60)
-    logger.info("🚀 Starting Application Auto-Discovery Platform")
+    logger.info("Starting Application Auto-Discovery Platform")
     logger.info("=" * 60)
     logger.info("Platform Features:")
-    logger.info("   📊 Application portfolio management")
-    logger.info("   🔍 Network topology discovery")
-    logger.info("   📝 Documentation generation")
-    logger.info("   📡 Real-time WebSocket communication")
+    logger.info("   Application portfolio management")
+    logger.info("   Network topology discovery")
+    logger.info("   Documentation generation")
+    logger.info("   Real-time WebSocket communication")
+    logger.info("   Dynamic CSV file discovery")
+    logger.info("   Data processing pipeline management")
     
     if DIAGRAM_SERVICE_AVAILABLE:
-        logger.info("   ✅ Enhanced diagram service - Available")
+        logger.info("   Enhanced diagram service - Available")
     else:
-        logger.info("   ❌ Enhanced diagram service - Not available")
+        logger.info("   Enhanced diagram service - Not available")
     
     if LUCIDCHART_SERVICE_AVAILABLE:
-        logger.info("   ✅ LucidChart generation service - Available")
+        logger.info("   LucidChart generation service - Available")
     else:
-        logger.info("   ❌ LucidChart generation service - Not available (basic XML fallback)")
+        logger.info("   LucidChart generation service - Not available (basic XML fallback)")
     
-    logger.info("\n🌐 Server Information:")
-    logger.info(f"📚 API Documentation: http://localhost:8001/docs")
-    logger.info(f"🏠 Main Application: http://localhost:8001/")
-    logger.info(f"💚 Health Check: http://localhost:8001/health")
-    logger.info(f"ℹ️  API Info: http://localhost:8001/api/info")
+    logger.info("\nServer Information:")
+    logger.info(f"API Documentation: http://localhost:8001/docs")
+    logger.info(f"Main Application: http://localhost:8001/")
+    logger.info(f"Health Check: http://localhost:8001/health")
+    logger.info(f"API Info: http://localhost:8001/api/info")
+    logger.info(f"Data Pipeline Status: http://localhost:8001/api/v1/data/status")
     
-    logger.info("\n🔌 WebSocket Endpoints:")
-    logger.info(f"📡 Main WebSocket: ws://localhost:8001/ws")
-    logger.info(f"📊 Excel WebSocket: ws://localhost:8001/api/v1/excel/ws")
-    logger.info(f"💊 WebSocket Health: http://localhost:8001/api/v1/ws/health")
+    logger.info("\nWebSocket Endpoints:")
+    logger.info(f"Main WebSocket: ws://localhost:8001/ws")
+    logger.info(f"Excel WebSocket: ws://localhost:8001/api/v1/excel/ws")
+    logger.info(f"WebSocket Health: http://localhost:8001/api/v1/ws/health")
     
     if LUCIDCHART_SERVICE_AVAILABLE:
-        logger.info(f"📈 LucidChart Status: http://localhost:8001/api/v1/lucidchart/status")
+        logger.info(f"LucidChart Status: http://localhost:8001/api/v1/lucidchart/status")
     
     logger.info("=" * 60)
     
