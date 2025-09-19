@@ -4,7 +4,6 @@
 // =================== GLOBAL VARIABLES ===================
 let applications = []; // Start empty, will be populated from app-data.js
 let filteredApps = [];
-let selectedApps = new Set();
 let currentBatchIndex = 0;
 const batchSize = 50;
 let availableQualityLevels = {};
@@ -18,6 +17,39 @@ let _excel_results_cache = [];
 // Job tracking for enhanced features
 let activeJobs = {};
 let completedJobs = {};
+
+// =================== SAFETY FUNCTION =================
+function ensureSelectedAppsIsSet() {
+    if (!(window.selectedApps instanceof Set)) {
+        console.warn('selectedApps was not a Set, converting...');
+        const oldValues = Array.isArray(window.selectedApps) ? window.selectedApps : [];
+        window.selectedApps = new Set(oldValues);
+    }
+    return window.selectedApps;
+}
+
+function trackSelectedAppsChanges() {
+    let currentValue = window.selectedApps;
+    
+    Object.defineProperty(window, 'selectedApps', {
+        get() {
+            return currentValue;
+        },
+        set(newValue) {
+            if (!(newValue instanceof Set)) {
+                console.trace('selectedApps being set to non-Set:', newValue);
+            }
+            currentValue = newValue;
+        },
+        configurable: true
+    });
+}
+
+// Call this early in your initialization
+trackSelectedAppsChanges();
+
+const selectedApps = ensureSelectedAppsIsSet();
+// ============= GLOBAL VARIABLES END ==================
 
 // =================== CONFIGURATION ===================
 function loadApplicationsFromAppData() {
@@ -94,7 +126,19 @@ function getApiBase() {
     return window.location.origin;
 }
 
-const API_BASE = getApiBase();
+const API_BASE = (() => {
+    if (window.API_BASE) {
+        console.log('Using window.API_BASE:', window.API_BASE);
+        return window.API_BASE;
+    } else if (window.getApiBase) {
+        const apiBase = window.getApiBase();
+        console.log('Using getApiBase():', apiBase);
+        return apiBase;
+    } else {
+        console.warn('Neither window.API_BASE nor window.getApiBase available, using fallback');
+        return 'http://127.0.0.1:8001';
+    }
+})();
 console.log('API Base URL:', API_BASE);
 console.log('Current URL:', window.location.href);
 
@@ -1484,7 +1528,14 @@ function processApplications() {
 // =================== APPLICATION MANAGEMENT ===================
 
 function selectAllApps() {
-    filteredApps.forEach(app => selectedApps.add(app.app_id));
+    filteredApps.forEach(app => {
+		if (selectedApps instanceof Set) {
+			selectedApps.add(app.app_id);
+		} else {
+			selectedApps = new Set();
+			selectedApps.add(app.app_id);
+		}
+	});
     updateDisplay();
     updateStats();
     updateHeaderStats();
@@ -1620,7 +1671,7 @@ function populateApplicationDropdown() {
         const option = document.createElement('option');
         option.value = app.app_id;
         option.textContent = `${app.app_name} (${app.app_id})`;
-        option.selected = selectedApps.has(app.app_id);
+        option.selected = selectedApps instanceof Set ? selectedApps.has(app.app_id) : selectedApps.includes(app.app_id);
         dropdown.appendChild(option);
     });
     

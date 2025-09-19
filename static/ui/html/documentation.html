@@ -472,8 +472,8 @@
 
     <!-- Load JavaScript Files -->
 	<script src="/ui/js/data-config.js"></script>
+	<script src="/ui/js/common.js"></script>
     <script src="/ui/js/app-data.js"></script>
-    <script src="/ui/js/common.js"></script>
     <script src="/ui/js/documentation.js"></script>
     <script src="/ui/js/shared-state.js"></script>
     
@@ -736,24 +736,67 @@
             
             try {
 				// Get the first selected app for testing
-				const firstApp = Array.from(selectedApps)[0];
+				const firstAppData = Array.from(selectedApps)[0];
+				console.log('First app data:', firstAppData);
+
+				// Extract the actual app name - adjust this based on your data structure
+				let firstApp;
+				if (typeof firstAppData === 'string') {
+					// If selectedApps contains app names directly
+					firstApp = firstAppData;
+				} else if (firstAppData && firstAppData.name) {
+					// If selectedApps contains app objects with a 'name' property
+					firstApp = firstAppData.name;
+				} else if (firstAppData && firstAppData.app_name) {
+					// If selectedApps contains app objects with an 'app_name' property
+					firstApp = firstAppData.app_name;
+				} else {
+					console.error('Cannot determine app name from:', firstAppData);
+					return; // Exit if we can't get a valid app name
+				}
+				
+				console.log('Extracted app name:', firstApp);
+				
+				// Validate that we have a real app name
+				if (!firstApp || firstApp.trim() === '') {
+					console.error('No valid app name found');
+					return;
+				}
+				
 				const qualityLevel = document.getElementById('qualityLevel').value;
 				
 				// Call your working FastAPI endpoint
-				const response = await fetch(`http://localhost:8001/api/v1/archetype/generate-practical-diagrams?archetype=three_tier&app_name=${firstApp}`, {
+				const encodedAppName = encodeURIComponent(firstApp);
+				
+				console.log('About to fetch with firstApp:', firstApp);
+				console.log('About to fetch with encodedAppName:', encodedAppName);
+				console.log('Full URL will be:', `$API_BASE}/api/v1/archetype/generate-practical-diagrams?archetype=three_tier&app_name=${encodedAppName}`);
+
+				const response = await fetch(`${API_BASE}/api/v1/archetype/generate-practical-diagrams?archetype=three_tier&app_name=${encodedAppName}`, {
 					method: 'GET',
 					headers: {
 						'Accept': 'application/json',
 					}
 				});
-				
+
 				if (!response.ok) {
 					throw new Error(`API returned ${response.status}: ${response.statusText}`);
 				}
 				
 				const result = await response.json();
-				console.log('Real API Response:', result);
-				
+				if (result.success) {
+					// OLD CODE - replace with this:
+					if (result.job_id) {
+						updateProcessingStatus('Job created successfully. Polling for completion...');
+						pollJobUntilComplete(result.job_id);
+					} else {
+						// Immediate response - no job polling needed
+						showRealDownloadLinks(result.files || []);
+					}
+				} else {
+					throw new Error('API returned success: false');
+				}
+
 				// Show real results
 				const resultPanel = document.getElementById('resultPanel');
 				const noResults = document.getElementById('noResults');
@@ -795,7 +838,92 @@
 				showToast(`API Error: ${error.message}`, 'error');
 			}
 		}
+		
+		async function pollJobUntilComplete(jobId) {
+			const maxPolls = 24; // 2 minutes max
+			
+			for (let i = 0; i < maxPolls; i++) {
+				try {
+					const jobResponse = await fetch(`${API_BASE}/api/v1/archetype/jobs/${jobId}`);
+					const job = await jobResponse.json();
+					
+					updateProcessingStatus(`Checking job status... (${i + 1}/${maxPolls})`);
+					
+					if (job.status === 'completed' && job.result) {
+						showRealDownloadLinks(job.result.files);
+						updateProcessingStatus('Processing complete! Files ready for download.');
+						break;
+					} else if (job.status === 'error') {
+						updateProcessingStatus(`Job failed: ${job.error || 'Unknown error'}`);
+						break;
+					}
+					
+					await new Promise(resolve => setTimeout(resolve, 5000)); // Wait 5 seconds
+				} catch (error) {
+					console.error('Job polling error:', error);
+					updateProcessingStatus('Error checking job status');
+					break;
+				}
+			}
+		}
+		
+		function showRealDownloadLinks(files) {
+			// Find the existing results area
+			const resultPanel = document.getElementById('resultPanel');
+			const noResults = document.getElementById('noResults');
+			
+			if (resultPanel && noResults) {
+				noResults.style.display = 'none';
+				resultPanel.style.display = 'block';
+				
+				// Create download buttons
+				const downloadButtons = files.map(file => 
+					`<div class="download-item" style="margin: 8px 0; padding: 8px; background: rgba(0, 255, 136, 0.1); border-radius: 4px;">
+						<div style="font-weight: bold; color: #00ff88;">${file.description}</div>
+						<div style="font-size: 0.8rem; color: #94a3b8;">Size: ${(file.file_size / 1024).toFixed(1)} KB</div>
+						<button class="btn btn-sm" onclick="downloadFile('${file.filename}')" style="margin-top: 5px; background: #059669;">
+							Download ${file.format.toUpperCase()}
+						</button>
+					</div>`
+				).join('');
+				
+				resultPanel.innerHTML = `
+					<h4 style="color: #00ff88; margin-bottom: 15px;">Generated Files Ready</h4>
+					${downloadButtons}
+				`;
+			}
+			
+			// Also update the processing panel
+			const processingPanel = document.getElementById('processingPanel');
+			if (processingPanel) {
+				processingPanel.innerHTML = `
+					<div style="color: #00ff88;">✅ Processing Complete!</div>
+					<div style="font-size: 0.8rem; color: #94a3b8; margin-top: 5px;">
+						Generated ${files.length} files successfully
+					</div>
+				`;
+			}
+		}
 
+		function downloadFile(filename) {
+			// Use the working download endpoint
+			const downloadUrl = `${API_BASE}/api/v1/diagram/download/${filename}`;
+			window.open(downloadUrl, '_blank');
+			showToast(`Downloading ${filename}`, 'success');
+		}
+		
+		function updateProcessingStatus(message) {
+			const statusElement = document.getElementById('processingPanel');
+			if (statusElement) {
+				statusElement.innerHTML = `
+					<div>${message}</div>
+					<div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">
+						Real-time job processing...
+					</div>
+				`;
+			}
+		}
+		
         function completeProcessing() {
             const panel = document.getElementById('processingPanel');
             if (panel) {
@@ -973,16 +1101,22 @@
             const appSelect = document.getElementById('applicationSelect');
             if (appSelect) {
                 appSelect.addEventListener('change', function() {
-                    selectedApps.clear();
-                    Array.from(this.selectedOptions).forEach(option => {
-                        if (option.value) {
-                            selectedApps.add(option.value);
-                        }
-                    });
-                    updateSelectionCount();
-                    updateStats();
-                });
-            }
+					// Ensure selectedApps is a Set
+					if (!(selectedApps instanceof Set)) {
+						console.warn('selectedApps was not a Set, reinitializing...');
+						selectedApps = new Set();
+					}
+					
+					selectedApps.clear();
+					Array.from(this.selectedOptions).forEach(option => {
+						if (option.value) {
+							selectedApps.add(option.value);
+						}
+					});
+					updateSelectionCount();
+					updateStats();
+				});
+			}
             
             console.log('📊 Documentation Dashboard Ready');
             showToast('Documentation Dashboard loaded successfully!', 'success');
@@ -990,5 +1124,20 @@
 
         console.log('📊 Documentation Dashboard Script Loaded Successfully');
     </script>
+	<!-- <script>
+		const API_BASE = (() => {
+			if (window.API_BASE) {
+				console.log('Using window.API_BASE:', window.API_BASE);
+				return window.API_BASE;
+			} else if (window.getApiBase) {
+				const apiBase = window.getApiBase();
+				console.log('Using getApiBase():', apiBase);
+				return apiBase;
+			} else {
+				console.warn('Neither window.API_BASE nor window.getApiBase available, using fallback');
+				return 'http://127.0.0.1:8001';
+			}
+		})();
+	</script> -->
 </body>
 </html>

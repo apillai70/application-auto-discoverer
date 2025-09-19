@@ -112,6 +112,38 @@ function addNavigationHandlers() {
     });
 }
 
+// API Configuration with localhost fallback
+function getApiBase() {
+    const currentHost = window.location.hostname;
+    const currentPort = window.location.port;
+    
+    console.log(`API context detection: ${currentHost}:${currentPort}`);
+    
+    // Force 127.0.0.1 if localhost fails
+    if (currentHost === 'localhost') {
+        return 'http://127.0.0.1:8001';
+    }
+    
+    // Handle different port scenarios
+    if (currentPort === '8000') {
+        return `http://127.0.0.1:8001`;
+    }
+    
+    if (currentPort === '9000') {
+        return window.location.origin;
+    }
+    
+    if (currentPort === '8002') {
+        return `http://127.0.0.1:8001`;
+    }
+    
+    return `http://${currentHost}:8001`;
+}
+
+// Make it globally available
+window.getApiBase = getApiBase;
+window.API_BASE = getApiBase();
+
 function showNavigationLoading() {
     // Add a subtle loading indicator
     const body = document.body;

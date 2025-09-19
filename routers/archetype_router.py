@@ -72,7 +72,7 @@ class AppConfig:
     
     # File handling
     MAX_FILE_SIZE = 100 * 1024 * 1024  # 100MB
-    ALLOWED_FILE_TYPES = {".lucid", ".svg", ".pdf", ".json", ".docx", ".xlsx"}
+    ALLOWED_FILE_TYPES = {".lucid", ".svg", ".pdf", ".json", ".docx", ".xlsx", ".drawio"}
     
     @classmethod
     def ensure_directories(cls):
@@ -788,39 +788,111 @@ async def generate_practical_diagrams(
 ):
     """Generate diagrams in practical formats"""
     try:
+        # Sanitize app_name to remove problematic characters
+        clean_app_name = safe_filename(app_name)
+        logger.info(f"Original app_name: '{app_name}', Cleaned: '{clean_app_name}'")
+        #logger.info(f"Starting generate_practical_diagrams: archetype={archetype}, app_name={app_name}")
+         
         if not DIAGRAM_GENERATORS_AVAILABLE:
             raise HTTPException(
                 status_code=503,
                 detail="Diagram generators not available"
             )
+        logger.info("DIAGRAM_GENERATORS_AVAILABLE is True")
         
         if not job_id:
             job_id = job_manager.create_job(
                 job_type="diagram_generation",
                 archetype=archetype,
-                app_name=app_name
+                app_name=clean_app_name
             )
+            logger.info(f"Created job: {job_id}")
         
+        logger.info(f"Adding background task for job {job_id}")
         background_tasks.add_task(
             _generate_practical_diagrams_background,
             job_id, archetype, app_name
         )
+        logger.info("Background task added successfully")
         
-        return {
+        response = {
             "success": True,
             "job_id": job_id,
             "status": "queued",
             "archetype": archetype,
-            "app_name": app_name,
+            "app_name": clean_app_name,
+            "original_app_name": app_name,
             "status_url": f"/api/v1/archetype/jobs/{job_id}"
         }
+        
+        logger.info(f"Returning response: {response}")
+        return response
     
-    except HTTPException:
+    except HTTPException as he:
+        logger.error(f"HTTP Exception in generate_practical_diagrams: {he}")
         raise
     except Exception as e:
         logger.error(f"Error in generate_practical_diagrams: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@router.get("/test-generate-formats")
+async def test_generate_formats():
+    """Test generate_all_formats function directly"""
+    try:
+        logger.info("Testing generate_all_formats function")
+        
+        test_applications = [
+            {"id": "test1", "name": "TestApp", "type": "web_application"}
+        ]
+        
+        # Test the function directly without background task
+        result = generate_all_formats("three_tier", test_applications, "TestApp", "test_job")
+        
+        return {
+            "success": True,
+            "function_works": True,
+            "result_type": type(result).__name__,
+            "result_keys": list(result.keys()) if isinstance(result, dict) else "Not a dict",
+            "result": result
+        }
+    except Exception as e:
+        logger.error(f"Error testing generate_all_formats: {e}", exc_info=True)
+        return {
+            "success": False,
+            "error": str(e),
+            "function_works": False
+        }
+        
+@router.get("/test-background-sync")
+async def test_background_sync():
+    """Test background function synchronously"""
+    try:
+        job_id = "test_sync_job"
+        
+        # Create test job
+        job_manager._jobs[job_id] = {
+            "job_id": job_id,
+            "status": "created",
+            "progress": 0
+        }
+        
+        # Call background function directly
+        await _generate_practical_diagrams_background(job_id, "three_tier", "TestApp")
+        
+        # Get job status
+        job_status = job_manager.get_job(job_id)
+        
+        return {
+            "success": True,
+            "job_status": job_status
+        }
+    except Exception as e:
+        logger.error(f"Error in sync test: {e}", exc_info=True)
+        return {
+            "success": False,
+            "error": str(e)
+        }
+        
 async def _generate_practical_diagrams_background(
     job_id: str, archetype: str, app_name: str
 ):

@@ -24,6 +24,8 @@ from pathlib import Path
 import uuid
 import re
 import logging
+import threading
+from concurrent.futures import ThreadPoolExecutor
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -32,6 +34,18 @@ logger = logging.getLogger(__name__)
 # Add the project root to Python path
 project_root = Path(__file__).parent
 sys.path.insert(0, str(project_root))
+
+# Add this near the top of main.py with other imports
+try:
+    from routers.archetype_router import safe_filename
+    SAFE_FILENAME_AVAILABLE = True
+except ImportError:
+    SAFE_FILENAME_AVAILABLE = False
+    def safe_filename(filename: str) -> str:
+        """Fallback safe filename function"""
+        clean_name = re.sub(r'[<>:"/\\|?*]', '-', filename)
+        clean_name = re.sub(r'\s+', '_', clean_name)
+        return clean_name[:100]
 
 # =================== REQUEST MODELS ===================
 class EnhancedDiagramRequest(BaseModel):
@@ -234,7 +248,7 @@ except ImportError as e:
     LUCIDCHART_SERVICE_AVAILABLE = False
     lucid_generator = None
     logger.warning(f"LucidChart Service not available: {e}")
-
+    
 # =================== WEBSOCKET MANAGEMENT ===================
 class WebSocketConnectionManager:
     """Manage WebSocket connections for Excel processing"""
@@ -638,11 +652,14 @@ async def process_excel_background(job_id: str, file_data: dict):
             "progress": 10,
             "message": "Processing Excel file..."
         })
-        await websocket_manager.send_job_update(job_id, {
-            "status": "processing", 
-            "progress": 10,
-            "message": "Processing Excel file..."
-        })
+        
+        # Only send WebSocket if there are connections
+        if websocket_manager.active_connections:
+            await websocket_manager.send_job_update(job_id, {
+                "status": "processing", 
+                "progress": 10,
+                "message": "Processing Excel file..."
+            })
         
         # Simulate processing steps
         for progress, message in [
@@ -656,10 +673,16 @@ async def process_excel_background(job_id: str, file_data: dict):
                 "progress": progress,
                 "message": message
             })
-            await websocket_manager.send_job_update(job_id, {
-                "progress": progress,
-                "message": message
-            })
+            
+            # Only send WebSocket updates if there are active connections
+            if websocket_manager.active_connections:
+                try:
+                    await websocket_manager.send_job_update(job_id, {
+                        "progress": progress,
+                        "message": message
+                    })
+                except Exception as ws_error:
+                    logger.warning(f"WebSocket update failed for job {job_id}: {ws_error}")
         
         # Complete
         websocket_manager.update_job(job_id, {
@@ -667,11 +690,13 @@ async def process_excel_background(job_id: str, file_data: dict):
             "progress": 100,
             "message": "Processing completed successfully"
         })
-        await websocket_manager.send_job_update(job_id, {
-            "status": "completed",
-            "progress": 100, 
-            "message": "Processing completed successfully"
-        })
+        
+        if websocket_manager.active_connections:
+            await websocket_manager.send_job_update(job_id, {
+                "status": "completed",
+                "progress": 100, 
+                "message": "Processing completed successfully"
+            })
         
     except Exception as e:
         logger.error(f"Excel processing error for job {job_id}: {e}")
@@ -679,10 +704,107 @@ async def process_excel_background(job_id: str, file_data: dict):
             "status": "error",
             "error": str(e)
         })
-        await websocket_manager.send_job_update(job_id, {
-            "status": "error",
-            "error": str(e)
-        })
+        
+        if websocket_manager.active_connections:
+            try:
+                await websocket_manager.send_job_update(job_id, {
+                    "status": "error",
+                    "error": str(e)
+                })
+            except Exception as ws_error:
+                logger.warning(f"Failed to send error update via WebSocket: {ws_error}")
+
+# =================== BACKGROUND TASK UTILITIES ===================
+# process-all worker state & helpers - MOVED TO MODULE LEVEL
+_process_all_lock = threading.Lock()
+_process_all_state = {
+    "running": False,
+    "action": None,
+    "started_at": None,
+    "finished_at": None,
+    "moved": 0,
+    "errors": [],      # list of {"filename": "...", "error": "..."}
+    "accepted": 0,     # how many files the job accepted initially
+}
+
+def _move_one_file_internal(filename: str, action: str = "processed", error: str | None = None, source_data: dict | None = None):
+    """Pure python helper that mirrors POST /api/v1/data/move behavior."""
+    data_staging_dir = Path("data_staging")
+    source_file = data_staging_dir / filename
+    if not source_file.exists():
+        raise FileNotFoundError(f"Source file {filename} not found")
+
+    if action == "processed":
+        dest_dir = data_staging_dir / "processed"
+        ts_key = "processed_at"
+    elif action == "failed":
+        dest_dir = data_staging_dir / "failed"
+        ts_key = "failed_at"
+    else:
+        raise ValueError(f"Invalid action: {action}")
+
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    dest_file = dest_dir / filename
+
+    # move the csv
+    shutil.move(str(source_file), str(dest_file))
+
+    # write sidecar metadata
+    meta = {
+        "filename": filename,
+        ts_key: datetime.now().isoformat(),
+        "action": action,
+        "error": error,
+        "source_data": source_data or {},
+    }
+    with open(dest_dir / f"{filename}.meta.json", "w", encoding="utf-8") as f:
+        json.dump(meta, f, indent=2)
+
+def _gather_pending_root_only():
+    """Return root-level pending CSVs (excludes subfolders and applicationList.csv)."""
+    data_staging_dir = Path("data_staging")
+    if not data_staging_dir.exists():
+        return []
+
+    files = []
+    for fp in data_staging_dir.glob("*.csv"):
+        if fp.name == "applicationList.csv":
+            continue
+        if fp.parent != data_staging_dir:
+            continue
+        files.append(fp)
+    # newest first
+    files.sort(key=lambda f: f.stat().st_mtime, reverse=True)
+    return [f.name for f in files]
+
+def _process_all_job(action: str = "processed"):
+    """Run in a background task: move every pending file to action (processed|failed)."""
+    global _process_all_state
+    
+    try:
+        pending = _gather_pending_root_only()
+        
+        with _process_all_lock:
+            _process_all_state["accepted"] = len(pending)
+        
+        for name in pending:
+            try:
+                _move_one_file_internal(name, action=action)
+                with _process_all_lock:
+                    _process_all_state["moved"] += 1
+            except Exception as e:
+                with _process_all_lock:
+                    _process_all_state["errors"].append({"filename": name, "error": str(e)})
+    except Exception as global_error:
+        with _process_all_lock:
+            _process_all_state["errors"].append({
+                "filename": "GLOBAL_ERROR", 
+                "error": str(global_error)
+            })
+    finally:
+        with _process_all_lock:
+            _process_all_state["running"] = False
+            _process_all_state["finished_at"] = datetime.now().isoformat()
 
 # =================== ENDPOINT SETUP FUNCTIONS ===================
 def setup_websocket_endpoints(app: FastAPI):
@@ -884,6 +1006,7 @@ def setup_file_discovery_endpoints(app: FastAPI):
 
 def setup_file_movement_endpoints(app: FastAPI):
     """Setup file movement and topology endpoints"""
+    
     @app.get("/api/v1/data/processed/{filename}")
     async def get_processed_file(filename: str):
         """Serve files from processed directory"""
@@ -911,8 +1034,6 @@ def setup_file_movement_endpoints(app: FastAPI):
                 raise HTTPException(status_code=404, detail=f"Failed file not found: {filename}")
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Error serving failed file: {str(e)}")
-    
-    logger.info("File movement endpoints added")
     
     @app.post("/api/v1/data/move")
     async def move_file(request: MoveFileRequest):
@@ -1029,6 +1150,55 @@ def setup_file_movement_endpoints(app: FastAPI):
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Failed to list pending files: {str(e)}")
 
+    @app.post("/api/v1/data/process-all")
+    async def process_all_files(background_tasks: BackgroundTasks, action: str = "processed"):
+        """
+        Kick off a background job that promotes every root-level pending CSV in data_staging/
+        to /processed (or /failed if action='failed').
+        """
+        if action not in ("processed", "failed"):
+            raise HTTPException(status_code=400, detail="action must be 'processed' or 'failed'")
+
+        with _process_all_lock:
+            if _process_all_state["running"]:
+                return {
+                    "status": "already_running",
+                    "action": _process_all_state["action"],
+                    "started_at": _process_all_state["started_at"],
+                    "moved": _process_all_state["moved"],
+                    "accepted": _process_all_state["accepted"],
+                    "errors": _process_all_state["errors"],
+                }
+            # initialize new job state
+            _process_all_state.update({
+                "running": True,
+                "action": action,
+                "started_at": datetime.now().isoformat(),
+                "finished_at": None,
+                "moved": 0,
+                "errors": [],
+                "accepted": 0,
+            })
+
+        # start the job
+        background_tasks.add_task(_process_all_job, action)
+        # immediate response
+        pending_now = _gather_pending_root_only()
+        return {
+            "status": "started",
+            "action": action,
+            "pending_detected": len(pending_now),
+            "note": "Job runs in background; poll /api/v1/data/process-all/status for progress."
+        }
+
+    @app.get("/api/v1/data/process-all/status")
+    async def process_all_status():
+        """Return progress of the process-all background job + current pending count."""
+        return {
+            **_process_all_state,
+            "pending_now": len(_gather_pending_root_only())
+        }
+        
     @app.get("/api/v1/data/directories")
     async def check_pipeline_directories():
         """Check status of pipeline directories"""
@@ -1592,6 +1762,28 @@ def setup_basic_endpoints(app: FastAPI):
         except Exception as e:
             logger.error(f"API info error: {e}")
             return {"error": str(e), "version": "2.3.0"}
+            
+    # ADD THE DEBUG ENDPOINT HERE
+    @app.get("/debug/router-status")
+    async def debug_router_status():
+        return {
+            "ARCHETYPE_ROUTER_AVAILABLE": ARCHETYPE_ROUTER_AVAILABLE,
+            "ARCHETYPE_SERVICE_AVAILABLE": ARCHETYPE_SERVICE_AVAILABLE,
+            "ENHANCEMENT_AVAILABLE": ENHANCEMENT_AVAILABLE,
+            "DIAGRAM_SERVICE_AVAILABLE": DIAGRAM_SERVICE_AVAILABLE,
+            "archetype_router_included": any("archetype" in str(route.path) for route in app.routes),
+            "total_routes": len(app.routes),
+            "archetype_routes": [str(route.path) for route in app.routes if "archetype" in str(route.path)],
+            "all_routes": [f"{route.methods} {route.path}" for route in app.routes if hasattr(route, 'methods')]
+        }
+        
+    @app.get("/debug/archetype-router")
+    async def debug_archetype_router():
+        return {
+            "ARCHETYPE_ROUTER_AVAILABLE": ARCHETYPE_ROUTER_AVAILABLE,
+            "archetype_router_type": str(type(archetype_router)) if 'archetype_router' in globals() else "Not imported",
+            "router_routes": [str(route) for route in archetype_router.routes] if 'archetype_router' in globals() else []
+        }
 
 def setup_error_handlers(app: FastAPI):
     """Setup error handlers"""
@@ -1717,6 +1909,7 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+    
     # Add cache-busting middleware right after CORS
     @app.middleware("http")
     async def add_cache_control_headers(request, call_next):
@@ -1823,7 +2016,6 @@ def create_app() -> FastAPI:
 
 # =================== CREATE APP INSTANCE ===================
 app = create_app()
-
 # =================== MAIN EXECUTION ===================
 if __name__ == "__main__":
     logger.info("\n" + "=" * 60)

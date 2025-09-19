@@ -1975,16 +1975,16 @@ class ApplicationDataManager {
         console.log('Generating network topology for:', selectedAppIds);
         
         // Determine which applications to include
-        const selectedApps = selectedAppIds.includes('all') 
-			? this.applications.filter(app => app.trafficRecords > 0) // Only apps with real traffic
-			: this.applications.filter(app => selectedAppIds.includes(app.id));
+        const appsToProcess = selectedAppIds.includes('all') 
+        ? this.applications.filter(app => app.trafficRecords > 0) 
+        : this.applications.filter(app => selectedAppIds.includes(app.id));
         
         const nodes = [];
         const links = [];
         const nodeMap = new Map();
         
         // Generate nodes for each application
-        selectedApps.forEach((app, appIndex) => {
+        appsToProcess.forEach((app, appIndex) => {
             const tiers = this.getTiersForArchetype(app.archetype, maxNodesPerApp);
             
             tiers.forEach((tier, tierIndex) => {
@@ -2044,8 +2044,8 @@ class ApplicationDataManager {
         });
         
         // Create inter-application links
-        if (selectedApps.length > 1 && (includeUpstream || includeDownstream)) {
-            this.generateInterApplicationLinks(selectedApps, links, { includeUpstream, includeDownstream });
+        if (appsToProcess.length > 1 && (includeUpstream || includeDownstream)) {
+            this.generateInterApplicationLinks(appsToProcess, links, { includeUpstream, includeDownstream });
         }
         
         this.networkTopology = { nodes, links };

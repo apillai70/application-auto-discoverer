@@ -1,45 +1,22 @@
-# ACTIVnet Web Application Integration
+# Composite Architecture Analysis Framework
 
-This project integrates ACTIVnet data processing with a web application interface.
-
-## Directory Structure
-
-### Web Application Files
-- `static/ui/js/app_data.js` - Main data management JavaScript
-- `static/ui/css/` - CSS stylesheets  
-- `static/ui/data/` - Processed data files for web consumption
-- `templates/` - JSON data files for web application
-
-### Data Processing
-- `data_staging/` - Drop folder for new data files
-- `data_staging/processed/` - Successfully processed files
-- `data_staging/failed/` - Failed processing attempts
-
-### Key Files
-- `synthetic_flows_apps_archetype_mapped.xlsx` - Master Excel file (appended with new data)
-- `activnet_data.json` - JSON data for web application
-- `activnet_file_processor.py` - File processing system
-
-## Usage
-
-1. Start the file processor:
-   ```bash
-   python activnet_file_processor.py
-   ```
-
-2. Drop data files in `data_staging/`
-
-3. Serve the web application:
-   ```bash
-   python -m http.server 8000
-   ```
-
-4. Open browser to `http://localhost:8000`
+Enterprise network analysis tool for detecting and visualizing composite architectural patterns.
 
 ## Features
 
-- File-name agnostic processing
-- Automatic duplicate detection
-- Real-time web application updates
-- Appending to master Excel file
-- Comprehensive port service research
+- **Multi-application processing** with batch capabilities
+- **Composite pattern detection** (not single archetypes)
+- **Interactive visualizations** with animated traffic flows
+- **IBM MQ and messaging protocol support**
+- **Enterprise-wide connectivity analysis**
+
+## Quick Start
+```bash
+# Process single application
+python complete_composite_workflow.py --input App_Code_APPNAME.csv
+
+# Batch process multiple applications  
+python batch_composite_workflow.py
+
+# Generate interactive diagrams
+python animated_flow_mapper.py --input-dir complete_composite_analysis
